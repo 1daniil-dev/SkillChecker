@@ -1,12 +1,132 @@
-﻿<Window x:Class="SkillChecker.MainWindow"
+<Window x:Class="SkillChecker.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SkillChecker"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="SkillChecker - Система тестирования" Height="700" Width="800"
+        WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
+        Background="#F0F4F8">
 
+    <Grid Margin="20">
+        <!-- АВТОРИЗАЦИЯ -->
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="400"
+                    Visibility="{Binding AuthVisibility}"
+                    x:Name="AuthPanel">
+            <TextBlock Text="SkillChecker" FontSize="32" FontWeight="Bold" Foreground="#1E293B"
+                       HorizontalAlignment="Center" Margin="0,0,0,8"
+                       AutomationProperties.Name="Название приложения"/>
+            <TextBlock Text="Система тестирования учащихся" FontSize="14" Foreground="#64748B"
+                       HorizontalAlignment="Center" Margin="0,0,0,32"/>
+
+            <TextBlock Text="IP адрес сервера" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
+            <TextBox Text="{Binding ServerIp, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
+                     VerticalContentAlignment="Center" Margin="0,0,0,10"
+                     AutomationProperties.Name="Ввод IP адреса" AutomationProperties.HelpText="IP адрес компьютера преподавателя"/>
+
+            <TextBlock Text="Порт" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
+            <TextBox Text="{Binding ServerPort, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
+                     VerticalContentAlignment="Center" Margin="0,0,0,10"
+                     AutomationProperties.Name="Ввод порта" AutomationProperties.HelpText="Порт сервера (по умолчанию 9000)"/>
+
+            <Button Content="Подключиться к серверу" Height="44" Margin="0,0,0,10"
+                    Command="{Binding ConnectCommand}" Background="#E2E8F0" Foreground="#334155"
+                    FontWeight="SemiBold" FontSize="14" BorderThickness="0"
+                    AutomationProperties.Name="Подключиться к серверу" AutomationProperties.HelpText="Установить соединение с сервером преподавателя"/>
+
+            <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="#64748B"
+                       TextWrapping="Wrap" Margin="0,0,0,18" HorizontalAlignment="Center"/>
+
+            <TextBlock Text="ФИО студента" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
+            <TextBox Text="{Binding StudentName, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
+                     VerticalContentAlignment="Center" Margin="0,0,0,10"
+                     AutomationProperties.Name="Ввод ФИО студента" AutomationProperties.HelpText="Введите полное ФИО"/>
+
+            <TextBlock Text="Учебная группа" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
+            <TextBox Text="{Binding StudentGroup, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
+                     VerticalContentAlignment="Center" Margin="0,0,0,10"
+                     AutomationProperties.Name="Ввод учебной группы" AutomationProperties.HelpText="Введите номер группы"/>
+
+            <TextBlock Text="Выберите тест" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
+            <ComboBox Height="40" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,0,18"
+                      ItemsSource="{Binding TestNames}" SelectedItem="{Binding SelectedTestName}"
+                      AutomationProperties.Name="Выбор теста" AutomationProperties.HelpText="Выберите тест из списка"/>
+
+            <Button Content="Начать тестирование" Height="48"
+                    Command="{Binding StartTestCommand}" Background="#4F46E5" Foreground="White"
+                    FontWeight="Bold" FontSize="15" BorderThickness="0"
+                    AutomationProperties.Name="Начать тестирование"/>
+
+            <Button Content="Выход" Height="36" Margin="0,12,0,0"
+                    Command="{Binding ExitCommand}" Background="Transparent" Foreground="#94A3B8"
+                    BorderThickness="0" FontWeight="Normal"
+                    AutomationProperties.Name="Выход из программы"/>
+        </StackPanel>
+
+        <!-- ТЕСТИРОВАНИЕ -->
+        <Grid Visibility="{Binding TestingVisibility}" x:Name="TestingPanel">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
+                <TextBlock Text="{Binding QuestionNumber, StringFormat='Вопрос {0}'}"
+                           FontSize="14" Foreground="#64748B"
+                           AutomationProperties.Name="Номер вопроса"/>
+                <TextBlock Text="{Binding TotalQuestions, StringFormat=' из {0}'}"
+                           FontSize="14" Foreground="#64748B"/>
+            </StackPanel>
+
+            <TextBlock Grid.Row="1" Text="{Binding QuestionText}" FontSize="20" FontWeight="Bold"
+                       Foreground="#1E293B" TextWrapping="Wrap" Margin="0,0,0,30"
+                       AutomationProperties.Name="Текст вопроса"/>
+
+            <ListBox Grid.Row="2" ItemsSource="{Binding CurrentOptions}"
+                     SelectedIndex="{Binding SelectedOptionIndex}"
+                     FontSize="16" Padding="8" BorderThickness="1" BorderBrush="#E2E8F0"
+                     Background="White"
+                     AutomationProperties.Name="Варианты ответа">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="12,10"/>
+                        <Setter Property="Margin" Value="0,4"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+
+            <Button Grid.Row="3" Content="Следующий вопрос" Height="48" Margin="0,20,0,0"
+                    Command="{Binding NextQuestionCommand}" Background="#4F46E5" Foreground="White"
+                    FontWeight="Bold" FontSize="15" BorderThickness="0"
+                    AutomationProperties.Name="Следующий вопрос"/>
+        </Grid>
+
+        <!-- РЕЗУЛЬТАТ -->
+        <Grid Visibility="{Binding ResultVisibility}" x:Name="ResultPanel">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Результат тестирования" FontSize="28" FontWeight="Bold"
+                       Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,20"
+                       AutomationProperties.Name="Заголовок результата"/>
+
+            <TextBlock Grid.Row="1" Text="{Binding ResultScore}" FontSize="22" FontWeight="Bold"
+                       Foreground="#4F46E5" HorizontalAlignment="Center" Margin="0,0,0,8"
+                       AutomationProperties.Name="Оценка"/>
+
+            <TextBlock Grid.Row="2" Text="{Binding ResultCorrect}" FontSize="16" Foreground="#64748B"
+                       HorizontalAlignment="Center"
+                       AutomationProperties.Name="Количество правильных ответов"/>
+
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,0">
+                <Button Content="Начать заново" Height="44" Padding="20,0"
+                        Command="{Binding RestartCommand}" Background="#E2E8F0" Foreground="#334155"
+                        FontWeight="SemiBold" BorderThickness="0"
+                        AutomationProperties.Name="Начать заново"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

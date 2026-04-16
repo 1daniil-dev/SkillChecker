@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="SkillChecker.Common/SkillChecker.Common.csproj" />
   <Project Path="SkillChecker/SkillChecker.csproj" />
+  <Project Path="SkillCheckerServer/SkillCheckerServer.csproj" />
 </Solution>
