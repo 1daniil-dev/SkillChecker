@@ -46,7 +46,8 @@ while (true)
     }
     else if (cmd == "reload")
     {
-        Console.WriteLine("Перезагрузка тестов...");
+        server.LoadAllTests();
+        Console.WriteLine("Тесты перезагружены");
     }
     else
     {

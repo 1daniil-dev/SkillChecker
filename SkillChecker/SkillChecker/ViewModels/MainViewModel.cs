@@ -308,7 +308,7 @@ namespace SkillChecker.ViewModels
         {
             try
             {
-                TestResultData result = _clientService.SubmitAnswers(StudentName, StudentGroup, _selectedTestName, _selectedAnswers);
+                TestResult result = _clientService.SubmitAnswers(StudentName, StudentGroup, _selectedTestName, _selectedAnswers);
 
                 ResultScore = "Оценка: " + result.Score + "%";
                 ResultCorrect = "Правильных ответов: " + result.CorrectAnswers + " из " + result.TotalQuestions;

@@ -6,7 +6,6 @@
         Background="#F0F4F8">
 
     <Grid Margin="20">
-        <!-- АВТОРИЗАЦИЯ -->
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="400"
                     Visibility="{Binding AuthVisibility}"
                     x:Name="AuthPanel">
@@ -60,7 +59,6 @@
                     AutomationProperties.Name="Выход из программы"/>
         </StackPanel>
 
-        <!-- ТЕСТИРОВАНИЕ -->
         <Grid Visibility="{Binding TestingVisibility}" x:Name="TestingPanel">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -126,7 +124,6 @@
                     AutomationProperties.Name="Следующий вопрос"/>
         </Grid>
 
-        <!-- РЕЗУЛЬТАТ -->
         <Grid Visibility="{Binding ResultVisibility}" x:Name="ResultPanel">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

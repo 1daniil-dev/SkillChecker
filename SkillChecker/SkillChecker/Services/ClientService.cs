@@ -62,17 +62,7 @@ namespace SkillChecker.Services
             throw new Exception("Не удалось получить тест");
         }
 
-        public string CheckStart(string testName)
-        {
-            string response = Send(ProtocolHelper.BuildMessage(Cmd.CheckStart, testName));
-            string[] parts = ProtocolHelper.ParseMessage(response);
-
-            if (parts[0] == Cmd.StartOk) return "OK";
-            if (parts[0] == Cmd.StartWait && parts.Length >= 2) return "WAIT:" + parts[1];
-            return "ERROR";
-        }
-
-        public TestResultData SubmitAnswers(string studentName, string group, string testName, List<int> answers)
+        public TestResult SubmitAnswers(string studentName, string group, string testName, List<int> answers)
         {
             string answersStr = "";
             for (int i = 0; i < answers.Count; i++)
@@ -84,7 +74,7 @@ namespace SkillChecker.Services
             string response = Send(ProtocolHelper.BuildMessage(Cmd.SubmitAnswers, studentName, group, testName, answersStr));
             string[] parts = ProtocolHelper.ParseMessage(response);
 
-            TestResultData result = new TestResultData();
+            TestResult result = new TestResult();
             if (parts.Length >= 4 && parts[0] == Cmd.Result)
             {
                 double score;
@@ -116,16 +106,5 @@ namespace SkillChecker.Services
                 }
             }
         }
-    }
-
-    public class TestResultData
-    {
-        private double _score;
-        private int _correctAnswers;
-        private int _totalQuestions;
-
-        public double Score { get => _score; set => _score = value; }
-        public int CorrectAnswers { get => _correctAnswers; set => _correctAnswers = value; }
-        public int TotalQuestions { get => _totalQuestions; set => _totalQuestions = value; }
     }
 }

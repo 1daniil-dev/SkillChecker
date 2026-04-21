@@ -60,7 +60,7 @@ namespace SkillCheckerServer
             Log("Сервер остановлен.");
         }
 
-        private void LoadAllTests()
+        public void LoadAllTests()
         {
             _tests.Clear();
 
@@ -111,14 +111,15 @@ namespace SkillCheckerServer
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Log("Ошибка клиента " + endPoint + ": " + ex.Message);
             }
 
             Log("Отключён: " + endPoint);
         }
 
-        private string ProcessCommand(string command, string[] parts, string clientEndPont)
+        private string ProcessCommand(string command, string[] parts, string clientEndPoint)
         {
             if (command == Commands.GetTests)
             {

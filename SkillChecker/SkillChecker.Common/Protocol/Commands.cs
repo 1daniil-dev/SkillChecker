@@ -12,7 +12,5 @@ namespace SkillChecker.Common.Protocol
         public const string StartOk = "START_OK";
         public const string StartWait = "START_WAIT";
         public const string Error = "ERROR";
-        public const string SetSchedule = "SET_SCHEDULE";
-        public const string Ok = "OK";
     }
 }
