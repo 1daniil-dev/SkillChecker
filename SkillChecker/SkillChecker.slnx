@@ -2,4 +2,11 @@
   <Project Path="SkillChecker.Common/SkillChecker.Common.csproj" />
   <Project Path="SkillChecker/SkillChecker.csproj" />
   <Project Path="SkillCheckerServer/SkillCheckerServer.csproj" />
+
+  <Properties>
+    <Startup>
+      <Project Path="SkillCheckerServer/SkillCheckerServer.csproj" Action="Start" />
+      <Project Path="SkillChecker/SkillChecker.csproj" Action="Start" />
+    </Startup>
+  </Properties>
 </Solution>
