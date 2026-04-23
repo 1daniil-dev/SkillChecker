@@ -196,10 +196,18 @@ namespace SkillCheckerServer
 
                 SaveResultToFile(result);
 
+                string correctIndices = "";
+                for (int i = 0; i < questions.Count; i++)
+                {
+                    if (i > 0) correctIndices += ",";
+                    correctIndices += questions[i].CorrectAnswerIndex.ToString();
+                }
+
                 return ProtocolHelper.BuildMessage(Commands.Result,
                     result.Score.ToString(),
                     result.CorrectAnswers.ToString(),
-                    result.TotalQuestions.ToString());
+                    result.TotalQuestions.ToString(),
+                    correctIndices);
             }
 
             return ProtocolHelper.BuildMessage(Commands.Error, "Неизвестная команда");

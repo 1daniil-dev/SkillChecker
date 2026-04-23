@@ -75,13 +75,23 @@ namespace SkillChecker.Services
             string[] parts = ProtocolHelper.ParseMessage(response);
 
             TestResult result = new TestResult();
-            if (parts.Length >= 4 && parts[0] == Cmd.Result)
+            if (parts.Length >= 5 && parts[0] == Cmd.Result)
             {
                 double score;
                 int correct, total;
                 if (double.TryParse(parts[1], out score)) result.Score = score;
                 if (int.TryParse(parts[2], out correct)) result.CorrectAnswers = correct;
                 if (int.TryParse(parts[3], out total)) result.TotalQuestions = total;
+
+                string[] correctParts = parts[4].Split(',');
+                for (int i = 0; i < correctParts.Length; i++)
+                {
+                    StudentAnswer sa = new StudentAnswer();
+                    if (int.TryParse(correctParts[i], out int idx)) sa.CorrectIndex = idx;
+                    if (i < answers.Count) sa.SelectedIndex = answers[i];
+                    sa.IsCorrect = sa.SelectedIndex == sa.CorrectIndex;
+                    result.Answers.Add(sa);
+                }
             }
             return result;
         }

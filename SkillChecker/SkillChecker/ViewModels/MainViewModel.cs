@@ -28,9 +28,11 @@ namespace SkillChecker.ViewModels
         private int _selectedOptionIndex;
         private int _questionNumber;
         private int _totalQuestions;
+        private double _progressValue;
 
         private string _resultScore;
         private string _resultCorrect;
+        private List<ResultItem> _resultItems;
 
         private Visibility _authVisibility;
         private Visibility _testingVisibility;
@@ -58,9 +60,11 @@ namespace SkillChecker.ViewModels
             _selectedOptionIndex = -1;
             _questionNumber = 0;
             _totalQuestions = 0;
+            _progressValue = 0;
 
             _resultScore = "";
             _resultCorrect = "";
+            _resultItems = new List<ResultItem>();
 
             _authVisibility = Visibility.Visible;
             _testingVisibility = Visibility.Collapsed;
@@ -151,6 +155,12 @@ namespace SkillChecker.ViewModels
             set { _totalQuestions = value; OnPropertyChanged(); }
         }
 
+        public double ProgressValue
+        {
+            get => _progressValue;
+            set { _progressValue = value; OnPropertyChanged(); }
+        }
+
         public string ResultScore
         {
             get => _resultScore;
@@ -161,6 +171,12 @@ namespace SkillChecker.ViewModels
         {
             get => _resultCorrect;
             set { _resultCorrect = value; OnPropertyChanged(); }
+        }
+
+        public List<ResultItem> ResultItems
+        {
+            get => _resultItems;
+            set { _resultItems = value; OnPropertyChanged(); }
         }
 
         public Visibility AuthVisibility
@@ -302,22 +318,52 @@ namespace SkillChecker.ViewModels
             CurrentOptions = q.Options;
             SelectedOptionIndex = -1;
             QuestionNumber = index + 1;
+
+            if (_questions.Count > 0)
+            {
+                ProgressValue = (double)index / _questions.Count * 100;
+            }
         }
 
         private void ShowResult()
         {
+            ProgressValue = 100;
+
             try
             {
                 TestResult result = _clientService.SubmitAnswers(StudentName, StudentGroup, _selectedTestName, _selectedAnswers);
 
-                ResultScore = "Оценка: " + result.Score + "%";
+                ResultScore = result.Score + "%";
                 ResultCorrect = "Правильных ответов: " + result.CorrectAnswers + " из " + result.TotalQuestions;
+
+                List<ResultItem> items = new List<ResultItem>();
+                for (int i = 0; i < _questions.Count; i++)
+                {
+                    Question q = _questions[i];
+                    int selected = i < _selectedAnswers.Count ? _selectedAnswers[i] : -1;
+                    int correctIdx = i < result.Answers.Count ? result.Answers[i].CorrectIndex : 0;
+                    bool isCorrect = selected == correctIdx;
+
+                    string selectedText = selected >= 0 && selected < q.Options.Count ? q.Options[selected] : "Пропущен";
+                    string correctText = correctIdx < q.Options.Count ? q.Options[correctIdx] : "?";
+
+                    ResultItem item = new ResultItem();
+                    item.Number = (i + 1).ToString();
+                    item.QuestionText = q.Text;
+                    item.SelectedAnswer = selectedText;
+                    item.CorrectAnswer = correctText;
+                    item.IsCorrect = isCorrect;
+                    items.Add(item);
+                }
+
+                ResultItems = items;
                 AppState = "Result";
             }
             catch (Exception ex)
             {
                 ResultScore = "Ошибка";
                 ResultCorrect = ex.Message;
+                ResultItems = new List<ResultItem>();
                 AppState = "Result";
             }
         }
@@ -328,6 +374,7 @@ namespace SkillChecker.ViewModels
             _currentQuestionIndex = 0;
             SelectedOptionIndex = -1;
             SelectedTestName = "";
+            ProgressValue = 0;
             StatusMessage = "Введите IP сервера и подключитесь";
             AppState = "Auth";
         }
@@ -335,6 +382,30 @@ namespace SkillChecker.ViewModels
         private void ExecuteExit(object? parameter)
         {
             Application.Current.Shutdown();
+        }
+    }
+
+    public class ResultItem
+    {
+        private string _number;
+        private string _questionText;
+        private string _selectedAnswer;
+        private string _correctAnswer;
+        private bool _isCorrect;
+
+        public string Number { get => _number; set => _number = value; }
+        public string QuestionText { get => _questionText; set => _questionText = value; }
+        public string SelectedAnswer { get => _selectedAnswer; set => _selectedAnswer = value; }
+        public string CorrectAnswer { get => _correctAnswer; set => _correctAnswer = value; }
+        public bool IsCorrect { get => _isCorrect; set => _isCorrect = value; }
+
+        public ResultItem()
+        {
+            _number = "";
+            _questionText = "";
+            _selectedAnswer = "";
+            _correctAnswer = "";
+            _isCorrect = false;
         }
     }
 }
