@@ -424,3 +424,6 @@ SkillChecker/SkillChecker.Web/Tests/*
 
 # Результаты тестирования
 Results/
+
+# GitHub auto-generated
+.github/
