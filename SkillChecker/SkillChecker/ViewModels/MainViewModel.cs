@@ -30,12 +30,18 @@ namespace SkillChecker.ViewModels
         private int _totalQuestions;
         private double _progressValue;
 
+        private string _nextButtonText;
+        private bool _canGoBack;
+
         private string _resultScore;
         private string _resultCorrect;
         private List<ResultItem> _resultItems;
 
+        private List<ReviewItem> _reviewItems;
+
         private Visibility _authVisibility;
         private Visibility _testingVisibility;
+        private Visibility _reviewVisibility;
         private Visibility _resultVisibility;
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -61,18 +67,25 @@ namespace SkillChecker.ViewModels
             _questionNumber = 0;
             _totalQuestions = 0;
             _progressValue = 0;
+            _nextButtonText = "Далее";
+            _canGoBack = false;
 
             _resultScore = "";
             _resultCorrect = "";
             _resultItems = new List<ResultItem>();
+            _reviewItems = new List<ReviewItem>();
 
             _authVisibility = Visibility.Visible;
             _testingVisibility = Visibility.Collapsed;
+            _reviewVisibility = Visibility.Collapsed;
             _resultVisibility = Visibility.Collapsed;
 
             ConnectCommand = new RelayCommand(ExecuteConnect);
             StartTestCommand = new RelayCommand(ExecuteStartTest, CanStartTest);
             NextQuestionCommand = new RelayCommand(ExecuteNextQuestion, CanNextQuestion);
+            PrevQuestionCommand = new RelayCommand(ExecutePrevQuestion, CanPrevQuestion);
+            GoToQuestionCommand = new RelayCommand(ExecuteGoToQuestion);
+            SubmitCommand = new RelayCommand(ExecuteSubmit);
             RestartCommand = new RelayCommand(ExecuteRestart);
             ExitCommand = new RelayCommand(ExecuteExit);
         }
@@ -161,6 +174,18 @@ namespace SkillChecker.ViewModels
             set { _progressValue = value; OnPropertyChanged(); }
         }
 
+        public string NextButtonText
+        {
+            get => _nextButtonText;
+            set { _nextButtonText = value; OnPropertyChanged(); }
+        }
+
+        public bool CanGoBack
+        {
+            get => _canGoBack;
+            set { _canGoBack = value; OnPropertyChanged(); }
+        }
+
         public string ResultScore
         {
             get => _resultScore;
@@ -179,6 +204,12 @@ namespace SkillChecker.ViewModels
             set { _resultItems = value; OnPropertyChanged(); }
         }
 
+        public List<ReviewItem> ReviewItems
+        {
+            get => _reviewItems;
+            set { _reviewItems = value; OnPropertyChanged(); }
+        }
+
         public Visibility AuthVisibility
         {
             get => _authVisibility;
@@ -191,6 +222,12 @@ namespace SkillChecker.ViewModels
             set { _testingVisibility = value; OnPropertyChanged(); }
         }
 
+        public Visibility ReviewVisibility
+        {
+            get => _reviewVisibility;
+            set { _reviewVisibility = value; OnPropertyChanged(); }
+        }
+
         public Visibility ResultVisibility
         {
             get => _resultVisibility;
@@ -200,6 +237,9 @@ namespace SkillChecker.ViewModels
         public RelayCommand ConnectCommand { get; private set; }
         public RelayCommand StartTestCommand { get; private set; }
         public RelayCommand NextQuestionCommand { get; private set; }
+        public RelayCommand PrevQuestionCommand { get; private set; }
+        public RelayCommand GoToQuestionCommand { get; private set; }
+        public RelayCommand SubmitCommand { get; private set; }
         public RelayCommand RestartCommand { get; private set; }
         public RelayCommand ExitCommand { get; private set; }
 
@@ -214,18 +254,28 @@ namespace SkillChecker.ViewModels
             {
                 AuthVisibility = Visibility.Visible;
                 TestingVisibility = Visibility.Collapsed;
+                ReviewVisibility = Visibility.Collapsed;
                 ResultVisibility = Visibility.Collapsed;
             }
             else if (_appState == "Testing")
             {
                 AuthVisibility = Visibility.Collapsed;
                 TestingVisibility = Visibility.Visible;
+                ReviewVisibility = Visibility.Collapsed;
+                ResultVisibility = Visibility.Collapsed;
+            }
+            else if (_appState == "Review")
+            {
+                AuthVisibility = Visibility.Collapsed;
+                TestingVisibility = Visibility.Collapsed;
+                ReviewVisibility = Visibility.Visible;
                 ResultVisibility = Visibility.Collapsed;
             }
             else if (_appState == "Result")
             {
                 AuthVisibility = Visibility.Collapsed;
                 TestingVisibility = Visibility.Collapsed;
+                ReviewVisibility = Visibility.Collapsed;
                 ResultVisibility = Visibility.Visible;
             }
         }
@@ -280,6 +330,10 @@ namespace SkillChecker.ViewModels
 
                 _questions = questions;
                 _selectedAnswers = new List<int>();
+                for (int i = 0; i < questions.Count; i++)
+                {
+                    _selectedAnswers.Add(-1);
+                }
                 _currentQuestionIndex = 0;
                 TotalQuestions = _questions.Count;
                 ShowQuestion(0);
@@ -298,31 +352,95 @@ namespace SkillChecker.ViewModels
 
         private void ExecuteNextQuestion(object? parameter)
         {
-            _selectedAnswers.Add(SelectedOptionIndex);
-            _currentQuestionIndex++;
+            _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
 
-            if (_currentQuestionIndex < _questions.Count)
+            if (_currentQuestionIndex < _questions.Count - 1)
             {
-                ShowQuestion(_currentQuestionIndex);
+                ShowQuestion(_currentQuestionIndex + 1);
             }
             else
             {
-                ShowResult();
+                ShowReview();
             }
+        }
+
+        private bool CanPrevQuestion(object? parameter)
+        {
+            return CanGoBack;
+        }
+
+        private void ExecutePrevQuestion(object? parameter)
+        {
+            _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
+            ShowQuestion(_currentQuestionIndex - 1);
+        }
+
+        private void ExecuteGoToQuestion(object? parameter)
+        {
+            if (parameter != null && int.TryParse(parameter.ToString(), out int index))
+            {
+                if (index >= 0 && index < _questions.Count)
+                {
+                    _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
+                    ShowQuestion(index);
+                    AppState = "Testing";
+                }
+            }
+        }
+
+        private void ExecuteSubmit(object? parameter)
+        {
+            _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
+            ShowResult();
         }
 
         private void ShowQuestion(int index)
         {
+            _currentQuestionIndex = index;
             Question q = _questions[index];
             QuestionText = q.Text;
             CurrentOptions = q.Options;
-            SelectedOptionIndex = -1;
+            SelectedOptionIndex = _selectedAnswers[index];
             QuestionNumber = index + 1;
+            CanGoBack = index > 0;
+
+            if (index < _questions.Count - 1)
+            {
+                NextButtonText = "Далее";
+            }
+            else
+            {
+                NextButtonText = "Завершить тест";
+            }
 
             if (_questions.Count > 0)
             {
-                ProgressValue = (double)index / _questions.Count * 100;
+                ProgressValue = (double)(index + 1) / _questions.Count * 100;
             }
+        }
+
+        private void ShowReview()
+        {
+            List<ReviewItem> items = new List<ReviewItem>();
+            int answeredCount = 0;
+
+            for (int i = 0; i < _questions.Count; i++)
+            {
+                ReviewItem item = new ReviewItem();
+                item.Number = (i + 1).ToString();
+                item.QuestionText = _questions[i].Text;
+                item.IsAnswered = _selectedAnswers[i] >= 0;
+                item.Index = i;
+                items.Add(item);
+
+                if (_selectedAnswers[i] >= 0)
+                {
+                    answeredCount++;
+                }
+            }
+
+            ReviewItems = items;
+            AppState = "Review";
         }
 
         private void ShowResult()
@@ -382,6 +500,27 @@ namespace SkillChecker.ViewModels
         private void ExecuteExit(object? parameter)
         {
             Application.Current.Shutdown();
+        }
+    }
+
+    public class ReviewItem
+    {
+        private string _number;
+        private string _questionText;
+        private bool _isAnswered;
+        private int _index;
+
+        public string Number { get => _number; set => _number = value; }
+        public string QuestionText { get => _questionText; set => _questionText = value; }
+        public bool IsAnswered { get => _isAnswered; set => _isAnswered = value; }
+        public int Index { get => _index; set => _index = value; }
+
+        public ReviewItem()
+        {
+            _number = "";
+            _questionText = "";
+            _isAnswered = false;
+            _index = 0;
         }
     }
 

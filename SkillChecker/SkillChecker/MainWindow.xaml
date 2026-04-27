@@ -123,10 +123,121 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <Button Grid.Row="4" Content="Следующий вопрос" Height="48" Margin="0,20,0,0"
-                    Command="{Binding NextQuestionCommand}" Background="#4F46E5" Foreground="White"
-                    FontWeight="Bold" FontSize="15" BorderThickness="0"
-                    AutomationProperties.Name="Следующий вопрос"/>
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button Content="Назад" Height="48" Width="160" Margin="0,0,12,0"
+                        Command="{Binding PrevQuestionCommand}" Background="#94A3B8" Foreground="White"
+                        FontWeight="SemiBold" FontSize="15" BorderThickness="0"
+                        AutomationProperties.Name="Предыдущий вопрос"/>
+                <Button Content="{Binding NextButtonText}" Height="48" Width="200"
+                        Command="{Binding NextQuestionCommand}" Background="#4F46E5" Foreground="White"
+                        FontWeight="Bold" FontSize="15" BorderThickness="0"
+                        AutomationProperties.Name="Следующий вопрос"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid Visibility="{Binding ReviewVisibility}" x:Name="ReviewPanel">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,24">
+                <TextBlock Text="Проверка ответов" FontSize="28" FontWeight="Bold"
+                           Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,8"
+                           AutomationProperties.Name="Заголовок проверки"/>
+                <TextBlock Text="Нажмите на вопрос, чтобы вернуться к нему" FontSize="14" Foreground="#64748B"
+                           HorizontalAlignment="Center"
+                           AutomationProperties.Name="Подсказка проверки"/>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                          AutomationProperties.Name="Список вопросов для проверки">
+                <ItemsControl ItemsSource="{Binding ReviewItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Margin="0,0,0,8" Padding="16,12" HorizontalContentAlignment="Stretch"
+                                    Command="{Binding DataContext.GoToQuestionCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding Index}"
+                                    AutomationProperties.Name="Перейти к вопросу">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="reviewBorder" CornerRadius="10" Padding="16,12"
+                                                BorderThickness="1.5" Cursor="Hand">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="White"/>
+                                                    <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsAnswered}" Value="True">
+                                                            <Setter Property="BorderBrush" Value="#86EFAC"/>
+                                                            <Setter Property="Background" Value="#F0FDF4"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Border Width="32" Height="32" CornerRadius="16" Margin="0,0,12,0"
+                                                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background" Value="#FCA5A5"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsAnswered}" Value="True">
+                                                                    <Setter Property="Background" Value="#86EFAC"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <TextBlock Text="{Binding Number}" Foreground="#1E293B" FontWeight="Bold" FontSize="14"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <TextBlock Grid.Column="1" Text="{Binding QuestionText}" FontSize="14" Foreground="#1E293B"
+                                                           TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="2" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#EF4444"/>
+                                                            <Setter Property="Text" Value="Не отвечен"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsAnswered}" Value="True">
+                                                                    <Setter Property="Foreground" Value="#22C55E"/>
+                                                                    <Setter Property="Text" Value="Отвечен"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="reviewBorder" Property="BorderBrush" Value="#4F46E5"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button Content="Назад к тесту" Height="48" Width="180" Margin="0,0,12,0"
+                        Command="{Binding PrevQuestionCommand}" Background="#94A3B8" Foreground="White"
+                        FontWeight="SemiBold" FontSize="15" BorderThickness="0"
+                        AutomationProperties.Name="Вернуться к тесту"/>
+                <Button Content="Отправить результат" Height="48" Width="220"
+                        Command="{Binding SubmitCommand}" Background="#4F46E5" Foreground="White"
+                        FontWeight="Bold" FontSize="15" BorderThickness="0"
+                        AutomationProperties.Name="Отправить результат"/>
+            </StackPanel>
         </Grid>
 
         <Grid Visibility="{Binding ResultVisibility}" x:Name="ResultPanel">
