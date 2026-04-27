@@ -417,9 +417,10 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-# Тесты сервера — всё кроме демо-файла
+# Тесты — всё кроме демо-файла
 SkillChecker/SkillCheckerServer/Tests/*
 !SkillChecker/SkillCheckerServer/Tests/demo.json
+SkillChecker/SkillChecker.Web/Tests/*
 
 # Результаты тестирования
 Results/

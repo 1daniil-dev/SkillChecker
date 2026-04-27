@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="SkillChecker.Common/SkillChecker.Common.csproj" />
+  <Project Path="SkillChecker.Web/SkillChecker.Web.csproj" />
   <Project Path="SkillChecker/SkillChecker.csproj" />
   <Project Path="SkillCheckerServer/SkillCheckerServer.csproj" />
 
@@ -7,6 +8,7 @@
     <Startup>
       <Project Path="SkillCheckerServer/SkillCheckerServer.csproj" Action="Start" />
       <Project Path="SkillChecker/SkillChecker.csproj" Action="Start" />
+      <Project Path="SkillChecker.Web/SkillChecker.Web.csproj" Action="Start" />
     </Startup>
   </Properties>
 </Solution>

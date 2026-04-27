@@ -1,0 +1,267 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    padding: 30px 0;
+}
+
+.container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+    padding: 32px;
+    width: 760px;
+    max-width: 95vw;
+}
+
+h1 {
+    color: #4A90D9;
+    font-size: 26px;
+}
+
+.subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.tab {
+    padding: 10px 24px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 15px;
+    color: #888;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.tab:hover {
+    color: #555;
+}
+
+.tab.active {
+    color: #4A90D9;
+    border-bottom-color: #4A90D9;
+}
+
+.tab-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    font-size: 18px;
+    color: #333;
+}
+
+.btn-sm {
+    background: #4A90D9;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-sm:hover {
+    background: #3A7BC8;
+}
+
+.btn-secondary {
+    background: #e0e0e0;
+    color: #555;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-secondary:hover {
+    background: #ccc;
+}
+
+.test-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+}
+
+.test-card:hover {
+    border-color: #4A90D9;
+}
+
+.test-name {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.test-count {
+    color: #888;
+    font-size: 14px;
+}
+
+.test-actions button {
+    background: #F44336;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.test-actions button:hover {
+    background: #D32F2F;
+}
+
+.upload-form {
+    margin-top: 16px;
+    padding: 20px;
+    border: 2px dashed #4A90D9;
+    border-radius: 10px;
+    background: #F8FBFF;
+}
+
+.upload-form h3 {
+    margin-bottom: 14px;
+    color: #4A90D9;
+    font-size: 16px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    font-family: inherit;
+}
+
+.form-group input:focus {
+    border-color: #4A90D9;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.form-row button:first-child {
+    background: #4A90D9;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.form-row button:first-child:hover {
+    background: #3A7BC8;
+}
+
+.result-card {
+    padding: 16px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.result-name {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.result-group {
+    color: #888;
+    font-size: 14px;
+}
+
+.result-score {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.result-meta {
+    display: flex;
+    gap: 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+.badge-green {
+    color: #4CAF50;
+}
+
+.badge-red {
+    color: #F44336;
+}
+
+.badge-orange {
+    color: #FF9800;
+}
+
+.empty {
+    text-align: center;
+    color: #aaa;
+    padding: 40px;
+    font-size: 15px;
+}
