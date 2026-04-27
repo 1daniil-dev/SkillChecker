@@ -171,7 +171,8 @@ function loadResults() {
                 meta.appendChild(correctSpan);
 
                 var dateSpan = document.createElement("span");
-                dateSpan.textContent = r.Date;
+                var d = new Date(r.Date);
+                dateSpan.textContent = d.toLocaleString("ru-RU");
                 meta.appendChild(dateSpan);
 
                 card.appendChild(meta);

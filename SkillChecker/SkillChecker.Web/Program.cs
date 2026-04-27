@@ -3,6 +3,10 @@ using System.Text.Json;
 using SkillChecker.Common.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = null;
+});
 var app = builder.Build();
 
 app.UseStaticFiles();
