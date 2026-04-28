@@ -482,6 +482,12 @@ namespace SkillChecker.ViewModels
                 string testName = parameter.ToString() ?? "";
                 if (testName.Length > 0)
                 {
+                    if (string.IsNullOrWhiteSpace(StudentName) || string.IsNullOrWhiteSpace(StudentGroup))
+                    {
+                        StatusMessage = "Введите ФИО и группу перед началом теста";
+                        return;
+                    }
+
                     _selectedTestName = testName;
 
                     bool isScheduled = false;
@@ -670,6 +676,14 @@ namespace SkillChecker.ViewModels
 
         private void ExecuteStartFromWait(object? parameter)
         {
+            if (string.IsNullOrWhiteSpace(StudentName) || string.IsNullOrWhiteSpace(StudentGroup))
+            {
+                StatusMessage = "Введите ФИО и группу перед началом теста";
+                _waitTimer.Stop();
+                AppState = "Auth";
+                return;
+            }
+
             _waitTimer.Stop();
             StartTestByName(_waitTestName);
         }
