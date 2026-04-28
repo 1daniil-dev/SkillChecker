@@ -14,8 +14,10 @@ function showTab(name) {
     var btns = document.querySelectorAll(".tab");
     for (var i = 0; i < btns.length; i++) {
         btns[i].classList.remove("active");
+        btns[i].setAttribute("aria-selected", "false");
     }
     event.target.classList.add("active");
+    event.target.setAttribute("aria-selected", "true");
 
     if (name === "schedule") {
         loadSchedule();
@@ -34,13 +36,15 @@ function loadTests() {
             div.innerHTML = "";
 
             if (tests.length === 0) {
-                div.innerHTML = '<div class="empty">Нет загруженных тестов</div>';
+                div.innerHTML = '<div class="empty" role="status">Нет загруженных тестов</div>';
                 return;
             }
 
             for (var i = 0; i < tests.length; i++) {
                 var card = document.createElement("div");
                 card.className = "test-card";
+                card.setAttribute("role", "listitem");
+                card.setAttribute("aria-label", "Тест " + tests[i].Name + ", " + tests[i].QuestionCount + " вопросов");
 
                 var info = document.createElement("div");
                 var nameSpan = document.createElement("div");
@@ -60,6 +64,7 @@ function loadTests() {
                 var delBtn = document.createElement("button");
                 delBtn.textContent = "Удалить";
                 delBtn.setAttribute("data-name", tests[i].Name);
+                delBtn.setAttribute("aria-label", "Удалить тест " + tests[i].Name);
                 delBtn.onclick = function () {
                     deleteTest(this.getAttribute("data-name"));
                 };
@@ -73,6 +78,7 @@ function loadTests() {
 
 function showUpload() {
     document.getElementById("uploadForm").classList.remove("hidden");
+    document.getElementById("testName").focus();
 }
 
 function hideUpload() {
@@ -138,6 +144,7 @@ function showScheduleForm() {
     document.getElementById("scheduleTime").value = now.toISOString().slice(0, 16);
 
     document.getElementById("scheduleForm").classList.remove("hidden");
+    select.focus();
 }
 
 function hideScheduleForm() {
@@ -179,13 +186,15 @@ function loadSchedule() {
             div.innerHTML = "";
 
             if (items.length === 0) {
-                div.innerHTML = '<div class="empty">Нет запланированных тестов</div>';
+                div.innerHTML = '<div class="empty" role="status">Нет запланированных тестов</div>';
                 return;
             }
 
             for (var i = 0; i < items.length; i++) {
                 var card = document.createElement("div");
                 card.className = "schedule-card";
+                card.setAttribute("role", "listitem");
+                card.setAttribute("aria-label", "Запланирован тест " + items[i].TestName + " на " + items[i].DisplayTime);
 
                 var info = document.createElement("div");
                 info.className = "schedule-info";
@@ -193,6 +202,7 @@ function loadSchedule() {
                 var icon = document.createElement("span");
                 icon.className = "schedule-icon";
                 icon.textContent = "\u{1F551}";
+                icon.setAttribute("aria-hidden", "true");
                 info.appendChild(icon);
 
                 var textDiv = document.createElement("div");
@@ -214,6 +224,7 @@ function loadSchedule() {
                 var delBtn = document.createElement("button");
                 delBtn.textContent = "Удалить";
                 delBtn.setAttribute("data-name", items[i].TestName);
+                delBtn.setAttribute("aria-label", "Удалить расписание теста " + items[i].TestName);
                 delBtn.onclick = function () {
                     deleteSchedule(this.getAttribute("data-name"));
                 };
@@ -245,7 +256,7 @@ function loadResults() {
             div.innerHTML = "";
 
             if (results.length === 0) {
-                div.innerHTML = '<div class="empty">Пока нет результатов</div>';
+                div.innerHTML = '<div class="empty" role="status">Пока нет результатов</div>';
                 return;
             }
 
@@ -253,6 +264,8 @@ function loadResults() {
                 var r = results[i];
                 var card = document.createElement("div");
                 card.className = "result-card";
+                card.setAttribute("role", "listitem");
+                card.setAttribute("aria-label", r.StudentName + ", группа " + r.Group + ", тест " + r.TestName + ", оценка " + r.Score + "%");
 
                 var header = document.createElement("div");
                 header.className = "result-header";

@@ -7,73 +7,73 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container" role="main">
         <h1>SkillChecker</h1>
         <p class="subtitle">Панель преподавателя</p>
 
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('tests')">Тесты</button>
-            <button class="tab" onclick="showTab('schedule')">Расписание</button>
-            <button class="tab" onclick="showTab('results')">Результаты</button>
+        <div class="tabs" role="tablist" aria-label="Разделы панели">
+            <button class="tab active" role="tab" aria-selected="true" aria-controls="tab-tests" onclick="showTab('tests')">Тесты</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-schedule" onclick="showTab('schedule')">Расписание</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-results" onclick="showTab('results')">Результаты</button>
         </div>
 
-        <div id="tab-tests" class="tab-content">
+        <div id="tab-tests" class="tab-content" role="tabpanel" aria-label="Управление тестами">
             <div class="section-header">
                 <h2>Загруженные тесты</h2>
-                <button class="btn-sm" onclick="showUpload()">Загрузить тест</button>
+                <button class="btn-sm" onclick="showUpload()" aria-label="Загрузить новый тест">Загрузить тест</button>
             </div>
-            <div id="testsList"></div>
+            <div id="testsList" role="list" aria-label="Список тестов" aria-live="polite"></div>
 
-            <div id="uploadForm" class="upload-form hidden">
+            <div id="uploadForm" class="upload-form hidden" role="form" aria-label="Форма загрузки теста">
                 <h3>Загрузить новый тест</h3>
                 <div class="form-group">
-                    <label>Название теста</label>
-                    <input type="text" id="testName" placeholder="Например: oop_exam">
+                    <label for="testName">Название теста</label>
+                    <input type="text" id="testName" placeholder="Например: oop_exam" aria-label="Название теста">
                 </div>
                 <div class="form-group">
-                    <label>JSON-файл</label>
-                    <input type="file" id="testFile" accept=".json">
+                    <label for="testFile">JSON-файл</label>
+                    <input type="file" id="testFile" accept=".json" aria-label="Выберите JSON файл теста">
                 </div>
                 <div class="form-row">
-                    <button onclick="uploadTest()">Загрузить</button>
-                    <button class="btn-secondary" onclick="hideUpload()">Отмена</button>
+                    <button onclick="uploadTest()" aria-label="Загрузить тест на сервер">Загрузить</button>
+                    <button class="btn-secondary" onclick="hideUpload()" aria-label="Отменить загрузку">Отмена</button>
                 </div>
             </div>
         </div>
 
-        <div id="tab-schedule" class="tab-content hidden">
+        <div id="tab-schedule" class="tab-content hidden" role="tabpanel" aria-label="Расписание тестов">
             <div class="section-header">
                 <h2>Расписание тестов</h2>
-                <button class="btn-sm" onclick="showScheduleForm()">Запланировать тест</button>
+                <button class="btn-sm" onclick="showScheduleForm()" aria-label="Запланировать новый тест">Запланировать тест</button>
             </div>
 
-            <div id="scheduleForm" class="upload-form hidden">
+            <div id="scheduleForm" class="upload-form hidden" role="form" aria-label="Форма планирования теста">
                 <h3>Запланировать тест</h3>
                 <div class="form-group">
-                    <label>Тест</label>
-                    <select id="scheduleTestSelect">
+                    <label for="scheduleTestSelect">Тест</label>
+                    <select id="scheduleTestSelect" aria-label="Выберите тест для планирования">
                         <option value="">Выберите тест</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Дата и время начала</label>
-                    <input type="datetime-local" id="scheduleTime">
+                    <label for="scheduleTime">Дата и время начала</label>
+                    <input type="datetime-local" id="scheduleTime" aria-label="Дата и время начала теста">
                 </div>
                 <div class="form-row">
-                    <button onclick="scheduleTest()">Запланировать</button>
-                    <button class="btn-secondary" onclick="hideScheduleForm()">Отмена</button>
+                    <button onclick="scheduleTest()" aria-label="Запланировать тест">Запланировать</button>
+                    <button class="btn-secondary" onclick="hideScheduleForm()" aria-label="Отменить планирование">Отмена</button>
                 </div>
             </div>
 
-            <div id="scheduleList"></div>
+            <div id="scheduleList" role="list" aria-label="Список запланированных тестов" aria-live="polite"></div>
         </div>
 
-        <div id="tab-results" class="tab-content hidden">
+        <div id="tab-results" class="tab-content hidden" role="tabpanel" aria-label="Результаты тестирования">
             <div class="section-header">
                 <h2>Результаты тестирования</h2>
-                <button class="btn-sm" onclick="loadResults()">Обновить</button>
+                <button class="btn-sm" onclick="loadResults()" aria-label="Обновить список результатов">Обновить</button>
             </div>
-            <div id="resultsList"></div>
+            <div id="resultsList" role="list" aria-label="Список результатов" aria-live="polite"></div>
         </div>
     </div>
     <script src="app.js"></script>
