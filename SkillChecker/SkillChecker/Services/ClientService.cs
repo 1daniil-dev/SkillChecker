@@ -7,6 +7,21 @@ using Cmd = SkillChecker.Common.Protocol.Commands;
 
 namespace SkillChecker.Services
 {
+    public class ScheduledTest
+    {
+        private string _name;
+        private DateTime _scheduledTime;
+
+        public string Name { get => _name; set => _name = value; }
+        public DateTime ScheduledTime { get => _scheduledTime; set => _scheduledTime = value; }
+
+        public ScheduledTest()
+        {
+            _name = "";
+            _scheduledTime = DateTime.Now;
+        }
+    }
+
     public class ClientService
     {
         private string _serverIp;
@@ -60,6 +75,30 @@ namespace SkillChecker.Services
             }
 
             throw new Exception("Не удалось получить тест");
+        }
+
+        public List<ScheduledTest> GetScheduledTests()
+        {
+            string response = Send(ProtocolHelper.BuildMessage(Cmd.GetSchedules));
+            string[] parts = ProtocolHelper.ParseMessage(response);
+
+            List<ScheduledTest> list = new List<ScheduledTest>();
+
+            if (parts.Length >= 2 && parts[0] == Cmd.Schedules)
+            {
+                for (int i = 1; i + 1 < parts.Length; i += 2)
+                {
+                    ScheduledTest st = new ScheduledTest();
+                    st.Name = parts[i];
+                    if (DateTime.TryParse(parts[i + 1], out DateTime dt))
+                    {
+                        st.ScheduledTime = dt;
+                        list.Add(st);
+                    }
+                }
+            }
+
+            return list;
         }
 
         public TestResult SubmitAnswers(string studentName, string group, string testName, List<int> answers)

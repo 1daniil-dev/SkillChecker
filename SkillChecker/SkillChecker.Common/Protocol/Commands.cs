@@ -11,6 +11,8 @@ namespace SkillChecker.Common.Protocol
         public const string CheckStart = "CHECK_START";
         public const string StartOk = "START_OK";
         public const string StartWait = "START_WAIT";
+        public const string GetSchedules = "GET_SCHEDULES";
+        public const string Schedules = "SCHEDULES";
         public const string Error = "ERROR";
     }
 }

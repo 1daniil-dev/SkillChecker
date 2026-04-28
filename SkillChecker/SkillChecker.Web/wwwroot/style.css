@@ -146,10 +146,19 @@ h1 {
     font-size: 13px;
     cursor: pointer;
     font-family: inherit;
+    margin-left: 6px;
 }
 
 .test-actions button:hover {
     background: #D32F2F;
+}
+
+.test-actions .btn-schedule {
+    background: #4A90D9;
+}
+
+.test-actions .btn-schedule:hover {
+    background: #3A7BC8;
 }
 
 .upload-form {
@@ -177,7 +186,8 @@ h1 {
     font-size: 14px;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
     width: 100%;
     padding: 10px 14px;
     border: 2px solid #e0e0e0;
@@ -187,7 +197,8 @@ h1 {
     font-family: inherit;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
     border-color: #4A90D9;
 }
 
@@ -209,6 +220,54 @@ h1 {
 
 .form-row button:first-child:hover {
     background: #3A7BC8;
+}
+
+.schedule-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border: 2px solid #B3D4FC;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: #EBF3FC;
+}
+
+.schedule-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.schedule-icon {
+    font-size: 22px;
+}
+
+.schedule-test-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #1E3A5F;
+}
+
+.schedule-time {
+    color: #4A90D9;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.schedule-actions button {
+    background: #F44336;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.schedule-actions button:hover {
+    background: #D32F2F;
 }
 
 .result-card {

@@ -13,6 +13,7 @@
 
         <div class="tabs">
             <button class="tab active" onclick="showTab('tests')">Тесты</button>
+            <button class="tab" onclick="showTab('schedule')">Расписание</button>
             <button class="tab" onclick="showTab('results')">Результаты</button>
         </div>
 
@@ -38,6 +39,33 @@
                     <button class="btn-secondary" onclick="hideUpload()">Отмена</button>
                 </div>
             </div>
+        </div>
+
+        <div id="tab-schedule" class="tab-content hidden">
+            <div class="section-header">
+                <h2>Расписание тестов</h2>
+                <button class="btn-sm" onclick="showScheduleForm()">Запланировать тест</button>
+            </div>
+
+            <div id="scheduleForm" class="upload-form hidden">
+                <h3>Запланировать тест</h3>
+                <div class="form-group">
+                    <label>Тест</label>
+                    <select id="scheduleTestSelect">
+                        <option value="">Выберите тест</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Дата и время начала</label>
+                    <input type="datetime-local" id="scheduleTime">
+                </div>
+                <div class="form-row">
+                    <button onclick="scheduleTest()">Запланировать</button>
+                    <button class="btn-secondary" onclick="hideScheduleForm()">Отмена</button>
+                </div>
+            </div>
+
+            <div id="scheduleList"></div>
         </div>
 
         <div id="tab-results" class="tab-content hidden">

@@ -6,328 +6,440 @@
         Background="#F0F4F8">
 
     <Grid Margin="20">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="400"
-                    Visibility="{Binding AuthVisibility}"
-                    x:Name="AuthPanel">
-            <TextBlock Text="SkillChecker" FontSize="32" FontWeight="Bold" Foreground="#1E293B"
-                       HorizontalAlignment="Center" Margin="0,0,0,8"
-                       AutomationProperties.Name="Название приложения"/>
-            <TextBlock Text="Система тестирования учащихся" FontSize="14" Foreground="#64748B"
-                       HorizontalAlignment="Center" Margin="0,0,0,32"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Auth -->
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="440"
+                            Visibility="{Binding AuthVisibility}"
+                            x:Name="AuthPanel">
+                    <TextBlock Text="SkillChecker" FontSize="32" FontWeight="Bold" Foreground="#1E293B"
+                               HorizontalAlignment="Center" Margin="0,0,0,8"
+                               AutomationProperties.Name="Название приложения"/>
+                    <TextBlock Text="Система тестирования учащихся" FontSize="14" Foreground="#64748B"
+                               HorizontalAlignment="Center" Margin="0,0,0,32"/>
 
-            <TextBlock Text="IP адрес сервера" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
-            <TextBox Text="{Binding ServerIp, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
-                     VerticalContentAlignment="Center" Margin="0,0,0,10"
-                     AutomationProperties.Name="Ввод IP адреса" AutomationProperties.HelpText="IP адрес компьютера преподавателя"/>
+                    <TextBlock Text="IP адрес сервера" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
+                    <TextBox Text="{Binding ServerIp, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
+                             VerticalContentAlignment="Center" Margin="0,0,0,10"
+                             AutomationProperties.Name="Ввод IP адреса"/>
 
-            <TextBlock Text="Порт" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
-            <TextBox Text="{Binding ServerPort, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
-                     VerticalContentAlignment="Center" Margin="0,0,0,10"
-                     AutomationProperties.Name="Ввод порта" AutomationProperties.HelpText="Порт сервера (по умолчанию 9000)"/>
+                    <TextBlock Text="Порт" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
+                    <TextBox Text="{Binding ServerPort, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
+                             VerticalContentAlignment="Center" Margin="0,0,0,10"
+                             AutomationProperties.Name="Ввод порта"/>
 
-            <Button Content="Подключиться к серверу" Height="44" Margin="0,0,0,10"
-                    Command="{Binding ConnectCommand}" Background="#E2E8F0" Foreground="#334155"
-                    FontWeight="SemiBold" FontSize="14" BorderThickness="0"
-                    AutomationProperties.Name="Подключиться к серверу" AutomationProperties.HelpText="Установить соединение с сервером преподавателя"/>
+                    <Button Content="Подключиться к серверу" Height="44" Margin="0,0,0,10"
+                            Command="{Binding ConnectCommand}" Background="#E2E8F0" Foreground="#334155"
+                            FontWeight="SemiBold" FontSize="14" BorderThickness="0"
+                            AutomationProperties.Name="Подключиться к серверу"/>
 
-            <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="#64748B"
-                       TextWrapping="Wrap" Margin="0,0,0,18" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="#64748B"
+                               TextWrapping="Wrap" Margin="0,0,0,18" HorizontalAlignment="Center"/>
 
-            <TextBlock Text="ФИО студента" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
-            <TextBox Text="{Binding StudentName, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
-                     VerticalContentAlignment="Center" Margin="0,0,0,10"
-                     AutomationProperties.Name="Ввод ФИО студента" AutomationProperties.HelpText="Введите полное ФИО"/>
+                    <TextBlock Text="ФИО студента" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
+                    <TextBox Text="{Binding StudentName, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
+                             VerticalContentAlignment="Center" Margin="0,0,0,10"
+                             AutomationProperties.Name="Ввод ФИО студента"/>
 
-            <TextBlock Text="Учебная группа" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
-            <TextBox Text="{Binding StudentGroup, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
-                     VerticalContentAlignment="Center" Margin="0,0,0,10"
-                     AutomationProperties.Name="Ввод учебной группы" AutomationProperties.HelpText="Введите номер группы"/>
+                    <TextBlock Text="Учебная группа" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
+                    <TextBox Text="{Binding StudentGroup, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
+                             VerticalContentAlignment="Center" Margin="0,0,0,18"
+                             AutomationProperties.Name="Ввод учебной группы"/>
 
-            <TextBlock Text="Выберите тест" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
-            <ComboBox Height="40" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,0,18"
-                      ItemsSource="{Binding TestNames}" SelectedItem="{Binding SelectedTestName}"
-                      AutomationProperties.Name="Выбор теста" AutomationProperties.HelpText="Выберите тест из списка"/>
+                    <TextBlock Text="Выберите тест" FontWeight="SemiBold" FontSize="15" Foreground="#334155" Margin="0,0,0,12"/>
 
-            <Button Content="Начать тестирование" Height="48"
-                    Command="{Binding StartTestCommand}" Background="#4F46E5" Foreground="White"
-                    FontWeight="Bold" FontSize="15" BorderThickness="0"
-                    AutomationProperties.Name="Начать тестирование"/>
+                    <ItemsControl ItemsSource="{Binding TestCards}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Margin="0,0,0,10" Padding="16,14" HorizontalContentAlignment="Stretch"
+                                        Command="{Binding DataContext.SelectTestCardCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding Name}"
+                                        AutomationProperties.Name="Тест">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="cardBorder" CornerRadius="10" Padding="16,14"
+                                                    BorderThickness="2" Cursor="Hand">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background" Value="#F0FDF4"/>
+                                                        <Setter Property="BorderBrush" Value="#86EFAC"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsScheduled}" Value="True">
+                                                                <Setter Property="Background" Value="#EBF3FC"/>
+                                                                <Setter Property="BorderBrush" Value="#93B8E8"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" Margin="0,0,12,0"
+                                                            HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="#86EFAC"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsScheduled}" Value="True">
+                                                                        <Setter Property="Background" Value="#93B8E8"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <TextBlock Foreground="#1E3A5F" FontWeight="Bold" FontSize="16"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Text" Value="&#x2714;"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsScheduled}" Value="True">
+                                                                            <Setter Property="Text" Value="&#x1F551;"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Foreground" Value="#166534"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsScheduled}" Value="True">
+                                                                            <Setter Property="Foreground" Value="#1E3A5F"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                        <TextBlock FontSize="12" Margin="0,2,0,0">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Foreground" Value="#64748B"/>
+                                                                    <Setter Property="Text" Value="Доступен"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsScheduled}" Value="True">
+                                                                            <Setter Property="Foreground" Value="#4A90D9"/>
+                                                                            <Setter Property="Text" Value="Запланирован"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="2" Text="{Binding ScheduleTime}" FontSize="16"
+                                                               FontWeight="Bold" Foreground="#4A90D9"
+                                                               VerticalAlignment="Center" Margin="8,0,0,0">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsScheduled}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Grid>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="cardBorder" Property="BorderBrush" Value="#4F46E5"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-            <Button Content="Выход" Height="36" Margin="0,12,0,0"
-                    Command="{Binding ExitCommand}" Background="Transparent" Foreground="#94A3B8"
-                    BorderThickness="0" FontWeight="Normal"
-                    AutomationProperties.Name="Выход из программы"/>
-        </StackPanel>
+                    <Button Content="Выход" Height="36" Margin="0,12,0,0"
+                            Command="{Binding ExitCommand}" Background="Transparent" Foreground="#94A3B8"
+                            BorderThickness="0" FontWeight="Normal"
+                            AutomationProperties.Name="Выход из программы"/>
+                </StackPanel>
 
-        <Grid Visibility="{Binding TestingVisibility}" x:Name="TestingPanel">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+                <!-- Wait -->
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="400"
+                            Visibility="{Binding WaitVisibility}"
+                            x:Name="WaitPanel">
+                    <TextBlock Text="&#x1F551;" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                    <TextBlock Text="{Binding WaitTestName}" FontSize="24" FontWeight="Bold" Foreground="#1E293B"
+                               HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="{Binding WaitTimeText}" FontSize="16" Foreground="#64748B"
+                               HorizontalAlignment="Center" Margin="0,0,0,24"/>
+                    <TextBlock Text="{Binding WaitCountdownText}" FontSize="48" FontWeight="Black" Foreground="#4F46E5"
+                               HorizontalAlignment="Center" Margin="0,0,0,32"
+                               AutomationProperties.Name="Обратный отсчёт"/>
+                    <Button Content="Начать тест" Height="48" Width="260"
+                            Command="{Binding StartFromWaitCommand}" Background="#4F46E5" Foreground="White"
+                            FontWeight="Bold" FontSize="15" BorderThickness="0"
+                            AutomationProperties.Name="Начать тест"/>
+                </StackPanel>
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
-                <TextBlock Text="{Binding QuestionNumber, StringFormat='Вопрос {0}'}"
-                           FontSize="14" Foreground="#64748B" FontWeight="SemiBold"
-                           AutomationProperties.Name="Номер вопроса"/>
-                <TextBlock Text="{Binding TotalQuestions, StringFormat=' из {0}'}"
-                           FontSize="14" Foreground="#94A3B8"/>
-            </StackPanel>
+                <!-- Testing -->
+                <Grid Visibility="{Binding TestingVisibility}" x:Name="TestingPanel" Height="680">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-            <ProgressBar Grid.Row="1" Height="6" Background="#E2E8F0"
-                         Foreground="#4F46E5" BorderThickness="0" Margin="0,0,0,24"
-                         Value="{Binding ProgressValue}" Minimum="0" Maximum="100"
-                         AutomationProperties.Name="Прогресс тестирования"/>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="{Binding QuestionNumber, StringFormat='Вопрос {0}'}"
+                                   FontSize="14" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding TotalQuestions, StringFormat=' из {0}'}"
+                                   FontSize="14" Foreground="#94A3B8"/>
+                    </StackPanel>
 
-            <TextBlock Grid.Row="2" Text="{Binding QuestionText}" FontSize="20" FontWeight="Bold"
-                       Foreground="#1E293B" TextWrapping="Wrap" Margin="0,0,0,24"
-                       AutomationProperties.Name="Текст вопроса"/>
+                    <ProgressBar Grid.Row="1" Height="6" Background="#E2E8F0"
+                                 Foreground="#4F46E5" BorderThickness="0" Margin="0,0,0,24"
+                                 Value="{Binding ProgressValue}" Minimum="0" Maximum="100"/>
 
-            <ListBox Grid.Row="3" ItemsSource="{Binding CurrentOptions}"
-                     SelectedIndex="{Binding SelectedOptionIndex}"
-                     BorderThickness="0" Background="Transparent"
-                     AutomationProperties.Name="Варианты ответа"
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Padding" Value="0"/>
-                        <Setter Property="Margin" Value="0,0,0,10"/>
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListBoxItem">
-                                    <Border x:Name="itemBorder" Background="White" CornerRadius="10"
-                                            BorderBrush="#E2E8F0" BorderThickness="1.5" Padding="18,14">
-                                        <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="#A5B4FC"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="#4F46E5"/>
-                                            <Setter TargetName="itemBorder" Property="Background" Value="#EEF2FF"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="16" Foreground="#1E293B" TextWrapping="Wrap"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                    <TextBlock Grid.Row="2" Text="{Binding QuestionText}" FontSize="20" FontWeight="Bold"
+                               Foreground="#1E293B" TextWrapping="Wrap" Margin="0,0,0,24"/>
 
-            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                <Button Content="Назад" Height="48" Width="160" Margin="0,0,12,0"
-                        Command="{Binding PrevQuestionCommand}" Background="#94A3B8" Foreground="White"
-                        FontWeight="SemiBold" FontSize="15" BorderThickness="0"
-                        AutomationProperties.Name="Предыдущий вопрос"/>
-                <Button Content="{Binding NextButtonText}" Height="48" Width="200"
-                        Command="{Binding NextQuestionCommand}" Background="#4F46E5" Foreground="White"
-                        FontWeight="Bold" FontSize="15" BorderThickness="0"
-                        AutomationProperties.Name="Следующий вопрос"/>
-            </StackPanel>
-        </Grid>
+                    <ListBox Grid.Row="3" ItemsSource="{Binding CurrentOptions}"
+                             SelectedIndex="{Binding SelectedOptionIndex}"
+                             BorderThickness="0" Background="Transparent"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0,0,0,10"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="itemBorder" Background="White" CornerRadius="10"
+                                                    BorderBrush="#E2E8F0" BorderThickness="1.5" Padding="18,14">
+                                                <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="itemBorder" Property="BorderBrush" Value="#A5B4FC"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="itemBorder" Property="BorderBrush" Value="#4F46E5"/>
+                                                    <Setter TargetName="itemBorder" Property="Background" Value="#EEF2FF"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="16" Foreground="#1E293B" TextWrapping="Wrap"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
 
-        <Grid Visibility="{Binding ReviewVisibility}" x:Name="ReviewPanel">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                        <Button Content="Назад" Height="48" Width="160" Margin="0,0,12,0"
+                                Command="{Binding PrevQuestionCommand}" Background="#94A3B8" Foreground="White"
+                                FontWeight="SemiBold" FontSize="15" BorderThickness="0"/>
+                        <Button Content="{Binding NextButtonText}" Height="48" Width="200"
+                                Command="{Binding NextQuestionCommand}" Background="#4F46E5" Foreground="White"
+                                FontWeight="Bold" FontSize="15" BorderThickness="0"/>
+                    </StackPanel>
+                </Grid>
 
-            <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,24">
-                <TextBlock Text="Проверка ответов" FontSize="28" FontWeight="Bold"
-                           Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,8"
-                           AutomationProperties.Name="Заголовок проверки"/>
-                <TextBlock Text="Нажмите на вопрос, чтобы вернуться к нему" FontSize="14" Foreground="#64748B"
-                           HorizontalAlignment="Center"
-                           AutomationProperties.Name="Подсказка проверки"/>
-            </StackPanel>
+                <!-- Review -->
+                <Grid Visibility="{Binding ReviewVisibility}" x:Name="ReviewPanel" Height="680">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
-                          AutomationProperties.Name="Список вопросов для проверки">
-                <ItemsControl ItemsSource="{Binding ReviewItems}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Margin="0,0,0,8" Padding="16,12" HorizontalContentAlignment="Stretch"
-                                    Command="{Binding DataContext.GoToQuestionCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                    CommandParameter="{Binding Index}"
-                                    AutomationProperties.Name="Перейти к вопросу">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border x:Name="reviewBorder" CornerRadius="10" Padding="16,12"
-                                                BorderThickness="1.5" Cursor="Hand">
-                                            <Border.Style>
-                                                <Style TargetType="Border">
-                                                    <Setter Property="Background" Value="#F8FAFC"/>
-                                                    <Setter Property="BorderBrush" Value="#CBD5E1"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsAnswered}" Value="True">
-                                                            <Setter Property="BorderBrush" Value="#86EFAC"/>
-                                                            <Setter Property="Background" Value="#F0FDF4"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Border.Style>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Border Width="32" Height="32" CornerRadius="16" Margin="0,0,12,0"
-                                                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,24">
+                        <TextBlock Text="Проверка ответов" FontSize="28" FontWeight="Bold"
+                                   Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                        <TextBlock Text="Нажмите на вопрос, чтобы вернуться к нему" FontSize="14" Foreground="#64748B"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ReviewItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Margin="0,0,0,8" Padding="16,12" HorizontalContentAlignment="Stretch"
+                                            Command="{Binding DataContext.GoToQuestionCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding Index}">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="reviewBorder" CornerRadius="10" Padding="16,12"
+                                                        BorderThickness="1.5" Cursor="Hand">
                                                     <Border.Style>
                                                         <Style TargetType="Border">
-                                                            <Setter Property="Background" Value="#CBD5E1"/>
+                                                            <Setter Property="Background" Value="#F8FAFC"/>
+                                                            <Setter Property="BorderBrush" Value="#CBD5E1"/>
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding IsAnswered}" Value="True">
-                                                                    <Setter Property="Background" Value="#86EFAC"/>
+                                                                    <Setter Property="BorderBrush" Value="#86EFAC"/>
+                                                                    <Setter Property="Background" Value="#F0FDF4"/>
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
                                                     </Border.Style>
-                                                    <TextBlock Text="{Binding Number}" Foreground="#1E293B" FontWeight="Bold" FontSize="14"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Width="32" Height="32" CornerRadius="16" Margin="0,0,12,0"
+                                                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Setter Property="Background" Value="#CBD5E1"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsAnswered}" Value="True">
+                                                                            <Setter Property="Background" Value="#86EFAC"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Border.Style>
+                                                            <TextBlock Text="{Binding Number}" Foreground="#1E293B" FontWeight="Bold" FontSize="14"
+                                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <TextBlock Grid.Column="1" Text="{Binding QuestionText}" FontSize="14" Foreground="#1E293B"
+                                                                   TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="2" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Foreground" Value="#94A3B8"/>
+                                                                    <Setter Property="Text" Value="Не отвечен"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsAnswered}" Value="True">
+                                                                            <Setter Property="Foreground" Value="#22C55E"/>
+                                                                            <Setter Property="Text" Value="Отвечен"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
                                                 </Border>
-                                                <TextBlock Grid.Column="1" Text="{Binding QuestionText}" FontSize="14" Foreground="#1E293B"
-                                                           TextWrapping="Wrap" VerticalAlignment="Center"/>
-                                                <TextBlock Grid.Column="2" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0">
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="reviewBorder" Property="BorderBrush" Value="#4F46E5"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                        <Button Content="Отправить результат" Height="48" Width="260"
+                                Command="{Binding SubmitCommand}" Background="#4F46E5" Foreground="White"
+                                FontWeight="Bold" FontSize="15" BorderThickness="0"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Result -->
+                <Grid Visibility="{Binding ResultVisibility}" x:Name="ResultPanel" Height="680">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,20">
+                        <TextBlock Text="Результат тестирования" FontSize="28" FontWeight="Bold"
+                                   Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                        <Border Width="100" Height="100" CornerRadius="50" Background="#EEF2FF" HorizontalAlignment="Center" Margin="0,0,0,10">
+                            <TextBlock Text="{Binding ResultScore}" FontSize="30" FontWeight="Black"
+                                       Foreground="#4F46E5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="{Binding ResultCorrect}" FontSize="16" Foreground="#64748B"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ResultItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="0,0,0,8" CornerRadius="10" Padding="16,12">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="#F0FDF4"/>
+                                                <Setter Property="BorderBrush" Value="#BBF7D0"/>
+                                                <Setter Property="BorderThickness" Value="1"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCorrect}" Value="False">
+                                                        <Setter Property="Background" Value="#FEF2F2"/>
+                                                        <Setter Property="BorderBrush" Value="#FECACA"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Width="28" Height="28" CornerRadius="14" Margin="0,0,12,0"
+                                                    HorizontalAlignment="Center" VerticalAlignment="Top">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background" Value="#22C55E"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsCorrect}" Value="False">
+                                                                <Setter Property="Background" Value="#EF4444"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock Foreground="White" FontWeight="Bold" FontSize="14"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="#94A3B8"/>
-                                                            <Setter Property="Text" Value="Не отвечен"/>
+                                                            <Setter Property="Text" Value="+"/>
                                                             <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsAnswered}" Value="True">
-                                                                    <Setter Property="Foreground" Value="#22C55E"/>
-                                                                    <Setter Property="Text" Value="Отвечен"/>
+                                                                <DataTrigger Binding="{Binding IsCorrect}" Value="False">
+                                                                    <Setter Property="Text" Value="-"/>
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
                                                     </TextBlock.Style>
                                                 </TextBlock>
-                                            </Grid>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="reviewBorder" Property="BorderBrush" Value="#4F46E5"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                <Button Content="Отправить результат" Height="48" Width="260"
-                        Command="{Binding SubmitCommand}" Background="#4F46E5" Foreground="White"
-                        FontWeight="Bold" FontSize="15" BorderThickness="0"
-                        AutomationProperties.Name="Отправить результат"/>
-            </StackPanel>
-        </Grid>
-
-        <Grid Visibility="{Binding ResultVisibility}" x:Name="ResultPanel">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,20">
-                <TextBlock Text="Результат тестирования" FontSize="28" FontWeight="Bold"
-                           Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,16"
-                           AutomationProperties.Name="Заголовок результата"/>
-                <Border Width="100" Height="100" CornerRadius="50" Background="#EEF2FF" HorizontalAlignment="Center" Margin="0,0,0,10">
-                    <TextBlock Text="{Binding ResultScore}" FontSize="30" FontWeight="Black"
-                               Foreground="#4F46E5" HorizontalAlignment="Center" VerticalAlignment="Center"
-                               AutomationProperties.Name="Оценка"/>
-                </Border>
-                <TextBlock Text="{Binding ResultCorrect}" FontSize="16" Foreground="#64748B"
-                           HorizontalAlignment="Center"
-                           AutomationProperties.Name="Количество правильных ответов"/>
-            </StackPanel>
-
-            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
-                          AutomationProperties.Name="Подробности ответов">
-                <ItemsControl ItemsSource="{Binding ResultItems}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Margin="0,0,0,8" CornerRadius="10" Padding="16,12">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Setter Property="Background" Value="#F0FDF4"/>
-                                        <Setter Property="BorderBrush" Value="#BBF7D0"/>
-                                        <Setter Property="BorderThickness" Value="1"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsCorrect}" Value="False">
-                                                <Setter Property="Background" Value="#FEF2F2"/>
-                                                <Setter Property="BorderBrush" Value="#FECACA"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Width="28" Height="28" CornerRadius="14" Margin="0,0,12,0"
-                                            HorizontalAlignment="Center" VerticalAlignment="Top">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="Background" Value="#22C55E"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsCorrect}" Value="False">
-                                                        <Setter Property="Background" Value="#EF4444"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                        <TextBlock Foreground="White" FontWeight="Bold" FontSize="14"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="+"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsCorrect}" Value="False">
-                                                            <Setter Property="Text" Value="-"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
+                                            </Border>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding QuestionText}" FontWeight="SemiBold" Foreground="#0F172A" FontSize="14" TextWrapping="Wrap"/>
+                                                <TextBlock Foreground="#64748B" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap">
+                                                    <Run Text="Ваш ответ: "/><Run Text="{Binding SelectedAnswer, Mode=OneWay}"/>
+                                                    <Run Text="   Правильный: "/><Run Text="{Binding CorrectAnswer, Mode=OneWay}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Grid>
                                     </Border>
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding QuestionText}" FontWeight="SemiBold" Foreground="#0F172A" FontSize="14" TextWrapping="Wrap"/>
-                                        <TextBlock Foreground="#64748B" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap">
-                                            <Run Text="Ваш ответ: "/><Run Text="{Binding SelectedAnswer, Mode=OneWay}"/>
-                                            <Run Text="   Правильный: "/><Run Text="{Binding CorrectAnswer, Mode=OneWay}"/>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
 
-            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
-                <Button Content="Начать заново" Height="44" Padding="20,0"
-                        Command="{Binding RestartCommand}" Background="#E2E8F0" Foreground="#334155"
-                        FontWeight="SemiBold" BorderThickness="0"
-                        AutomationProperties.Name="Начать заново"/>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
+                        <Button Content="Начать заново" Height="44" Padding="20,0"
+                                Command="{Binding RestartCommand}" Background="#E2E8F0" Foreground="#334155"
+                                FontWeight="SemiBold" BorderThickness="0"/>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
-        </Grid>
+        </ScrollViewer>
     </Grid>
 </Window>

@@ -1,5 +1,9 @@
 [
-  {"Text":"Демонстрационный вопрос 1: Выберите правильный ответ","Options":["Вариант А","Вариант Б (правильный)","Вариант В"],"CorrectAnswerIndex":1},
-  {"Text":"Демонстрационный вопрос 2: Выберите один вариант","Options":["Ответ 1","Ответ 2 (правильный)","Ответ 3","Ответ 4"],"CorrectAnswerIndex":1},
-  {"Text":"Демонстрационный вопрос 3: Да/Нет","Options":["Да (правильный)","Нет"],"CorrectAnswerIndex":0}
+  {"Text":"Сколько бит в одном байте?","Options":["4","8","16","32"],"CorrectAnswerIndex":1},
+  {"Text":"Какой тип данных используется для хранения целых чисел в C#?","Options":["string","double","int","bool"],"CorrectAnswerIndex":2},
+  {"Text":"Что делает оператор && в C#?","Options":["Логическое ИЛИ","Логическое И","Побитовое И","Присваивание"],"CorrectAnswerIndex":1},
+  {"Text":"Какой результат выражения 10 % 3?","Options":["3","1","0","3.33"],"CorrectAnswerIndex":1},
+  {"Text":"Какое ключевое слово используется для создания класса в C#?","Options":["struct","interface","class","object"],"CorrectAnswerIndex":2},
+  {"Text":"Что возвращает метод с типом void?","Options":["0","null","Ничего","Пустую строку"],"CorrectAnswerIndex":2},
+  {"Text":"Какой модификатор доступа делает член доступным только внутри класса?","Options":["public","protected","internal","private"],"CorrectAnswerIndex":3}
 ]

@@ -15,6 +15,7 @@ namespace SkillCheckerServer
         private Dictionary<string, DateTime?> _schedules;
         private List<TestResult> _results;
         private string _testsFolder;
+        private string _scheduleFile;
 
         public Server(int port)
         {
@@ -24,12 +25,14 @@ namespace SkillCheckerServer
             _schedules = new Dictionary<string, DateTime?>();
             _results = new List<TestResult>();
             _testsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tests");
+            _scheduleFile = Path.Combine(_testsFolder, "schedule.json");
         }
 
         public void Start()
         {
             Directory.CreateDirectory(_testsFolder);
             LoadAllTests();
+            LoadSchedule();
 
             _isRunning = true;
             _listener.Start();
@@ -69,6 +72,8 @@ namespace SkillCheckerServer
             string[] files = Directory.GetFiles(_testsFolder, "*.json");
             for (int i = 0; i < files.Length; i++)
             {
+                if (Path.GetFileName(files[i]) == "schedule.json") continue;
+
                 try
                 {
                     string json = File.ReadAllText(files[i], Encoding.UTF8);
@@ -85,6 +90,54 @@ namespace SkillCheckerServer
                     Log("Ошибка загрузки " + files[i] + ": " + ex.Message);
                 }
             }
+        }
+
+        private void LoadSchedule()
+        {
+            if (!File.Exists(_scheduleFile)) return;
+
+            try
+            {
+                string json = File.ReadAllText(_scheduleFile, Encoding.UTF8);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                Dictionary<string, string>? data = JsonSerializer.Deserialize<Dictionary<string, string>>(json, options);
+                if (data != null)
+                {
+                    foreach (var kvp in data)
+                    {
+                        if (DateTime.TryParse(kvp.Value, out DateTime dt))
+                        {
+                            _schedules[kvp.Key] = dt;
+                        }
+                    }
+                    Log("Загружено расписаний: " + _schedules.Count);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log("Ошибка загрузки расписания: " + ex.Message);
+            }
+        }
+
+        private void SaveSchedule()
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            foreach (var kvp in _schedules)
+            {
+                if (kvp.Value != null)
+                {
+                    data[kvp.Key] = kvp.Value.Value.ToString("o");
+                }
+            }
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
+            string json = JsonSerializer.Serialize(data, options);
+            File.WriteAllText(_scheduleFile, json, Encoding.UTF8);
         }
 
         private void HandleClient(TcpClient client)
@@ -133,6 +186,22 @@ namespace SkillCheckerServer
                 return ProtocolHelper.BuildMessage(Commands.TestsList, testNames);
             }
 
+            if (command == Commands.GetSchedules)
+            {
+                ReloadTestsIfNeeded();
+                LoadSchedule();
+                string scheduleData = "";
+                foreach (var kvp in _schedules)
+                {
+                    if (kvp.Value != null)
+                    {
+                        if (scheduleData.Length > 0) scheduleData += "|";
+                        scheduleData += kvp.Key + "|" + kvp.Value.Value.ToString("o");
+                    }
+                }
+                return ProtocolHelper.BuildMessage(Commands.Schedules, scheduleData);
+            }
+
             if (command == Commands.GetTest && parts.Length >= 2)
             {
                 string testName = parts[1];
@@ -141,7 +210,7 @@ namespace SkillCheckerServer
                     DateTime? schedule = _schedules.ContainsKey(testName) ? _schedules[testName] : null;
                     if (schedule != null && DateTime.Now < schedule.Value)
                     {
-                        return ProtocolHelper.BuildMessage(Commands.StartWait, schedule.Value.ToString("HH:mm"));
+                        return ProtocolHelper.BuildMessage(Commands.StartWait, schedule.Value.ToString("o"));
                     }
 
                     string json = ProtocolHelper.SerializeQuestionsWithoutAnswers(_tests[testName]);
@@ -158,7 +227,7 @@ namespace SkillCheckerServer
                 {
                     return ProtocolHelper.BuildMessage(Commands.StartOk);
                 }
-                return ProtocolHelper.BuildMessage(Commands.StartWait, schedule.Value.ToString("HH:mm"));
+                return ProtocolHelper.BuildMessage(Commands.StartWait, schedule.Value.ToString("o"));
             }
 
             if (command == Commands.SubmitAnswers && parts.Length >= 5)
@@ -275,7 +344,12 @@ namespace SkillCheckerServer
         {
             if (!Directory.Exists(_testsFolder)) return;
             string[] files = Directory.GetFiles(_testsFolder, "*.json");
-            if (files.Length != _tests.Count)
+            int testFileCount = 0;
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (Path.GetFileName(files[i]) != "schedule.json") testFileCount++;
+            }
+            if (testFileCount != _tests.Count)
             {
                 LoadAllTests();
             }
@@ -288,6 +362,7 @@ namespace SkillCheckerServer
                 DateTime scheduled = DateTime.Today.Add(time.ToTimeSpan());
                 if (scheduled < DateTime.Now) scheduled = scheduled.AddDays(1);
                 _schedules[testName] = scheduled;
+                SaveSchedule();
                 Log("Запланировано: " + testName + " на " + scheduled.ToString("HH:mm"));
             }
         }

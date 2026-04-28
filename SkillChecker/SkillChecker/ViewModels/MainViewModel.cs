@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Threading;
 using SkillChecker.Commands;
 using SkillChecker.Common.Models;
 using SkillChecker.Services;
@@ -14,6 +15,7 @@ namespace SkillChecker.ViewModels
         private List<int> _selectedAnswers;
         private int _currentQuestionIndex;
         private string _selectedTestName;
+        private DispatcherTimer _waitTimer;
 
         private string _appState;
         private string _serverIp;
@@ -22,6 +24,8 @@ namespace SkillChecker.ViewModels
         private string _studentGroup;
         private string _statusMessage;
         private List<string> _testNames;
+        private List<ScheduledTest> _scheduledTests;
+        private List<TestCardItem> _testCards;
 
         private string _questionText;
         private List<string> _currentOptions;
@@ -33,6 +37,11 @@ namespace SkillChecker.ViewModels
         private string _nextButtonText;
         private bool _canGoBack;
 
+        private string _waitTestName;
+        private string _waitTimeText;
+        private string _waitCountdownText;
+        private bool _canStartFromWait;
+
         private string _resultScore;
         private string _resultCorrect;
         private List<ResultItem> _resultItems;
@@ -40,6 +49,7 @@ namespace SkillChecker.ViewModels
         private List<ReviewItem> _reviewItems;
 
         private Visibility _authVisibility;
+        private Visibility _waitVisibility;
         private Visibility _testingVisibility;
         private Visibility _reviewVisibility;
         private Visibility _resultVisibility;
@@ -52,6 +62,9 @@ namespace SkillChecker.ViewModels
             _questions = new List<Question>();
             _selectedAnswers = new List<int>();
             _selectedTestName = "";
+            _waitTimer = new DispatcherTimer();
+            _waitTimer.Interval = TimeSpan.FromSeconds(1);
+            _waitTimer.Tick += WaitTimerTick;
 
             _appState = "Auth";
             _serverIp = "127.0.0.1";
@@ -60,6 +73,8 @@ namespace SkillChecker.ViewModels
             _studentGroup = "";
             _statusMessage = "Введите IP сервера и подключитесь";
             _testNames = new List<string>();
+            _scheduledTests = new List<ScheduledTest>();
+            _testCards = new List<TestCardItem>();
 
             _questionText = "";
             _currentOptions = new List<string>();
@@ -70,12 +85,18 @@ namespace SkillChecker.ViewModels
             _nextButtonText = "Далее";
             _canGoBack = false;
 
+            _waitTestName = "";
+            _waitTimeText = "";
+            _waitCountdownText = "";
+            _canStartFromWait = false;
+
             _resultScore = "";
             _resultCorrect = "";
             _resultItems = new List<ResultItem>();
             _reviewItems = new List<ReviewItem>();
 
             _authVisibility = Visibility.Visible;
+            _waitVisibility = Visibility.Collapsed;
             _testingVisibility = Visibility.Collapsed;
             _reviewVisibility = Visibility.Collapsed;
             _resultVisibility = Visibility.Collapsed;
@@ -86,6 +107,8 @@ namespace SkillChecker.ViewModels
             PrevQuestionCommand = new RelayCommand(ExecutePrevQuestion, CanPrevQuestion);
             GoToQuestionCommand = new RelayCommand(ExecuteGoToQuestion);
             SubmitCommand = new RelayCommand(ExecuteSubmit);
+            SelectTestCardCommand = new RelayCommand(ExecuteSelectTestCard);
+            StartFromWaitCommand = new RelayCommand(ExecuteStartFromWait, CheckCanStartFromWait);
             RestartCommand = new RelayCommand(ExecuteRestart);
             ExitCommand = new RelayCommand(ExecuteExit);
         }
@@ -130,6 +153,18 @@ namespace SkillChecker.ViewModels
         {
             get => _testNames;
             set { _testNames = value; OnPropertyChanged(); }
+        }
+
+        public List<ScheduledTest> ScheduledTests
+        {
+            get => _scheduledTests;
+            set { _scheduledTests = value; OnPropertyChanged(); }
+        }
+
+        public List<TestCardItem> TestCards
+        {
+            get => _testCards;
+            set { _testCards = value; OnPropertyChanged(); }
         }
 
         public string SelectedTestName
@@ -186,6 +221,30 @@ namespace SkillChecker.ViewModels
             set { _canGoBack = value; OnPropertyChanged(); }
         }
 
+        public string WaitTestName
+        {
+            get => _waitTestName;
+            set { _waitTestName = value; OnPropertyChanged(); }
+        }
+
+        public string WaitTimeText
+        {
+            get => _waitTimeText;
+            set { _waitTimeText = value; OnPropertyChanged(); }
+        }
+
+        public string WaitCountdownText
+        {
+            get => _waitCountdownText;
+            set { _waitCountdownText = value; OnPropertyChanged(); }
+        }
+
+        public bool CanStartFromWait
+        {
+            get => _canStartFromWait;
+            set { _canStartFromWait = value; OnPropertyChanged(); }
+        }
+
         public string ResultScore
         {
             get => _resultScore;
@@ -216,6 +275,12 @@ namespace SkillChecker.ViewModels
             set { _authVisibility = value; OnPropertyChanged(); }
         }
 
+        public Visibility WaitVisibility
+        {
+            get => _waitVisibility;
+            set { _waitVisibility = value; OnPropertyChanged(); }
+        }
+
         public Visibility TestingVisibility
         {
             get => _testingVisibility;
@@ -240,6 +305,8 @@ namespace SkillChecker.ViewModels
         public RelayCommand PrevQuestionCommand { get; private set; }
         public RelayCommand GoToQuestionCommand { get; private set; }
         public RelayCommand SubmitCommand { get; private set; }
+        public RelayCommand SelectTestCardCommand { get; private set; }
+        public RelayCommand StartFromWaitCommand { get; private set; }
         public RelayCommand RestartCommand { get; private set; }
         public RelayCommand ExitCommand { get; private set; }
 
@@ -253,6 +320,15 @@ namespace SkillChecker.ViewModels
             if (_appState == "Auth")
             {
                 AuthVisibility = Visibility.Visible;
+                WaitVisibility = Visibility.Collapsed;
+                TestingVisibility = Visibility.Collapsed;
+                ReviewVisibility = Visibility.Collapsed;
+                ResultVisibility = Visibility.Collapsed;
+            }
+            else if (_appState == "Wait")
+            {
+                AuthVisibility = Visibility.Collapsed;
+                WaitVisibility = Visibility.Visible;
                 TestingVisibility = Visibility.Collapsed;
                 ReviewVisibility = Visibility.Collapsed;
                 ResultVisibility = Visibility.Collapsed;
@@ -260,6 +336,7 @@ namespace SkillChecker.ViewModels
             else if (_appState == "Testing")
             {
                 AuthVisibility = Visibility.Collapsed;
+                WaitVisibility = Visibility.Collapsed;
                 TestingVisibility = Visibility.Visible;
                 ReviewVisibility = Visibility.Collapsed;
                 ResultVisibility = Visibility.Collapsed;
@@ -267,6 +344,7 @@ namespace SkillChecker.ViewModels
             else if (_appState == "Review")
             {
                 AuthVisibility = Visibility.Collapsed;
+                WaitVisibility = Visibility.Collapsed;
                 TestingVisibility = Visibility.Collapsed;
                 ReviewVisibility = Visibility.Visible;
                 ResultVisibility = Visibility.Collapsed;
@@ -274,6 +352,7 @@ namespace SkillChecker.ViewModels
             else if (_appState == "Result")
             {
                 AuthVisibility = Visibility.Collapsed;
+                WaitVisibility = Visibility.Collapsed;
                 TestingVisibility = Visibility.Collapsed;
                 ReviewVisibility = Visibility.Collapsed;
                 ResultVisibility = Visibility.Visible;
@@ -293,6 +372,11 @@ namespace SkillChecker.ViewModels
                 List<string> tests = _clientService.GetTestList();
                 TestNames = tests;
 
+                List<ScheduledTest> scheduled = _clientService.GetScheduledTests();
+                ScheduledTests = scheduled;
+
+                BuildTestCards(tests, scheduled);
+
                 if (tests.Count > 0)
                 {
                     StatusMessage = "Подключено. Доступно тестов: " + tests.Count;
@@ -301,11 +385,43 @@ namespace SkillChecker.ViewModels
                 {
                     StatusMessage = "Подключено, но тестов на сервере нет";
                 }
+
+                if (scheduled.Count > 0)
+                {
+                    StatusMessage += ". Запланировано: " + scheduled.Count;
+                }
             }
             catch (Exception ex)
             {
                 StatusMessage = "Ошибка подключения: " + ex.Message;
             }
+        }
+
+        private void BuildTestCards(List<string> tests, List<ScheduledTest> scheduled)
+        {
+            List<TestCardItem> cards = new List<TestCardItem>();
+
+            for (int i = 0; i < tests.Count; i++)
+            {
+                TestCardItem card = new TestCardItem();
+                card.Name = tests[i];
+                card.IsScheduled = false;
+                card.ScheduleTime = "";
+
+                for (int j = 0; j < scheduled.Count; j++)
+                {
+                    if (scheduled[j].Name == tests[i])
+                    {
+                        card.IsScheduled = true;
+                        card.ScheduleTime = scheduled[j].ScheduledTime.ToString("HH:mm");
+                        break;
+                    }
+                }
+
+                cards.Add(card);
+            }
+
+            TestCards = cards;
         }
 
         private bool CanStartTest(object? parameter)
@@ -318,9 +434,57 @@ namespace SkillChecker.ViewModels
 
         private void ExecuteStartTest(object? parameter)
         {
+            StartTestByName(_selectedTestName);
+        }
+
+        private void ExecuteSelectTestCard(object? parameter)
+        {
+            if (parameter != null)
+            {
+                string testName = parameter.ToString() ?? "";
+                if (testName.Length > 0)
+                {
+                    _selectedTestName = testName;
+
+                    bool isScheduled = false;
+                    for (int i = 0; i < _testCards.Count; i++)
+                    {
+                        if (_testCards[i].Name == testName && _testCards[i].IsScheduled)
+                        {
+                            isScheduled = true;
+                            break;
+                        }
+                    }
+
+                    if (isScheduled)
+                    {
+                        ScheduledTest? sched = null;
+                        for (int i = 0; i < _scheduledTests.Count; i++)
+                        {
+                            if (_scheduledTests[i].Name == testName)
+                            {
+                                sched = _scheduledTests[i];
+                                break;
+                            }
+                        }
+
+                        if (sched != null && sched.ScheduledTime > DateTime.Now)
+                        {
+                            ShowWaitScreen(testName, sched.ScheduledTime);
+                            return;
+                        }
+                    }
+
+                    StartTestByName(testName);
+                }
+            }
+        }
+
+        private void StartTestByName(string testName)
+        {
             try
             {
-                List<Question> questions = _clientService.GetTestQuestions(_selectedTestName);
+                List<Question> questions = _clientService.GetTestQuestions(testName);
 
                 if (questions.Count == 0)
                 {
@@ -341,8 +505,81 @@ namespace SkillChecker.ViewModels
             }
             catch (Exception ex)
             {
-                StatusMessage = ex.Message;
+                if (ex.Message.StartsWith("Тест начнётся"))
+                {
+                    string timeStr = ex.Message.Replace("Тест начнётся в ", "").Replace(". Подождите.", "").Trim();
+                    if (DateTime.TryParse(timeStr, out DateTime scheduledTime))
+                    {
+                        ShowWaitScreen(testName, scheduledTime);
+                    }
+                    else
+                    {
+                        StatusMessage = ex.Message;
+                    }
+                }
+                else
+                {
+                    StatusMessage = ex.Message;
+                }
             }
+        }
+
+        private void ShowWaitScreen(string testName, DateTime scheduledTime)
+        {
+            WaitTestName = testName;
+            WaitTimeText = "Тест начнётся в " + scheduledTime.ToString("HH:mm");
+            UpdateWaitCountdown(scheduledTime);
+            _waitTimer.Start();
+            AppState = "Wait";
+        }
+
+        private void WaitTimerTick(object? sender, EventArgs e)
+        {
+            ScheduledTest? scheduled = null;
+            for (int i = 0; i < _scheduledTests.Count; i++)
+            {
+                if (_scheduledTests[i].Name == _waitTestName)
+                {
+                    scheduled = _scheduledTests[i];
+                    break;
+                }
+            }
+
+            if (scheduled != null)
+            {
+                UpdateWaitCountdown(scheduled.ScheduledTime);
+            }
+        }
+
+        private void UpdateWaitCountdown(DateTime scheduledTime)
+        {
+            TimeSpan remaining = scheduledTime - DateTime.Now;
+
+            if (remaining.TotalSeconds <= 0)
+            {
+                WaitCountdownText = "00:00:00";
+                CanStartFromWait = true;
+                _waitTimer.Stop();
+            }
+            else
+            {
+                int hours = (int)remaining.TotalHours;
+                int minutes = remaining.Minutes;
+                int seconds = remaining.Seconds;
+                WaitCountdownText = hours.ToString("D2") + ":" + minutes.ToString("D2") + ":" + seconds.ToString("D2");
+                CanStartFromWait = false;
+            }
+        }
+
+        private bool CheckCanStartFromWait(object? parameter)
+        {
+            return _canStartFromWait;
+        }
+
+        private void ExecuteStartFromWait(object? parameter)
+        {
+            _waitTimer.Stop();
+            StartTestByName(_waitTestName);
         }
 
         private bool CanNextQuestion(object? parameter)
@@ -488,6 +725,7 @@ namespace SkillChecker.ViewModels
 
         private void ExecuteRestart(object? parameter)
         {
+            _waitTimer.Stop();
             _selectedAnswers = new List<int>();
             _currentQuestionIndex = 0;
             SelectedOptionIndex = -1;
@@ -500,6 +738,24 @@ namespace SkillChecker.ViewModels
         private void ExecuteExit(object? parameter)
         {
             Application.Current.Shutdown();
+        }
+    }
+
+    public class TestCardItem
+    {
+        private string _name;
+        private bool _isScheduled;
+        private string _scheduleTime;
+
+        public string Name { get => _name; set => _name = value; }
+        public bool IsScheduled { get => _isScheduled; set => _isScheduled = value; }
+        public string ScheduleTime { get => _scheduleTime; set => _scheduleTime = value; }
+
+        public TestCardItem()
+        {
+            _name = "";
+            _isScheduled = false;
+            _scheduleTime = "";
         }
     }
 

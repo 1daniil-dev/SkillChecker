@@ -1,9 +1,11 @@
+var allTests = [];
+
 window.onload = function () {
     loadTests();
 };
 
 function showTab(name) {
-    var tabs = ["tests", "results"];
+    var tabs = ["tests", "schedule", "results"];
     for (var i = 0; i < tabs.length; i++) {
         document.getElementById("tab-" + tabs[i]).classList.add("hidden");
     }
@@ -15,6 +17,9 @@ function showTab(name) {
     }
     event.target.classList.add("active");
 
+    if (name === "schedule") {
+        loadSchedule();
+    }
     if (name === "results") {
         loadResults();
     }
@@ -24,6 +29,7 @@ function loadTests() {
     fetch("/api/tests")
         .then(function (r) { return r.json(); })
         .then(function (tests) {
+            allTests = tests;
             var div = document.getElementById("testsList");
             div.innerHTML = "";
 
@@ -114,6 +120,120 @@ function deleteTest(name) {
     .then(function (r) { return r.json(); })
     .then(function (data) {
         loadTests();
+    });
+}
+
+function showScheduleForm() {
+    var select = document.getElementById("scheduleTestSelect");
+    select.innerHTML = '<option value="">Выберите тест</option>';
+    for (var i = 0; i < allTests.length; i++) {
+        var opt = document.createElement("option");
+        opt.value = allTests[i].Name;
+        opt.textContent = allTests[i].Name;
+        select.appendChild(opt);
+    }
+
+    var now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById("scheduleTime").value = now.toISOString().slice(0, 16);
+
+    document.getElementById("scheduleForm").classList.remove("hidden");
+}
+
+function hideScheduleForm() {
+    document.getElementById("scheduleForm").classList.add("hidden");
+}
+
+function scheduleTest() {
+    var testName = document.getElementById("scheduleTestSelect").value;
+    var time = document.getElementById("scheduleTime").value;
+
+    if (!testName) {
+        alert("Выберите тест");
+        return;
+    }
+    if (!time) {
+        alert("Укажите время");
+        return;
+    }
+
+    fetch("/api/schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ TestName: testName, Time: time })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+        if (data.ok) {
+            hideScheduleForm();
+            loadSchedule();
+        }
+    });
+}
+
+function loadSchedule() {
+    fetch("/api/schedule")
+        .then(function (r) { return r.json(); })
+        .then(function (items) {
+            var div = document.getElementById("scheduleList");
+            div.innerHTML = "";
+
+            if (items.length === 0) {
+                div.innerHTML = '<div class="empty">Нет запланированных тестов</div>';
+                return;
+            }
+
+            for (var i = 0; i < items.length; i++) {
+                var card = document.createElement("div");
+                card.className = "schedule-card";
+
+                var info = document.createElement("div");
+                info.className = "schedule-info";
+
+                var icon = document.createElement("span");
+                icon.className = "schedule-icon";
+                icon.textContent = "\u{1F551}";
+                info.appendChild(icon);
+
+                var textDiv = document.createElement("div");
+                var nameDiv = document.createElement("div");
+                nameDiv.className = "schedule-test-name";
+                nameDiv.textContent = items[i].TestName;
+                textDiv.appendChild(nameDiv);
+
+                var timeDiv = document.createElement("div");
+                timeDiv.className = "schedule-time";
+                timeDiv.textContent = items[i].DisplayTime;
+                textDiv.appendChild(timeDiv);
+
+                info.appendChild(textDiv);
+                card.appendChild(info);
+
+                var actions = document.createElement("div");
+                actions.className = "schedule-actions";
+                var delBtn = document.createElement("button");
+                delBtn.textContent = "Удалить";
+                delBtn.setAttribute("data-name", items[i].TestName);
+                delBtn.onclick = function () {
+                    deleteSchedule(this.getAttribute("data-name"));
+                };
+                actions.appendChild(delBtn);
+                card.appendChild(actions);
+
+                div.appendChild(card);
+            }
+        });
+}
+
+function deleteSchedule(testName) {
+    if (!confirm("Удалить расписание для \"" + testName + "\"?")) return;
+
+    fetch("/api/schedule/" + encodeURIComponent(testName), {
+        method: "DELETE"
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+        loadSchedule();
     });
 }
 
