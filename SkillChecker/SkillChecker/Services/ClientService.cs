@@ -11,14 +11,17 @@ namespace SkillChecker.Services
     {
         private string _name;
         private DateTime _scheduledTime;
+        private int _timeMinutes;
 
         public string Name { get => _name; set => _name = value; }
         public DateTime ScheduledTime { get => _scheduledTime; set => _scheduledTime = value; }
+        public int TimeMinutes { get => _timeMinutes; set => _timeMinutes = value; }
 
         public ScheduledTest()
         {
             _name = "";
             _scheduledTime = DateTime.Now;
+            _timeMinutes = 0;
         }
     }
 
@@ -59,19 +62,35 @@ namespace SkillChecker.Services
             return new List<string>();
         }
 
-        public List<Question> GetTestQuestions(string testName)
+        public TestQuestionsResult GetTestQuestions(string testName)
         {
             string response = Send(ProtocolHelper.BuildMessage(Cmd.GetTest, testName));
             string[] parts = ProtocolHelper.ParseMessage(response);
 
+            TestQuestionsResult result = new TestQuestionsResult();
+
             if (parts.Length >= 2 && parts[0] == Cmd.TestData)
             {
-                return ProtocolHelper.DeserializeQuestions(parts[1]);
+                result.Questions = ProtocolHelper.DeserializeQuestions(parts[1]);
+                if (parts.Length >= 3 && int.TryParse(parts[2], out int timeMinutes))
+                {
+                    result.TimeMinutes = timeMinutes;
+                }
+                return result;
             }
 
             if (parts.Length >= 2 && parts[0] == Cmd.StartWait)
             {
-                throw new Exception("Тест начнётся в " + parts[1] + ". Подождите.");
+                result.IsWaiting = true;
+                if (DateTime.TryParse(parts[1], out DateTime dt))
+                {
+                    result.WaitTime = dt;
+                }
+                if (parts.Length >= 3 && int.TryParse(parts[2], out int timeMinutes))
+                {
+                    result.TimeMinutes = timeMinutes;
+                }
+                return result;
             }
 
             throw new Exception("Не удалось получить тест");
@@ -79,22 +98,27 @@ namespace SkillChecker.Services
 
         public List<ScheduledTest> GetScheduledTests()
         {
-            string response = Send(ProtocolHelper.BuildMessage(Cmd.GetSchedules));
+            string response = Send(ProtocolHelper.BuildMessage(Cmd.GetTestSettings));
             string[] parts = ProtocolHelper.ParseMessage(response);
 
             List<ScheduledTest> list = new List<ScheduledTest>();
 
-            if (parts.Length >= 2 && parts[0] == Cmd.Schedules)
+            if (parts.Length >= 2 && parts[0] == Cmd.TestSettingsList)
             {
-                for (int i = 1; i + 1 < parts.Length; i += 2)
+                for (int i = 1; i + 2 < parts.Length; i += 3)
                 {
                     ScheduledTest st = new ScheduledTest();
                     st.Name = parts[i];
-                    if (DateTime.TryParse(parts[i + 1], out DateTime dt))
+                    string startTimeStr = parts[i + 1];
+                    if (startTimeStr.Length > 0 && DateTime.TryParse(startTimeStr, out DateTime dt))
                     {
                         st.ScheduledTime = dt;
-                        list.Add(st);
                     }
+                    if (int.TryParse(parts[i + 2], out int timeMinutes))
+                    {
+                        st.TimeMinutes = timeMinutes;
+                    }
+                    list.Add(st);
                 }
             }
 
@@ -154,6 +178,27 @@ namespace SkillChecker.Services
                     return reader.ReadLine() ?? "";
                 }
             }
+        }
+    }
+
+    public class TestQuestionsResult
+    {
+        private List<Question> _questions;
+        private int _timeMinutes;
+        private bool _isWaiting;
+        private DateTime _waitTime;
+
+        public List<Question> Questions { get => _questions; set => _questions = value; }
+        public int TimeMinutes { get => _timeMinutes; set => _timeMinutes = value; }
+        public bool IsWaiting { get => _isWaiting; set => _isWaiting = value; }
+        public DateTime WaitTime { get => _waitTime; set => _waitTime = value; }
+
+        public TestQuestionsResult()
+        {
+            _questions = new List<Question>();
+            _timeMinutes = 0;
+            _isWaiting = false;
+            _waitTime = DateTime.Now;
         }
     }
 }

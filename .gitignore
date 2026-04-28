@@ -420,6 +420,7 @@ FodyWeavers.xsd
 # Тесты — всё кроме демо-файла
 SkillChecker/SkillCheckerServer/Tests/*
 !SkillChecker/SkillCheckerServer/Tests/demo.json
+!SkillChecker/SkillCheckerServer/Tests/test_settings.json
 SkillChecker/SkillChecker.Web/Tests/*
 
 # Результаты тестирования

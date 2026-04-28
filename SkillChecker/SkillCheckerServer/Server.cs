@@ -12,27 +12,27 @@ namespace SkillCheckerServer
         private TcpListener _listener;
         private bool _isRunning;
         private Dictionary<string, List<Question>> _tests;
-        private Dictionary<string, DateTime?> _schedules;
+        private Dictionary<string, TestSettings> _testSettings;
         private List<TestResult> _results;
         private string _testsFolder;
-        private string _scheduleFile;
+        private string _settingsFile;
 
         public Server(int port)
         {
             _listener = new TcpListener(IPAddress.Any, port);
             _isRunning = false;
             _tests = new Dictionary<string, List<Question>>();
-            _schedules = new Dictionary<string, DateTime?>();
+            _testSettings = new Dictionary<string, TestSettings>();
             _results = new List<TestResult>();
             _testsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tests");
-            _scheduleFile = Path.Combine(_testsFolder, "schedule.json");
+            _settingsFile = Path.Combine(_testsFolder, "test_settings.json");
         }
 
         public void Start()
         {
             Directory.CreateDirectory(_testsFolder);
             LoadAllTests();
-            LoadSchedule();
+            LoadSettings();
 
             _isRunning = true;
             _listener.Start();
@@ -72,7 +72,8 @@ namespace SkillCheckerServer
             string[] files = Directory.GetFiles(_testsFolder, "*.json");
             for (int i = 0; i < files.Length; i++)
             {
-                if (Path.GetFileName(files[i]) == "schedule.json") continue;
+                string fileName = Path.GetFileName(files[i]);
+                if (fileName == "test_settings.json" || fileName == "schedule.json") continue;
 
                 try
                 {
@@ -92,42 +93,73 @@ namespace SkillCheckerServer
             }
         }
 
-        private void LoadSchedule()
+        private void LoadSettings()
         {
-            if (!File.Exists(_scheduleFile)) return;
+            if (!File.Exists(_settingsFile)) return;
 
             try
             {
-                string json = File.ReadAllText(_scheduleFile, Encoding.UTF8);
+                string json = File.ReadAllText(_settingsFile, Encoding.UTF8);
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                Dictionary<string, string>? data = JsonSerializer.Deserialize<Dictionary<string, string>>(json, options);
+                Dictionary<string, JsonElement>? data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json, options);
                 if (data != null)
                 {
                     foreach (var kvp in data)
                     {
-                        if (DateTime.TryParse(kvp.Value, out DateTime dt))
+                        TestSettings settings = new TestSettings();
+
+                        if (kvp.Value.ValueKind == JsonValueKind.Object)
                         {
-                            _schedules[kvp.Key] = dt;
+                            JsonElement startElem;
+                            if (kvp.Value.TryGetProperty("StartTime", out startElem) && startElem.ValueKind == JsonValueKind.String)
+                            {
+                                if (DateTime.TryParse(startElem.GetString(), out DateTime dt))
+                                {
+                                    settings.StartTime = dt;
+                                }
+                            }
+
+                            JsonElement timeElem;
+                            if (kvp.Value.TryGetProperty("TimeMinutes", out timeElem) && timeElem.ValueKind == JsonValueKind.Number)
+                            {
+                                settings.TimeMinutes = timeElem.GetInt32();
+                            }
                         }
+                        else if (kvp.Value.ValueKind == JsonValueKind.String)
+                        {
+                            if (DateTime.TryParse(kvp.Value.GetString(), out DateTime dt))
+                            {
+                                settings.StartTime = dt;
+                            }
+                        }
+
+                        _testSettings[kvp.Key] = settings;
                     }
-                    Log("Загружено расписаний: " + _schedules.Count);
+                    Log("Загружено настроек тестов: " + _testSettings.Count);
                 }
             }
             catch (Exception ex)
             {
-                Log("Ошибка загрузки расписания: " + ex.Message);
+                Log("Ошибка загрузки настроек: " + ex.Message);
             }
         }
 
-        private void SaveSchedule()
+        private void SaveSettings()
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            foreach (var kvp in _schedules)
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            foreach (var kvp in _testSettings)
             {
-                if (kvp.Value != null)
+                Dictionary<string, object> entry = new Dictionary<string, object>();
+                if (kvp.Value.StartTime != null)
                 {
-                    data[kvp.Key] = kvp.Value.Value.ToString("o");
+                    entry["StartTime"] = kvp.Value.StartTime.Value.ToString("o");
                 }
+                else
+                {
+                    entry["StartTime"] = "";
+                }
+                entry["TimeMinutes"] = kvp.Value.TimeMinutes;
+                data[kvp.Key] = entry;
             }
 
             var options = new JsonSerializerOptions
@@ -137,7 +169,7 @@ namespace SkillCheckerServer
             };
 
             string json = JsonSerializer.Serialize(data, options);
-            File.WriteAllText(_scheduleFile, json, Encoding.UTF8);
+            File.WriteAllText(_settingsFile, json, Encoding.UTF8);
         }
 
         private void HandleClient(TcpClient client)
@@ -186,20 +218,18 @@ namespace SkillCheckerServer
                 return ProtocolHelper.BuildMessage(Commands.TestsList, testNames);
             }
 
-            if (command == Commands.GetSchedules)
+            if (command == Commands.GetTestSettings)
             {
                 ReloadTestsIfNeeded();
-                LoadSchedule();
-                string scheduleData = "";
-                foreach (var kvp in _schedules)
+                LoadSettings();
+                string settingsData = "";
+                foreach (var kvp in _testSettings)
                 {
-                    if (kvp.Value != null)
-                    {
-                        if (scheduleData.Length > 0) scheduleData += "|";
-                        scheduleData += kvp.Key + "|" + kvp.Value.Value.ToString("o");
-                    }
+                    if (settingsData.Length > 0) settingsData += "|";
+                    string startTime = kvp.Value.StartTime != null ? kvp.Value.StartTime.Value.ToString("o") : "";
+                    settingsData += kvp.Key + "|" + startTime + "|" + kvp.Value.TimeMinutes.ToString();
                 }
-                return ProtocolHelper.BuildMessage(Commands.Schedules, scheduleData);
+                return ProtocolHelper.BuildMessage(Commands.TestSettingsList, settingsData);
             }
 
             if (command == Commands.GetTest && parts.Length >= 2)
@@ -207,14 +237,19 @@ namespace SkillCheckerServer
                 string testName = parts[1];
                 if (_tests.ContainsKey(testName))
                 {
-                    DateTime? schedule = _schedules.ContainsKey(testName) ? _schedules[testName] : null;
-                    if (schedule != null && DateTime.Now < schedule.Value)
+                    TestSettings? settings = _testSettings.ContainsKey(testName) ? _testSettings[testName] : null;
+                    if (settings != null && settings.StartTime != null && DateTime.Now < settings.StartTime.Value)
                     {
-                        return ProtocolHelper.BuildMessage(Commands.StartWait, schedule.Value.ToString("o"));
+                        string timeMinutes = settings.TimeMinutes.ToString();
+                        return ProtocolHelper.BuildMessage(Commands.StartWait, settings.StartTime.Value.ToString("o"), timeMinutes);
                     }
 
                     string json = ProtocolHelper.SerializeQuestionsWithoutAnswers(_tests[testName]);
-                    return ProtocolHelper.BuildMessage(Commands.TestData, json);
+
+                    int timeMinutesValue = 0;
+                    if (settings != null) timeMinutesValue = settings.TimeMinutes;
+
+                    return ProtocolHelper.BuildMessage(Commands.TestData, json, timeMinutesValue.ToString());
                 }
                 return ProtocolHelper.BuildMessage(Commands.Error, "Тест не найден");
             }
@@ -222,12 +257,13 @@ namespace SkillCheckerServer
             if (command == Commands.CheckStart && parts.Length >= 2)
             {
                 string testName = parts[1];
-                DateTime? schedule = _schedules.ContainsKey(testName) ? _schedules[testName] : null;
-                if (schedule == null || DateTime.Now >= schedule.Value)
+                TestSettings? settings = _testSettings.ContainsKey(testName) ? _testSettings[testName] : null;
+                if (settings == null || settings.StartTime == null || DateTime.Now >= settings.StartTime.Value)
                 {
                     return ProtocolHelper.BuildMessage(Commands.StartOk);
                 }
-                return ProtocolHelper.BuildMessage(Commands.StartWait, schedule.Value.ToString("o"));
+                string timeMinutes = settings.TimeMinutes.ToString();
+                return ProtocolHelper.BuildMessage(Commands.StartWait, settings.StartTime.Value.ToString("o"), timeMinutes);
             }
 
             if (command == Commands.SubmitAnswers && parts.Length >= 5)
@@ -347,7 +383,8 @@ namespace SkillCheckerServer
             int testFileCount = 0;
             for (int i = 0; i < files.Length; i++)
             {
-                if (Path.GetFileName(files[i]) != "schedule.json") testFileCount++;
+                string fileName = Path.GetFileName(files[i]);
+                if (fileName != "test_settings.json" && fileName != "schedule.json") testFileCount++;
             }
             if (testFileCount != _tests.Count)
             {
@@ -361,8 +398,20 @@ namespace SkillCheckerServer
             {
                 DateTime scheduled = DateTime.Today.Add(time.ToTimeSpan());
                 if (scheduled < DateTime.Now) scheduled = scheduled.AddDays(1);
-                _schedules[testName] = scheduled;
-                SaveSchedule();
+
+                TestSettings settings;
+                if (_testSettings.ContainsKey(testName))
+                {
+                    settings = _testSettings[testName];
+                }
+                else
+                {
+                    settings = new TestSettings();
+                }
+                settings.StartTime = scheduled;
+                _testSettings[testName] = settings;
+
+                SaveSettings();
                 Log("Запланировано: " + testName + " на " + scheduled.ToString("HH:mm"));
             }
         }
