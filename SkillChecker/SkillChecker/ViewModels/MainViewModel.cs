@@ -596,6 +596,7 @@ namespace SkillChecker.ViewModels
                 _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
             }
 
+            MessageBox.Show("Время вышло! Ответы отправлены.", "SkillChecker", MessageBoxButton.OK, MessageBoxImage.Warning);
             ShowResult();
         }
 
