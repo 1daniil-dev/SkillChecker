@@ -139,6 +139,19 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
+                                                        <TextBlock FontSize="11" Foreground="#EF4444" Margin="0,1,0,0"
+                                                                   Text="{Binding TimeMinutes, StringFormat='Лимит: {0} мин'}">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding TimeMinutes}" Value="0">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
                                                     </StackPanel>
                                                     <TextBlock Grid.Column="2" Text="{Binding ScheduleTime}" FontSize="16"
                                                                FontWeight="Bold" Foreground="#4A90D9"

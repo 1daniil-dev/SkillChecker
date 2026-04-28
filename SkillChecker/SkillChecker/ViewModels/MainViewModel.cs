@@ -442,14 +442,16 @@ namespace SkillChecker.ViewModels
                 card.Name = tests[i];
                 card.IsScheduled = false;
                 card.ScheduleTime = "";
+                card.TimeMinutes = 0;
 
                 for (int j = 0; j < scheduled.Count; j++)
                 {
                     if (scheduled[j].Name == tests[i])
                     {
-                        card.IsScheduled = true;
+                        card.TimeMinutes = scheduled[j].TimeMinutes;
                         if (scheduled[j].ScheduledTime > DateTime.Now)
                         {
+                            card.IsScheduled = true;
                             card.ScheduleTime = scheduled[j].ScheduledTime.ToString("HH:mm");
                         }
                         break;
@@ -857,16 +859,19 @@ namespace SkillChecker.ViewModels
         private string _name;
         private bool _isScheduled;
         private string _scheduleTime;
+        private int _timeMinutes;
 
         public string Name { get => _name; set => _name = value; }
         public bool IsScheduled { get => _isScheduled; set => _isScheduled = value; }
         public string ScheduleTime { get => _scheduleTime; set => _scheduleTime = value; }
+        public int TimeMinutes { get => _timeMinutes; set => _timeMinutes = value; }
 
         public TestCardItem()
         {
             _name = "";
             _isScheduled = false;
             _scheduleTime = "";
+            _timeMinutes = 0;
         }
     }
 

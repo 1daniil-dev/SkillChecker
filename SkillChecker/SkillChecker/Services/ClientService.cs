@@ -47,10 +47,9 @@ namespace SkillChecker.Services
             if (parts.Length >= 2 && parts[0] == Cmd.TestsList)
             {
                 List<string> tests = new List<string>();
-                string[] names = parts[1].Split('|');
-                for (int i = 0; i < names.Length; i++)
+                for (int i = 1; i < parts.Length; i++)
                 {
-                    string name = names[i].Trim();
+                    string name = parts[i].Trim();
                     if (name.Length > 0)
                     {
                         tests.Add(name);
