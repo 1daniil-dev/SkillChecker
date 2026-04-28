@@ -11,40 +11,48 @@
                 <!-- Auth -->
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="440"
                             Visibility="{Binding AuthVisibility}"
-                            x:Name="AuthPanel">
+                            x:Name="AuthPanel"
+                            AutomationProperties.Name="Экран авторизации">
                     <TextBlock Text="SkillChecker" FontSize="32" FontWeight="Bold" Foreground="#1E293B"
                                HorizontalAlignment="Center" Margin="0,0,0,8"
                                AutomationProperties.Name="Название приложения"/>
                     <TextBlock Text="Система тестирования учащихся" FontSize="14" Foreground="#64748B"
-                               HorizontalAlignment="Center" Margin="0,0,0,32"/>
+                               HorizontalAlignment="Center" Margin="0,0,0,32"
+                               AutomationProperties.Name="Подзаголовок"/>
 
                     <TextBlock Text="IP адрес сервера" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
                     <TextBox Text="{Binding ServerIp, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
                              VerticalContentAlignment="Center" Margin="0,0,0,10"
-                             AutomationProperties.Name="Ввод IP адреса"/>
+                             AutomationProperties.Name="IP адрес сервера"
+                             AutomationProperties.HelpText="IP адрес компьютера преподавателя"/>
 
                     <TextBlock Text="Порт" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
                     <TextBox Text="{Binding ServerPort, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
                              VerticalContentAlignment="Center" Margin="0,0,0,10"
-                             AutomationProperties.Name="Ввод порта"/>
+                             AutomationProperties.Name="Порт сервера"
+                             AutomationProperties.HelpText="Порт сервера, по умолчанию 9000"/>
 
                     <Button Content="Подключиться к серверу" Height="44" Margin="0,0,0,10"
                             Command="{Binding ConnectCommand}" Background="#E2E8F0" Foreground="#334155"
                             FontWeight="SemiBold" FontSize="14" BorderThickness="0"
-                            AutomationProperties.Name="Подключиться к серверу"/>
+                            AutomationProperties.Name="Подключиться к серверу"
+                            AutomationProperties.HelpText="Установить соединение с сервером"/>
 
                     <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="#64748B"
-                               TextWrapping="Wrap" Margin="0,0,0,18" HorizontalAlignment="Center"/>
+                               TextWrapping="Wrap" Margin="0,0,0,18" HorizontalAlignment="Center"
+                               AutomationProperties.Name="Статус подключения"/>
 
                     <TextBlock Text="ФИО студента" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
                     <TextBox Text="{Binding StudentName, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
                              VerticalContentAlignment="Center" Margin="0,0,0,10"
-                             AutomationProperties.Name="Ввод ФИО студента"/>
+                             AutomationProperties.Name="ФИО студента"
+                             AutomationProperties.HelpText="Введите полное ФИО"/>
 
                     <TextBlock Text="Учебная группа" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
                     <TextBox Text="{Binding StudentGroup, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
                              VerticalContentAlignment="Center" Margin="0,0,0,18"
-                             AutomationProperties.Name="Ввод учебной группы"/>
+                             AutomationProperties.Name="Учебная группа"
+                             AutomationProperties.HelpText="Введите номер группы"/>
 
                     <TextBlock Text="Выберите тест" FontWeight="SemiBold" FontSize="15" Foreground="#334155" Margin="0,0,0,12"/>
 
@@ -54,7 +62,8 @@
                                 <Button Margin="0,0,0,10" Padding="16,14" HorizontalContentAlignment="Stretch"
                                         Command="{Binding DataContext.SelectTestCardCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                         CommandParameter="{Binding Name}"
-                                        AutomationProperties.Name="Тест">
+                                        AutomationProperties.Name="{Binding Name}"
+                                        AutomationProperties.HelpText="Нажмите чтобы начать тест">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="cardBorder" CornerRadius="10" Padding="16,14"
@@ -168,23 +177,31 @@
                 <!-- Wait -->
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="400"
                             Visibility="{Binding WaitVisibility}"
-                            x:Name="WaitPanel">
-                    <TextBlock Text="&#x1F551;" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            x:Name="WaitPanel"
+                            AutomationProperties.Name="Экран ожидания теста">
+                    <TextBlock Text="&#x1F551;" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"
+                               AutomationProperties.Name="Иконка часов"/>
                     <TextBlock Text="{Binding WaitTestName}" FontSize="24" FontWeight="Bold" Foreground="#1E293B"
-                               HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                               HorizontalAlignment="Center" Margin="0,0,0,8"
+                               AutomationProperties.Name="Название теста"/>
                     <TextBlock Text="{Binding WaitTimeText}" FontSize="16" Foreground="#64748B"
-                               HorizontalAlignment="Center" Margin="0,0,0,24"/>
+                               HorizontalAlignment="Center" Margin="0,0,0,24"
+                               AutomationProperties.Name="Время начала теста"/>
                     <TextBlock Text="{Binding WaitCountdownText}" FontSize="48" FontWeight="Black" Foreground="#4F46E5"
                                HorizontalAlignment="Center" Margin="0,0,0,32"
-                               AutomationProperties.Name="Обратный отсчёт"/>
+                               AutomationProperties.Name="Обратный отсчёт"
+                               AutomationProperties.HelpText="Время до начала теста"
+                               AutomationProperties.LiveSetting="Polite"/>
                     <Button Content="Начать тест" Height="48" Width="260"
                             Command="{Binding StartFromWaitCommand}" Background="#4F46E5" Foreground="White"
                             FontWeight="Bold" FontSize="15" BorderThickness="0"
-                            AutomationProperties.Name="Начать тест"/>
+                            AutomationProperties.Name="Начать тест"
+                            AutomationProperties.HelpText="{Binding WaitButtonHelpText}"/>
                 </StackPanel>
 
                 <!-- Testing -->
-                <Grid Visibility="{Binding TestingVisibility}" x:Name="TestingPanel" Height="680">
+                <Grid Visibility="{Binding TestingVisibility}" x:Name="TestingPanel" Height="680"
+                      AutomationProperties.Name="Экран тестирования">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -193,7 +210,8 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8"
+                                AutomationProperties.Name="{Binding QuestionNumber, StringFormat='Вопрос {0}'}">
                         <TextBlock Text="{Binding QuestionNumber, StringFormat='Вопрос {0}'}"
                                    FontSize="14" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding TotalQuestions, StringFormat=' из {0}'}"
@@ -202,15 +220,19 @@
 
                     <ProgressBar Grid.Row="1" Height="6" Background="#E2E8F0"
                                  Foreground="#4F46E5" BorderThickness="0" Margin="0,0,0,24"
-                                 Value="{Binding ProgressValue}" Minimum="0" Maximum="100"/>
+                                 Value="{Binding ProgressValue}" Minimum="0" Maximum="100"
+                                 AutomationProperties.Name="Прогресс тестирования"/>
 
                     <TextBlock Grid.Row="2" Text="{Binding QuestionText}" FontSize="20" FontWeight="Bold"
-                               Foreground="#1E293B" TextWrapping="Wrap" Margin="0,0,0,24"/>
+                               Foreground="#1E293B" TextWrapping="Wrap" Margin="0,0,0,24"
+                               AutomationProperties.Name="Текст вопроса"/>
 
                     <ListBox Grid.Row="3" ItemsSource="{Binding CurrentOptions}"
                              SelectedIndex="{Binding SelectedOptionIndex}"
                              BorderThickness="0" Background="Transparent"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             AutomationProperties.Name="Варианты ответа"
+                             AutomationProperties.HelpText="Выберите один вариант ответа">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="Padding" Value="0"/>
@@ -247,15 +269,20 @@
                     <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
                         <Button Content="Назад" Height="48" Width="160" Margin="0,0,12,0"
                                 Command="{Binding PrevQuestionCommand}" Background="#94A3B8" Foreground="White"
-                                FontWeight="SemiBold" FontSize="15" BorderThickness="0"/>
+                                FontWeight="SemiBold" FontSize="15" BorderThickness="0"
+                                AutomationProperties.Name="Предыдущий вопрос"
+                                AutomationProperties.HelpText="Вернуться к предыдущему вопросу"/>
                         <Button Content="{Binding NextButtonText}" Height="48" Width="200"
                                 Command="{Binding NextQuestionCommand}" Background="#4F46E5" Foreground="White"
-                                FontWeight="Bold" FontSize="15" BorderThickness="0"/>
+                                FontWeight="Bold" FontSize="15" BorderThickness="0"
+                                AutomationProperties.Name="Следующий вопрос"/>
                     </StackPanel>
                 </Grid>
 
                 <!-- Review -->
-                <Grid Visibility="{Binding ReviewVisibility}" x:Name="ReviewPanel" Height="680">
+                <Grid Visibility="{Binding ReviewVisibility}" x:Name="ReviewPanel" Height="680"
+                      AutomationProperties.Name="Экран проверки ответов">
+
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -264,18 +291,23 @@
 
                     <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,24">
                         <TextBlock Text="Проверка ответов" FontSize="28" FontWeight="Bold"
-                                   Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                   Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,8"
+                                   AutomationProperties.Name="Заголовок проверки ответов"/>
                         <TextBlock Text="Нажмите на вопрос, чтобы вернуться к нему" FontSize="14" Foreground="#64748B"
-                                   HorizontalAlignment="Center"/>
+                                   HorizontalAlignment="Center"
+                                   AutomationProperties.Name="Подсказка"/>
                     </StackPanel>
 
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                                  AutomationProperties.Name="Список вопросов для проверки">
                         <ItemsControl ItemsSource="{Binding ReviewItems}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Button Margin="0,0,0,8" Padding="16,12" HorizontalContentAlignment="Stretch"
                                             Command="{Binding DataContext.GoToQuestionCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                            CommandParameter="{Binding Index}">
+                                            CommandParameter="{Binding Index}"
+                                            AutomationProperties.Name="{Binding ReviewAccessibilityName}"
+                                            AutomationProperties.HelpText="Нажмите чтобы вернуться к этому вопросу">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border x:Name="reviewBorder" CornerRadius="10" Padding="16,12"
@@ -347,12 +379,15 @@
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
                         <Button Content="Отправить результат" Height="48" Width="260"
                                 Command="{Binding SubmitCommand}" Background="#4F46E5" Foreground="White"
-                                FontWeight="Bold" FontSize="15" BorderThickness="0"/>
+                                FontWeight="Bold" FontSize="15" BorderThickness="0"
+                                AutomationProperties.Name="Отправить результат"
+                                AutomationProperties.HelpText="Отправить ответы на сервер"/>
                     </StackPanel>
                 </Grid>
 
                 <!-- Result -->
-                <Grid Visibility="{Binding ResultVisibility}" x:Name="ResultPanel" Height="680">
+                <Grid Visibility="{Binding ResultVisibility}" x:Name="ResultPanel" Height="680"
+                      AutomationProperties.Name="Экран результата тестирования">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -361,16 +396,20 @@
 
                     <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,20">
                         <TextBlock Text="Результат тестирования" FontSize="28" FontWeight="Bold"
-                                   Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                                   Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,16"
+                                   AutomationProperties.Name="Заголовок результата"/>
                         <Border Width="100" Height="100" CornerRadius="50" Background="#EEF2FF" HorizontalAlignment="Center" Margin="0,0,0,10">
                             <TextBlock Text="{Binding ResultScore}" FontSize="30" FontWeight="Black"
-                                       Foreground="#4F46E5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                       Foreground="#4F46E5" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       AutomationProperties.Name="Оценка"/>
                         </Border>
                         <TextBlock Text="{Binding ResultCorrect}" FontSize="16" Foreground="#64748B"
-                                   HorizontalAlignment="Center"/>
+                                   HorizontalAlignment="Center"
+                                   AutomationProperties.Name="Количество правильных ответов"/>
                     </StackPanel>
 
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                                  AutomationProperties.Name="Подробности ответов">
                         <ItemsControl ItemsSource="{Binding ResultItems}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -436,7 +475,9 @@
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
                         <Button Content="Начать заново" Height="44" Padding="20,0"
                                 Command="{Binding RestartCommand}" Background="#E2E8F0" Foreground="#334155"
-                                FontWeight="SemiBold" BorderThickness="0"/>
+                                FontWeight="SemiBold" BorderThickness="0"
+                                AutomationProperties.Name="Начать заново"
+                                AutomationProperties.HelpText="Вернуться к экрану авторизации"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>

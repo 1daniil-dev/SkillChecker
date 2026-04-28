@@ -41,6 +41,7 @@ namespace SkillChecker.ViewModels
         private string _waitTimeText;
         private string _waitCountdownText;
         private bool _canStartFromWait;
+        private string _waitButtonHelpText;
 
         private string _resultScore;
         private string _resultCorrect;
@@ -89,6 +90,7 @@ namespace SkillChecker.ViewModels
             _waitTimeText = "";
             _waitCountdownText = "";
             _canStartFromWait = false;
+            _waitButtonHelpText = "Кнопка станет активной когда наступит время начала теста";
 
             _resultScore = "";
             _resultCorrect = "";
@@ -242,7 +244,13 @@ namespace SkillChecker.ViewModels
         public bool CanStartFromWait
         {
             get => _canStartFromWait;
-            set { _canStartFromWait = value; OnPropertyChanged(); }
+            set { _canStartFromWait = value; OnPropertyChanged(); UpdateWaitButtonHelpText(); }
+        }
+
+        public string WaitButtonHelpText
+        {
+            get => _waitButtonHelpText;
+            set { _waitButtonHelpText = value; OnPropertyChanged(); }
         }
 
         public string ResultScore
@@ -571,6 +579,18 @@ namespace SkillChecker.ViewModels
             }
         }
 
+        private void UpdateWaitButtonHelpText()
+        {
+            if (_canStartFromWait)
+            {
+                WaitButtonHelpText = "Время наступило, нажмите чтобы начать тест";
+            }
+            else
+            {
+                WaitButtonHelpText = "Кнопка станет активной когда наступит время начала теста";
+            }
+        }
+
         private bool CheckCanStartFromWait(object? parameter)
         {
             return _canStartFromWait;
@@ -668,6 +688,7 @@ namespace SkillChecker.ViewModels
                 item.QuestionText = _questions[i].Text;
                 item.IsAnswered = _selectedAnswers[i] >= 0;
                 item.Index = i;
+                item.ReviewAccessibilityName = "Вопрос " + (i + 1) + ": " + _questions[i].Text + (_selectedAnswers[i] >= 0 ? ", отвечен" : ", не отвечен");
                 items.Add(item);
 
                 if (_selectedAnswers[i] >= 0)
@@ -765,11 +786,13 @@ namespace SkillChecker.ViewModels
         private string _questionText;
         private bool _isAnswered;
         private int _index;
+        private string _accessibilityName;
 
         public string Number { get => _number; set => _number = value; }
         public string QuestionText { get => _questionText; set => _questionText = value; }
         public bool IsAnswered { get => _isAnswered; set => _isAnswered = value; }
         public int Index { get => _index; set => _index = value; }
+        public string ReviewAccessibilityName { get => _accessibilityName; set => _accessibilityName = value; }
 
         public ReviewItem()
         {
@@ -777,6 +800,7 @@ namespace SkillChecker.ViewModels
             _questionText = "";
             _isAnswered = false;
             _index = 0;
+            _accessibilityName = "";
         }
     }
 
