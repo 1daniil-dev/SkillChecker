@@ -166,8 +166,8 @@
                                                 BorderThickness="1.5" Cursor="Hand">
                                             <Border.Style>
                                                 <Style TargetType="Border">
-                                                    <Setter Property="Background" Value="White"/>
-                                                    <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                                                    <Setter Property="Background" Value="#F8FAFC"/>
+                                                    <Setter Property="BorderBrush" Value="#CBD5E1"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsAnswered}" Value="True">
                                                             <Setter Property="BorderBrush" Value="#86EFAC"/>
@@ -186,7 +186,7 @@
                                                         HorizontalAlignment="Center" VerticalAlignment="Center">
                                                     <Border.Style>
                                                         <Style TargetType="Border">
-                                                            <Setter Property="Background" Value="#FCA5A5"/>
+                                                            <Setter Property="Background" Value="#CBD5E1"/>
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding IsAnswered}" Value="True">
                                                                     <Setter Property="Background" Value="#86EFAC"/>
@@ -202,7 +202,7 @@
                                                 <TextBlock Grid.Column="2" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="#EF4444"/>
+                                                            <Setter Property="Foreground" Value="#94A3B8"/>
                                                             <Setter Property="Text" Value="Не отвечен"/>
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding IsAnswered}" Value="True">
@@ -229,11 +229,7 @@
             </ScrollViewer>
 
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                <Button Content="Назад к тесту" Height="48" Width="180" Margin="0,0,12,0"
-                        Command="{Binding PrevQuestionCommand}" Background="#94A3B8" Foreground="White"
-                        FontWeight="SemiBold" FontSize="15" BorderThickness="0"
-                        AutomationProperties.Name="Вернуться к тесту"/>
-                <Button Content="Отправить результат" Height="48" Width="220"
+                <Button Content="Отправить результат" Height="48" Width="260"
                         Command="{Binding SubmitCommand}" Background="#4F46E5" Foreground="White"
                         FontWeight="Bold" FontSize="15" BorderThickness="0"
                         AutomationProperties.Name="Отправить результат"/>

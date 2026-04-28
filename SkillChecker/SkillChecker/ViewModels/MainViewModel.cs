@@ -347,12 +347,15 @@ namespace SkillChecker.ViewModels
 
         private bool CanNextQuestion(object? parameter)
         {
-            return SelectedOptionIndex >= 0;
+            return true;
         }
 
         private void ExecuteNextQuestion(object? parameter)
         {
-            _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
+            if (SelectedOptionIndex >= 0)
+            {
+                _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
+            }
 
             if (_currentQuestionIndex < _questions.Count - 1)
             {
@@ -371,7 +374,10 @@ namespace SkillChecker.ViewModels
 
         private void ExecutePrevQuestion(object? parameter)
         {
-            _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
+            if (SelectedOptionIndex >= 0)
+            {
+                _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
+            }
             ShowQuestion(_currentQuestionIndex - 1);
         }
 
@@ -381,7 +387,10 @@ namespace SkillChecker.ViewModels
             {
                 if (index >= 0 && index < _questions.Count)
                 {
-                    _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
+                    if (SelectedOptionIndex >= 0)
+                    {
+                        _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
+                    }
                     ShowQuestion(index);
                     AppState = "Testing";
                 }
@@ -390,7 +399,6 @@ namespace SkillChecker.ViewModels
 
         private void ExecuteSubmit(object? parameter)
         {
-            _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
             ShowResult();
         }
 
@@ -403,15 +411,7 @@ namespace SkillChecker.ViewModels
             SelectedOptionIndex = _selectedAnswers[index];
             QuestionNumber = index + 1;
             CanGoBack = index > 0;
-
-            if (index < _questions.Count - 1)
-            {
-                NextButtonText = "Далее";
-            }
-            else
-            {
-                NextButtonText = "Завершить тест";
-            }
+            NextButtonText = "Далее";
 
             if (_questions.Count > 0)
             {
