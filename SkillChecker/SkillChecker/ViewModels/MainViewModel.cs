@@ -132,6 +132,7 @@ namespace SkillChecker.ViewModels
             _resultVisibility = Visibility.Collapsed;
 
             ConnectCommand = new RelayCommand(ExecuteConnect);
+            RefreshCommand = new RelayCommand(ExecuteRefresh, CanRefresh);
             StartTestCommand = new RelayCommand(ExecuteStartTest, CanStartTest);
             NextQuestionCommand = new RelayCommand(ExecuteNextQuestion, CanNextQuestion);
             PrevQuestionCommand = new RelayCommand(ExecutePrevQuestion, CanPrevQuestion);
@@ -385,6 +386,7 @@ namespace SkillChecker.ViewModels
         }
 
         public RelayCommand ConnectCommand { get; private set; }
+        public RelayCommand RefreshCommand { get; private set; }
         public RelayCommand StartTestCommand { get; private set; }
         public RelayCommand NextQuestionCommand { get; private set; }
         public RelayCommand PrevQuestionCommand { get; private set; }
@@ -484,6 +486,45 @@ namespace SkillChecker.ViewModels
                 IsConnected = false;
                 TestCountText = "";
                 StatusMessage = "Ошибка подключения: " + ex.Message;
+            }
+        }
+
+        private bool CanRefresh(object? parameter)
+        {
+            return _isConnected;
+        }
+
+        private void ExecuteRefresh(object? parameter)
+        {
+            try
+            {
+                List<string> tests = _clientService.GetTestList();
+                TestNames = tests;
+
+                List<ScheduledTest> scheduled = _clientService.GetScheduledTests();
+                ScheduledTests = scheduled;
+
+                BuildTestCards(tests, scheduled);
+
+                if (tests.Count > 0)
+                {
+                    TestCountText = "Доступно тестов: " + tests.Count;
+                }
+                else
+                {
+                    TestCountText = "Тестов нет";
+                }
+
+                if (scheduled.Count > 0)
+                {
+                    TestCountText += " | Запланировано: " + scheduled.Count;
+                }
+
+                StatusMessage = "Данные обновлены";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "Ошибка обновления: " + ex.Message;
             }
         }
 

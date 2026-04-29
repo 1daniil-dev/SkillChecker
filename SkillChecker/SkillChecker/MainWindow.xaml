@@ -32,11 +32,18 @@
                              AutomationProperties.Name="Порт сервера"
                              AutomationProperties.HelpText="Порт сервера, по умолчанию 9000"/>
 
-                    <Button Content="Подключиться к серверу" Height="44" Margin="0,0,0,10"
-                            Command="{Binding ConnectCommand}" Background="#E2E8F0" Foreground="#334155"
-                            FontWeight="SemiBold" FontSize="14" BorderThickness="0"
-                            AutomationProperties.Name="Подключиться к серверу"
-                            AutomationProperties.HelpText="Установить соединение с сервером"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                        <Button Content="Подключиться к серверу" Height="44" Padding="20,0" Margin="0,0,8,0"
+                                Command="{Binding ConnectCommand}" Background="#E2E8F0" Foreground="#334155"
+                                FontWeight="SemiBold" FontSize="14" BorderThickness="0"
+                                AutomationProperties.Name="Подключиться к серверу"
+                                AutomationProperties.HelpText="Установить соединение с сервером"/>
+                        <Button Content="Обновить" Height="44" Padding="16,0"
+                                Command="{Binding RefreshCommand}" Background="#4F46E5" Foreground="White"
+                                FontWeight="SemiBold" FontSize="14" BorderThickness="0"
+                                AutomationProperties.Name="Обновить список тестов"
+                                AutomationProperties.HelpText="Обновить список тестов и расписание с сервера"/>
+                    </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,18"
                                 AutomationProperties.Name="Статус подключения">
