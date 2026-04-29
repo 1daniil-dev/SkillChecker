@@ -319,8 +319,10 @@
                                  Value="{Binding ProgressValue}" Minimum="0" Maximum="100"
                                  AutomationProperties.Name="Прогресс тестирования"/>
 
+                    <TextBlock Grid.Row="2" Text="{Binding QuestionTypeHint}" FontSize="14" Foreground="#94A3B8"
+                               Margin="0,0,0,6" AutomationProperties.Name="Тип вопроса"/>
                     <TextBlock Grid.Row="2" Text="{Binding QuestionText}" FontSize="20" FontWeight="Bold"
-                               Foreground="#1E293B" TextWrapping="Wrap" Margin="0,0,0,24"
+                               Foreground="#1E293B" TextWrapping="Wrap" Margin="0,18,0,24"
                                AutomationProperties.Name="Текст вопроса"/>
 
                     <ListBox Grid.Row="3" ItemsSource="{Binding CurrentOptions}"

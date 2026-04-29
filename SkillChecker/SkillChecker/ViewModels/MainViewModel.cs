@@ -35,6 +35,7 @@ namespace SkillChecker.ViewModels
         private List<TestCardItem> _testCards;
 
         private string _questionText;
+        private string _questionTypeHint;
         private List<OptionItem> _currentOptions;
         private int _selectedOptionIndex;
         private bool _isCurrentMultiple;
@@ -101,6 +102,7 @@ namespace SkillChecker.ViewModels
             _testCards = new List<TestCardItem>();
 
             _questionText = "";
+            _questionTypeHint = "";
             _currentOptions = new List<OptionItem>();
             _selectedOptionIndex = -1;
             _isCurrentMultiple = false;
@@ -234,6 +236,12 @@ namespace SkillChecker.ViewModels
         {
             get => _questionText;
             set { _questionText = value; OnPropertyChanged(); }
+        }
+
+        public string QuestionTypeHint
+        {
+            get => _questionTypeHint;
+            set { _questionTypeHint = value; OnPropertyChanged(); }
         }
 
         public List<OptionItem> CurrentOptions
@@ -920,6 +928,7 @@ namespace SkillChecker.ViewModels
             Question q = _questions[index];
             QuestionText = q.Text;
             IsCurrentMultiple = q.Type == "Multiple";
+            QuestionTypeHint = _isCurrentMultiple ? "Выберите несколько вариантов ответа" : "Выберите один вариант ответа";
 
             List<int> savedAnswers = _selectedAnswers[index];
 
