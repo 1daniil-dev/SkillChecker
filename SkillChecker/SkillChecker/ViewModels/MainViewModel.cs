@@ -28,6 +28,8 @@ namespace SkillChecker.ViewModels
         private string _statusMessage;
         private bool _isConnected;
         private string _testCountText;
+        private bool _isNameError;
+        private bool _isGroupError;
         private List<string> _testNames;
         private List<ScheduledTest> _scheduledTests;
         private List<TestCardItem> _testCards;
@@ -89,6 +91,8 @@ namespace SkillChecker.ViewModels
             _statusMessage = "Введите IP сервера и подключитесь";
             _isConnected = false;
             _testCountText = "";
+            _isNameError = false;
+            _isGroupError = false;
             _testNames = new List<string>();
             _scheduledTests = new List<ScheduledTest>();
             _testCards = new List<TestCardItem>();
@@ -155,13 +159,13 @@ namespace SkillChecker.ViewModels
         public string StudentName
         {
             get => _studentName;
-            set { _studentName = value; OnPropertyChanged(); }
+            set { _studentName = value; IsNameError = false; OnPropertyChanged(); }
         }
 
         public string StudentGroup
         {
             get => _studentGroup;
-            set { _studentGroup = value; OnPropertyChanged(); }
+            set { _studentGroup = value; IsGroupError = false; OnPropertyChanged(); }
         }
 
         public string StatusMessage
@@ -180,6 +184,18 @@ namespace SkillChecker.ViewModels
         {
             get => _testCountText;
             set { _testCountText = value; OnPropertyChanged(); }
+        }
+
+        public bool IsNameError
+        {
+            get => _isNameError;
+            set { _isNameError = value; OnPropertyChanged(); }
+        }
+
+        public bool IsGroupError
+        {
+            get => _isGroupError;
+            set { _isGroupError = value; OnPropertyChanged(); }
         }
 
         public List<string> TestNames
@@ -506,9 +522,14 @@ namespace SkillChecker.ViewModels
                 {
                     if (string.IsNullOrWhiteSpace(StudentName) || string.IsNullOrWhiteSpace(StudentGroup))
                     {
+                        IsNameError = string.IsNullOrWhiteSpace(StudentName);
+                        IsGroupError = string.IsNullOrWhiteSpace(StudentGroup);
                         StatusMessage = "Введите ФИО и группу перед началом теста";
                         return;
                     }
+
+                    IsNameError = false;
+                    IsGroupError = false;
 
                     _selectedTestName = testName;
 

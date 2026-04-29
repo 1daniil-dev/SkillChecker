@@ -74,13 +74,39 @@
                     <TextBox Text="{Binding StudentName, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
                              VerticalContentAlignment="Center" Margin="0,0,0,10"
                              AutomationProperties.Name="ФИО студента"
-                             AutomationProperties.HelpText="Введите полное ФИО"/>
+                             AutomationProperties.HelpText="Введите полное ФИО">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsNameError}" Value="True">
+                                        <Setter Property="BorderBrush" Value="#EF4444"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
 
                     <TextBlock Text="Учебная группа" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
                     <TextBox Text="{Binding StudentGroup, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
                              VerticalContentAlignment="Center" Margin="0,0,0,18"
                              AutomationProperties.Name="Учебная группа"
-                             AutomationProperties.HelpText="Введите номер группы"/>
+                             AutomationProperties.HelpText="Введите номер группы">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsGroupError}" Value="True">
+                                        <Setter Property="BorderBrush" Value="#EF4444"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
 
                     <TextBlock Text="Выберите тест" FontWeight="SemiBold" FontSize="15" Foreground="#334155" Margin="0,0,0,12"/>
 
