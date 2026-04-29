@@ -124,6 +124,12 @@ namespace SkillCheckerServer
                             {
                                 settings.TimeMinutes = timeElem.GetInt32();
                             }
+
+                            JsonElement visibleElem;
+                            if (kvp.Value.TryGetProperty("Visible", out visibleElem) && (visibleElem.ValueKind == JsonValueKind.True || visibleElem.ValueKind == JsonValueKind.False))
+                            {
+                                settings.Visible = visibleElem.GetBoolean();
+                            }
                         }
                         else if (kvp.Value.ValueKind == JsonValueKind.String)
                         {
@@ -159,6 +165,7 @@ namespace SkillCheckerServer
                     entry["StartTime"] = "";
                 }
                 entry["TimeMinutes"] = kvp.Value.TimeMinutes;
+                entry["Visible"] = kvp.Value.Visible;
                 data[kvp.Key] = entry;
             }
 
@@ -212,6 +219,10 @@ namespace SkillCheckerServer
                 string testNames = "";
                 foreach (var kvp in _tests)
                 {
+                    if (_testSettings.ContainsKey(kvp.Key) && !_testSettings[kvp.Key].Visible)
+                    {
+                        continue;
+                    }
                     if (testNames.Length > 0) testNames += "|";
                     testNames += kvp.Key;
                 }
@@ -225,6 +236,10 @@ namespace SkillCheckerServer
                 string settingsData = "";
                 foreach (var kvp in _testSettings)
                 {
+                    if (!kvp.Value.Visible)
+                    {
+                        continue;
+                    }
                     if (settingsData.Length > 0) settingsData += "|";
                     string startTime = kvp.Value.StartTime != null ? kvp.Value.StartTime.Value.ToString("o") : "";
                     settingsData += kvp.Key + "|" + startTime + "|" + kvp.Value.TimeMinutes.ToString();
@@ -237,6 +252,11 @@ namespace SkillCheckerServer
                 string testName = parts[1];
                 if (_tests.ContainsKey(testName))
                 {
+                    if (_testSettings.ContainsKey(testName) && !_testSettings[testName].Visible)
+                    {
+                        return ProtocolHelper.BuildMessage(Commands.Error, "Тест недоступен");
+                    }
+
                     TestSettings? settings = _testSettings.ContainsKey(testName) ? _testSettings[testName] : null;
                     if (settings != null && settings.StartTime != null && DateTime.Now < settings.StartTime.Value)
                     {
@@ -257,6 +277,10 @@ namespace SkillCheckerServer
             if (command == Commands.CheckStart && parts.Length >= 2)
             {
                 string testName = parts[1];
+                if (_testSettings.ContainsKey(testName) && !_testSettings[testName].Visible)
+                {
+                    return ProtocolHelper.BuildMessage(Commands.Error, "Тест недоступен");
+                }
                 TestSettings? settings = _testSettings.ContainsKey(testName) ? _testSettings[testName] : null;
                 if (settings == null || settings.StartTime == null || DateTime.Now >= settings.StartTime.Value)
                 {

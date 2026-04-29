@@ -5,7 +5,7 @@ window.onload = function () {
 };
 
 function showTab(name) {
-    var tabs = ["tests", "schedule", "results"];
+    var tabs = ["tests", "results"];
     for (var i = 0; i < tabs.length; i++) {
         document.getElementById("tab-" + tabs[i]).classList.add("hidden");
     }
@@ -19,9 +19,6 @@ function showTab(name) {
     event.target.classList.add("active");
     event.target.setAttribute("aria-selected", "true");
 
-    if (name === "schedule") {
-        loadSettings();
-    }
     if (name === "results") {
         loadResults();
     }
@@ -40,40 +37,153 @@ function loadTests() {
                 return;
             }
 
+            var visibleTests = [];
+            var hiddenTests = [];
             for (var i = 0; i < tests.length; i++) {
+                if (tests[i].Visible) {
+                    visibleTests.push(tests[i]);
+                } else {
+                    hiddenTests.push(tests[i]);
+                }
+            }
+
+            var sorted = [];
+            for (var i = 0; i < visibleTests.length; i++) sorted.push(visibleTests[i]);
+            for (var i = 0; i < hiddenTests.length; i++) sorted.push(hiddenTests[i]);
+
+            for (var i = 0; i < sorted.length; i++) {
+                var test = sorted[i];
                 var card = document.createElement("div");
                 card.className = "test-card";
+                if (!test.Visible) card.classList.add("test-hidden");
+                if (test.HasSettings) card.classList.add("test-scheduled");
                 card.setAttribute("role", "listitem");
-                card.setAttribute("aria-label", "Тест " + tests[i].Name + ", " + tests[i].QuestionCount + " вопросов");
+                card.setAttribute("aria-label", "Тест " + test.Name + ", " + test.QuestionCount + " вопросов");
+
+                var mainRow = document.createElement("div");
+                mainRow.className = "test-main-row";
+
+                var toggleLabel = document.createElement("label");
+                toggleLabel.className = "toggle";
+                var toggleInput = document.createElement("input");
+                toggleInput.type = "checkbox";
+                toggleInput.checked = test.Visible;
+                toggleInput.setAttribute("data-name", test.Name);
+                toggleInput.setAttribute("aria-label", "Видимость теста " + test.Name);
+                toggleInput.onchange = function () {
+                    toggleVisibility(this.getAttribute("data-name"), this.checked);
+                };
+                var toggleSpan = document.createElement("span");
+                toggleSpan.className = "toggle-slider";
+                toggleLabel.appendChild(toggleInput);
+                toggleLabel.appendChild(toggleSpan);
+                mainRow.appendChild(toggleLabel);
 
                 var info = document.createElement("div");
+                info.className = "test-info";
+
                 var nameSpan = document.createElement("div");
                 nameSpan.className = "test-name";
-                nameSpan.textContent = tests[i].Name;
+                nameSpan.textContent = test.Name;
                 info.appendChild(nameSpan);
 
                 var countSpan = document.createElement("div");
                 countSpan.className = "test-count";
-                countSpan.textContent = tests[i].QuestionCount + " вопросов";
+                countSpan.textContent = test.QuestionCount + " вопросов";
                 info.appendChild(countSpan);
 
-                card.appendChild(info);
+                mainRow.appendChild(info);
+
+                var statusBadge = document.createElement("span");
+                statusBadge.className = "status-badge";
+                if (test.Visible) {
+                    if (test.HasSettings) {
+                        statusBadge.className += " badge-scheduled";
+                        statusBadge.textContent = "Запланирован";
+                    } else {
+                        statusBadge.className += " badge-available";
+                        statusBadge.textContent = "Доступен";
+                    }
+                } else {
+                    statusBadge.className += " badge-hidden";
+                    statusBadge.textContent = "Скрыт";
+                }
+                mainRow.appendChild(statusBadge);
 
                 var actions = document.createElement("div");
                 actions.className = "test-actions";
+
+                var configBtn = document.createElement("button");
+                configBtn.className = "btn-configure";
+                configBtn.textContent = "Настроить";
+                configBtn.setAttribute("data-name", test.Name);
+                configBtn.setAttribute("data-visible", test.Visible ? "true" : "false");
+                configBtn.setAttribute("aria-label", "Настроить тест " + test.Name);
+                configBtn.onclick = function () {
+                    openSettingsForTest(this.getAttribute("data-name"));
+                };
+                actions.appendChild(configBtn);
+
                 var delBtn = document.createElement("button");
                 delBtn.textContent = "Удалить";
-                delBtn.setAttribute("data-name", tests[i].Name);
-                delBtn.setAttribute("aria-label", "Удалить тест " + tests[i].Name);
+                delBtn.setAttribute("data-name", test.Name);
+                delBtn.setAttribute("aria-label", "Удалить тест " + test.Name);
                 delBtn.onclick = function () {
                     deleteTest(this.getAttribute("data-name"));
                 };
                 actions.appendChild(delBtn);
-                card.appendChild(actions);
+
+                mainRow.appendChild(actions);
+                card.appendChild(mainRow);
+
+                if (test.HasSettings) {
+                    var settingsRow = document.createElement("div");
+                    settingsRow.className = "test-settings-row";
+
+                    var details = [];
+                    if (test.DisplayTime && test.DisplayTime.length > 0) {
+                        details.push("Начало: " + test.DisplayTime);
+                    }
+                    if (test.TimeMinutes > 0) {
+                        details.push("Лимит: " + test.TimeMinutes + " мин");
+                    }
+                    if (details.length === 0) {
+                        details.push("Без ограничений");
+                    }
+
+                    var settingsText = document.createElement("span");
+                    settingsText.className = "test-settings-text";
+                    settingsText.textContent = details.join(" | ");
+                    settingsRow.appendChild(settingsText);
+
+                    var deleteSettingsBtn = document.createElement("button");
+                    deleteSettingsBtn.className = "btn-delete-settings";
+                    deleteSettingsBtn.textContent = "Удалить настройку";
+                    deleteSettingsBtn.setAttribute("data-name", test.Name);
+                    deleteSettingsBtn.setAttribute("aria-label", "Удалить настройки теста " + test.Name);
+                    deleteSettingsBtn.onclick = function () {
+                        deleteSettings(this.getAttribute("data-name"));
+                    };
+                    settingsRow.appendChild(deleteSettingsBtn);
+
+                    card.appendChild(settingsRow);
+                }
 
                 div.appendChild(card);
             }
         });
+}
+
+function toggleVisibility(testName, visible) {
+    fetch("/api/settings/" + encodeURIComponent(testName) + "/visibility", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Visible: visible })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+        loadTests();
+    });
 }
 
 function showUpload() {
@@ -129,30 +239,76 @@ function deleteTest(name) {
     });
 }
 
-function showScheduleForm() {
+function deleteSettings(testName) {
+    if (!confirm("Удалить настройки для \"" + testName + "\"?")) return;
+
+    fetch("/api/settings/" + encodeURIComponent(testName), {
+        method: "DELETE"
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+        loadTests();
+    });
+}
+
+function openSettingsForTest(testName) {
     var select = document.getElementById("scheduleTestSelect");
     select.innerHTML = '<option value="">Выберите тест</option>';
     for (var i = 0; i < allTests.length; i++) {
         var opt = document.createElement("option");
         opt.value = allTests[i].Name;
         opt.textContent = allTests[i].Name;
+        if (allTests[i].Name === testName) opt.selected = true;
         select.appendChild(opt);
     }
 
-    var now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    document.getElementById("scheduleTime").value = now.toISOString().slice(0, 16);
-    document.getElementById("timeLimit").value = "0";
+    var test = null;
+    for (var i = 0; i < allTests.length; i++) {
+        if (allTests[i].Name === testName) {
+            test = allTests[i];
+            break;
+        }
+    }
 
-    document.getElementById("scheduleForm").classList.remove("hidden");
+    if (test && test.HasSettings && test.DisplayTime && test.DisplayTime.length > 0) {
+        var dateObj = null;
+        for (var i = 0; i < allTests.length; i++) {
+            if (allTests[i].Name === testName) {
+                fetch("/api/settings")
+                    .then(function (r) { return r.json(); })
+                    .then(function (items) {
+                        for (var j = 0; j < items.length; j++) {
+                            if (items[j].TestName === testName) {
+                                if (items[j].StartTime && items[j].StartTime.length > 0) {
+                                    var d = new Date(items[j].StartTime);
+                                    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+                                    document.getElementById("scheduleTime").value = d.toISOString().slice(0, 16);
+                                }
+                                document.getElementById("timeLimit").value = items[j].TimeMinutes;
+                                break;
+                            }
+                        }
+                    });
+                break;
+            }
+        }
+    } else {
+        var now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById("scheduleTime").value = now.toISOString().slice(0, 16);
+        document.getElementById("timeLimit").value = "0";
+    }
+
+    document.getElementById("settingsFormTitle").textContent = "Настройка: " + testName;
+    document.getElementById("settingsForm").classList.remove("hidden");
     select.focus();
 }
 
-function hideScheduleForm() {
-    document.getElementById("scheduleForm").classList.add("hidden");
+function hideSettingsForm() {
+    document.getElementById("settingsForm").classList.add("hidden");
 }
 
-function scheduleTest() {
+function saveSettings() {
     var testName = document.getElementById("scheduleTestSelect").value;
     var time = document.getElementById("scheduleTime").value;
     var timeLimit = parseInt(document.getElementById("timeLimit").value) || 0;
@@ -170,89 +326,9 @@ function scheduleTest() {
     .then(function (r) { return r.json(); })
     .then(function (data) {
         if (data.ok) {
-            hideScheduleForm();
-            loadSettings();
+            hideSettingsForm();
+            loadTests();
         }
-    });
-}
-
-function loadSettings() {
-    fetch("/api/settings")
-        .then(function (r) { return r.json(); })
-        .then(function (items) {
-            var div = document.getElementById("scheduleList");
-            div.innerHTML = "";
-
-            if (items.length === 0) {
-                div.innerHTML = '<div class="empty" role="status">Нет настроек тестов</div>';
-                return;
-            }
-
-            for (var i = 0; i < items.length; i++) {
-                var card = document.createElement("div");
-                card.className = "schedule-card";
-                card.setAttribute("role", "listitem");
-
-                var info = document.createElement("div");
-                info.className = "schedule-info";
-
-                var icon = document.createElement("span");
-                icon.className = "schedule-icon";
-                icon.textContent = "\u{1F4CB}";
-                icon.setAttribute("aria-hidden", "true");
-                info.appendChild(icon);
-
-                var textDiv = document.createElement("div");
-                var nameDiv = document.createElement("div");
-                nameDiv.className = "schedule-test-name";
-                nameDiv.textContent = items[i].TestName;
-                textDiv.appendChild(nameDiv);
-
-                var details = [];
-                if (items[i].DisplayTime && items[i].DisplayTime.length > 0) {
-                    details.push("Начало: " + items[i].DisplayTime);
-                }
-                if (items[i].TimeMinutes > 0) {
-                    details.push("Лимит: " + items[i].TimeMinutes + " мин");
-                }
-                if (details.length === 0) {
-                    details.push("Без ограничений");
-                }
-
-                var timeDiv = document.createElement("div");
-                timeDiv.className = "schedule-time";
-                timeDiv.textContent = details.join(" | ");
-                textDiv.appendChild(timeDiv);
-
-                info.appendChild(textDiv);
-                card.appendChild(info);
-
-                var actions = document.createElement("div");
-                actions.className = "schedule-actions";
-                var delBtn = document.createElement("button");
-                delBtn.textContent = "Удалить";
-                delBtn.setAttribute("data-name", items[i].TestName);
-                delBtn.setAttribute("aria-label", "Удалить настройки теста " + items[i].TestName);
-                delBtn.onclick = function () {
-                    deleteSettings(this.getAttribute("data-name"));
-                };
-                actions.appendChild(delBtn);
-                card.appendChild(actions);
-
-                div.appendChild(card);
-            }
-        });
-}
-
-function deleteSettings(testName) {
-    if (!confirm("Удалить настройки для \"" + testName + "\"?")) return;
-
-    fetch("/api/settings/" + encodeURIComponent(testName), {
-        method: "DELETE"
-    })
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-        loadSettings();
     });
 }
 

@@ -22,6 +22,19 @@ app.MapGet("/api/tests", () =>
     Directory.CreateDirectory(testsFolder);
     string[] files = Directory.GetFiles(testsFolder, "*.json");
     List<object> list = new List<object>();
+
+    Dictionary<string, JsonElement> settingsData = new Dictionary<string, JsonElement>();
+    if (File.Exists(settingsFile))
+    {
+        string settingsJson = File.ReadAllText(settingsFile, Encoding.UTF8);
+        var sOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        Dictionary<string, JsonElement>? loaded = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(settingsJson, sOptions);
+        if (loaded != null)
+        {
+            settingsData = loaded;
+        }
+    }
+
     for (int i = 0; i < files.Length; i++)
     {
         string fileName = Path.GetFileName(files[i]);
@@ -32,7 +45,41 @@ app.MapGet("/api/tests", () =>
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         List<Question>? questions = JsonSerializer.Deserialize<List<Question>>(json, options);
         int count = questions != null ? questions.Count : 0;
-        list.Add(new { Name = name, QuestionCount = count });
+
+        bool visible = true;
+        string displayTime = "";
+        int timeMinutes = 0;
+        bool hasSettings = false;
+
+        JsonElement settingsElem;
+        if (settingsData.TryGetValue(name, out settingsElem) && settingsElem.ValueKind == JsonValueKind.Object)
+        {
+            hasSettings = true;
+
+            JsonElement startElem;
+            if (settingsElem.TryGetProperty("StartTime", out startElem) && startElem.ValueKind == JsonValueKind.String)
+            {
+                string startTime = startElem.GetString() ?? "";
+                if (startTime.Length > 0 && DateTime.TryParse(startTime, out DateTime dt))
+                {
+                    displayTime = dt.ToString("dd.MM.yyyy HH:mm");
+                }
+            }
+
+            JsonElement timeElem;
+            if (settingsElem.TryGetProperty("TimeMinutes", out timeElem) && timeElem.ValueKind == JsonValueKind.Number)
+            {
+                timeMinutes = timeElem.GetInt32();
+            }
+
+            JsonElement visibleElem;
+            if (settingsElem.TryGetProperty("Visible", out visibleElem) && (visibleElem.ValueKind == JsonValueKind.True || visibleElem.ValueKind == JsonValueKind.False))
+            {
+                visible = visibleElem.GetBoolean();
+            }
+        }
+
+        list.Add(new { Name = name, QuestionCount = count, Visible = visible, HasSettings = hasSettings, DisplayTime = displayTime, TimeMinutes = timeMinutes });
     }
     return Results.Json(list);
 });
@@ -75,6 +122,7 @@ app.MapGet("/api/settings", () =>
     {
         string startTime = "";
         int timeMinutes = 0;
+        bool visible = true;
 
         if (kvp.Value.ValueKind == JsonValueKind.Object)
         {
@@ -89,6 +137,12 @@ app.MapGet("/api/settings", () =>
             {
                 timeMinutes = timeElem.GetInt32();
             }
+
+            JsonElement visibleElem;
+            if (kvp.Value.TryGetProperty("Visible", out visibleElem) && (visibleElem.ValueKind == JsonValueKind.True || visibleElem.ValueKind == JsonValueKind.False))
+            {
+                visible = visibleElem.GetBoolean();
+            }
         }
         else if (kvp.Value.ValueKind == JsonValueKind.String)
         {
@@ -101,7 +155,7 @@ app.MapGet("/api/settings", () =>
             displayTime = dt.ToString("dd.MM.yyyy HH:mm");
         }
 
-        list.Add(new { TestName = kvp.Key, StartTime = startTime, DisplayTime = displayTime, TimeMinutes = timeMinutes });
+        list.Add(new { TestName = kvp.Key, StartTime = startTime, DisplayTime = displayTime, TimeMinutes = timeMinutes, Visible = visible });
     }
     return Results.Json(list);
 });
@@ -139,6 +193,14 @@ app.MapPost("/api/settings", (SettingsRequest req) =>
                     }
                     entry["TimeMinutes"] = tm;
 
+                    JsonElement visibleElem;
+                    bool vis = true;
+                    if (kvp.Value.TryGetProperty("Visible", out visibleElem) && (visibleElem.ValueKind == JsonValueKind.True || visibleElem.ValueKind == JsonValueKind.False))
+                    {
+                        vis = visibleElem.GetBoolean();
+                    }
+                    entry["Visible"] = vis;
+
                     data[kvp.Key] = entry;
                 }
                 else if (kvp.Value.ValueKind == JsonValueKind.String)
@@ -146,23 +208,44 @@ app.MapPost("/api/settings", (SettingsRequest req) =>
                     Dictionary<string, object> entry = new Dictionary<string, object>();
                     entry["StartTime"] = kvp.Value.GetString() ?? "";
                     entry["TimeMinutes"] = 0;
+                    entry["Visible"] = true;
                     data[kvp.Key] = entry;
                 }
             }
         }
     }
 
-    Dictionary<string, object> newEntry = new Dictionary<string, object>();
-    if (req.StartTime.Length > 0 && DateTime.TryParse(req.StartTime, out DateTime scheduled))
+    if (data.ContainsKey(req.TestName))
     {
-        newEntry["StartTime"] = scheduled.ToString("o");
+        Dictionary<string, object> existingEntry = (Dictionary<string, object>)data[req.TestName];
+        Dictionary<string, object> newEntry = new Dictionary<string, object>();
+        if (req.StartTime.Length > 0 && DateTime.TryParse(req.StartTime, out DateTime scheduled))
+        {
+            newEntry["StartTime"] = scheduled.ToString("o");
+        }
+        else
+        {
+            newEntry["StartTime"] = existingEntry.ContainsKey("StartTime") ? existingEntry["StartTime"] : "";
+        }
+        newEntry["TimeMinutes"] = req.TimeMinutes;
+        newEntry["Visible"] = existingEntry.ContainsKey("Visible") ? existingEntry["Visible"] : true;
+        data[req.TestName] = newEntry;
     }
     else
     {
-        newEntry["StartTime"] = "";
+        Dictionary<string, object> newEntry = new Dictionary<string, object>();
+        if (req.StartTime.Length > 0 && DateTime.TryParse(req.StartTime, out DateTime scheduled))
+        {
+            newEntry["StartTime"] = scheduled.ToString("o");
+        }
+        else
+        {
+            newEntry["StartTime"] = "";
+        }
+        newEntry["TimeMinutes"] = req.TimeMinutes;
+        newEntry["Visible"] = true;
+        data[req.TestName] = newEntry;
     }
-    newEntry["TimeMinutes"] = req.TimeMinutes;
-    data[req.TestName] = newEntry;
 
     var jsonOptions = new JsonSerializerOptions
     {
@@ -199,6 +282,87 @@ app.MapDelete("/api/settings/{testName}", (string testName) =>
         string outJson = JsonSerializer.Serialize(data, jsonOptions);
         File.WriteAllText(settingsFile, outJson, Encoding.UTF8);
     }
+
+    return Results.Json(new { ok = true });
+});
+
+app.MapPatch("/api/settings/{testName}/visibility", (string testName, VisibilityRequest req) =>
+{
+    Directory.CreateDirectory(testsFolder);
+
+    Dictionary<string, object> data = new Dictionary<string, object>();
+    if (File.Exists(settingsFile))
+    {
+        string existingJson = File.ReadAllText(settingsFile, Encoding.UTF8);
+        var sOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        Dictionary<string, JsonElement>? existing = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(existingJson, sOptions);
+        if (existing != null)
+        {
+            foreach (var kvp in existing)
+            {
+                if (kvp.Value.ValueKind == JsonValueKind.Object)
+                {
+                    Dictionary<string, object> entry = new Dictionary<string, object>();
+                    JsonElement startElem;
+                    string st = "";
+                    if (kvp.Value.TryGetProperty("StartTime", out startElem) && startElem.ValueKind == JsonValueKind.String)
+                    {
+                        st = startElem.GetString() ?? "";
+                    }
+                    entry["StartTime"] = st;
+
+                    JsonElement timeElem;
+                    int tm = 0;
+                    if (kvp.Value.TryGetProperty("TimeMinutes", out timeElem) && timeElem.ValueKind == JsonValueKind.Number)
+                    {
+                        tm = timeElem.GetInt32();
+                    }
+                    entry["TimeMinutes"] = tm;
+
+                    JsonElement visibleElem;
+                    bool vis = true;
+                    if (kvp.Value.TryGetProperty("Visible", out visibleElem) && (visibleElem.ValueKind == JsonValueKind.True || visibleElem.ValueKind == JsonValueKind.False))
+                    {
+                        vis = visibleElem.GetBoolean();
+                    }
+                    entry["Visible"] = vis;
+
+                    data[kvp.Key] = entry;
+                }
+                else if (kvp.Value.ValueKind == JsonValueKind.String)
+                {
+                    Dictionary<string, object> entry = new Dictionary<string, object>();
+                    entry["StartTime"] = kvp.Value.GetString() ?? "";
+                    entry["TimeMinutes"] = 0;
+                    entry["Visible"] = true;
+                    data[kvp.Key] = entry;
+                }
+            }
+        }
+    }
+
+    if (data.ContainsKey(testName))
+    {
+        Dictionary<string, object> entry = (Dictionary<string, object>)data[testName];
+        entry["Visible"] = req.Visible;
+    }
+    else
+    {
+        Dictionary<string, object> entry = new Dictionary<string, object>();
+        entry["StartTime"] = "";
+        entry["TimeMinutes"] = 0;
+        entry["Visible"] = req.Visible;
+        data[testName] = entry;
+    }
+
+    var jsonOptions = new JsonSerializerOptions
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+
+    string outJson = JsonSerializer.Serialize(data, jsonOptions);
+    File.WriteAllText(settingsFile, outJson, Encoding.UTF8);
 
     return Results.Json(new { ok = true });
 });
@@ -247,4 +411,9 @@ public class SettingsRequest
     public string TestName { get; set; } = "";
     public string StartTime { get; set; } = "";
     public int TimeMinutes { get; set; } = 0;
+}
+
+public class VisibilityRequest
+{
+    public bool Visible { get; set; } = true;
 }

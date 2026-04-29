@@ -113,10 +113,7 @@ h1 {
 }
 
 .test-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 18px;
+    padding: 16px 18px;
     border: 2px solid #e8e8e8;
     border-radius: 10px;
     margin-bottom: 10px;
@@ -125,6 +122,36 @@ h1 {
 
 .test-card:hover {
     border-color: #4A90D9;
+}
+
+.test-card.test-scheduled {
+    border-color: #B3D4FC;
+    background: #F0F6FF;
+}
+
+.test-card.test-scheduled:hover {
+    border-color: #4A90D9;
+}
+
+.test-card.test-hidden {
+    border-color: #ddd;
+    background: #f9f9f9;
+    opacity: 0.65;
+}
+
+.test-card.test-hidden:hover {
+    opacity: 0.85;
+    border-color: #bbb;
+}
+
+.test-main-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.test-info {
+    flex: 1;
 }
 
 .test-name {
@@ -137,7 +164,127 @@ h1 {
     font-size: 14px;
 }
 
-.test-actions button {
+.test-settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #d0dfe8;
+}
+
+.test-settings-text {
+    color: #4A90D9;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.btn-delete-settings {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+}
+
+.btn-delete-settings:hover {
+    color: #F44336;
+}
+
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ccc;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggle input:checked + .toggle-slider {
+    background: #4CAF50;
+}
+
+.toggle input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+.status-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.badge-available {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.badge-scheduled {
+    background: #E3F2FD;
+    color: #1565C0;
+}
+
+.badge-hidden {
+    background: #f0f0f0;
+    color: #999;
+}
+
+.test-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.btn-configure {
+    background: #4A90D9;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-configure:hover {
+    background: #3A7BC8;
+}
+
+.test-actions button:not(.btn-configure) {
     background: #F44336;
     color: white;
     border: none;
@@ -146,19 +293,10 @@ h1 {
     font-size: 13px;
     cursor: pointer;
     font-family: inherit;
-    margin-left: 6px;
 }
 
-.test-actions button:hover {
+.test-actions button:not(.btn-configure):hover {
     background: #D32F2F;
-}
-
-.test-actions .btn-schedule {
-    background: #4A90D9;
-}
-
-.test-actions .btn-schedule:hover {
-    background: #3A7BC8;
 }
 
 .upload-form {
@@ -220,54 +358,6 @@ h1 {
 
 .form-row button:first-child:hover {
     background: #3A7BC8;
-}
-
-.schedule-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 18px;
-    border: 2px solid #B3D4FC;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    background: #EBF3FC;
-}
-
-.schedule-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.schedule-icon {
-    font-size: 22px;
-}
-
-.schedule-test-name {
-    font-weight: 600;
-    font-size: 16px;
-    color: #1E3A5F;
-}
-
-.schedule-time {
-    color: #4A90D9;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.schedule-actions button {
-    background: #F44336;
-    color: white;
-    border: none;
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.schedule-actions button:hover {
-    background: #D32F2F;
 }
 
 .result-card {

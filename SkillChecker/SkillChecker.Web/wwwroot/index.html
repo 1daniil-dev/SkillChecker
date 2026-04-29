@@ -13,13 +13,12 @@
 
         <div class="tabs" role="tablist" aria-label="Разделы панели">
             <button class="tab active" role="tab" aria-selected="true" aria-controls="tab-tests" onclick="showTab('tests')">Тесты</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-schedule" onclick="showTab('schedule')">Настройки тестов</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-results" onclick="showTab('results')">Результаты</button>
         </div>
 
         <div id="tab-tests" class="tab-content" role="tabpanel" aria-label="Управление тестами">
             <div class="section-header">
-                <h2>Загруженные тесты</h2>
+                <h2>Тесты</h2>
                 <button class="btn-sm" onclick="showUpload()" aria-label="Загрузить новый тест">Загрузить тест</button>
             </div>
             <div id="testsList" role="list" aria-label="Список тестов" aria-live="polite"></div>
@@ -39,16 +38,9 @@
                     <button class="btn-secondary" onclick="hideUpload()" aria-label="Отменить загрузку">Отмена</button>
                 </div>
             </div>
-        </div>
 
-        <div id="tab-schedule" class="tab-content hidden" role="tabpanel" aria-label="Настройки тестов">
-            <div class="section-header">
-                <h2>Настройки тестов</h2>
-                <button class="btn-sm" onclick="showScheduleForm()" aria-label="Настроить тест">Настроить тест</button>
-            </div>
-
-            <div id="scheduleForm" class="upload-form hidden" role="form" aria-label="Форма настройки теста">
-                <h3>Настройка теста</h3>
+            <div id="settingsForm" class="upload-form hidden" role="form" aria-label="Форма настройки теста">
+                <h3 id="settingsFormTitle">Настройка теста</h3>
                 <div class="form-group">
                     <label for="scheduleTestSelect">Тест</label>
                     <select id="scheduleTestSelect" aria-label="Выберите тест">
@@ -64,12 +56,10 @@
                     <input type="number" id="timeLimit" min="0" value="0" placeholder="0" aria-label="Лимит времени в минутах">
                 </div>
                 <div class="form-row">
-                    <button onclick="scheduleTest()" aria-label="Сохранить настройки">Сохранить</button>
-                    <button class="btn-secondary" onclick="hideScheduleForm()" aria-label="Отменить">Отмена</button>
+                    <button onclick="saveSettings()" aria-label="Сохранить настройки">Сохранить</button>
+                    <button class="btn-secondary" onclick="hideSettingsForm()" aria-label="Отменить">Отмена</button>
                 </div>
             </div>
-
-            <div id="scheduleList" role="list" aria-label="Список настроек тестов" aria-live="polite"></div>
         </div>
 
         <div id="tab-results" class="tab-content hidden" role="tabpanel" aria-label="Результаты тестирования">
