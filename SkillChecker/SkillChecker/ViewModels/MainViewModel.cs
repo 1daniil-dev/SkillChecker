@@ -141,6 +141,7 @@ namespace SkillChecker.ViewModels
             SelectTestCardCommand = new RelayCommand(ExecuteSelectTestCard);
             StartFromWaitCommand = new RelayCommand(ExecuteStartFromWait, CheckCanStartFromWait);
             ToggleOptionCommand = new RelayCommand(ExecuteToggleOption);
+            CancelTestCommand = new RelayCommand(ExecuteCancelTest);
             RestartCommand = new RelayCommand(ExecuteRestart);
             ExitCommand = new RelayCommand(ExecuteExit);
         }
@@ -395,6 +396,7 @@ namespace SkillChecker.ViewModels
         public RelayCommand SelectTestCardCommand { get; private set; }
         public RelayCommand StartFromWaitCommand { get; private set; }
         public RelayCommand ToggleOptionCommand { get; private set; }
+        public RelayCommand CancelTestCommand { get; private set; }
         public RelayCommand RestartCommand { get; private set; }
         public RelayCommand ExitCommand { get; private set; }
 
@@ -1075,6 +1077,29 @@ namespace SkillChecker.ViewModels
                 ResultCorrect = ex.Message;
                 ResultItems = new List<ResultItem>();
                 AppState = "Result";
+            }
+        }
+
+        private void ExecuteCancelTest(object? parameter)
+        {
+            MessageBoxResult result = MessageBox.Show(
+                "Вы уверены? Ответы не будут сохранены.",
+                "Выход из теста",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                _testTimer.Stop();
+                _selectedAnswers = new List<List<int>>();
+                _currentQuestionIndex = 0;
+                SelectedOptionIndex = -1;
+                CurrentMultipleSelected = new List<int>();
+                SelectedTestName = "";
+                ProgressValue = 0;
+                TimerVisibility = Visibility.Collapsed;
+                TimerText = "";
+                AppState = "Auth";
             }
         }
 
