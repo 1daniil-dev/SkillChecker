@@ -38,9 +38,37 @@
                             AutomationProperties.Name="Подключиться к серверу"
                             AutomationProperties.HelpText="Установить соединение с сервером"/>
 
-                    <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="#64748B"
-                               TextWrapping="Wrap" Margin="0,0,0,18" HorizontalAlignment="Center"
-                               AutomationProperties.Name="Статус подключения"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,18"
+                                AutomationProperties.Name="Статус подключения">
+                        <Ellipse Width="10" Height="10" Margin="0,0,8,0" VerticalAlignment="Center">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Setter Property="Fill" Value="#EF4444"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                            <Setter Property="Fill" Value="#22C55E"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+                        <TextBlock FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="#94A3B8"/>
+                                    <Setter Property="Text" Value="Не подключено"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                            <Setter Property="Foreground" Value="#166534"/>
+                                            <Setter Property="Text" Value="Подключено"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="{Binding TestCountText}" FontSize="13" Foreground="#64748B"
+                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    </StackPanel>
 
                     <TextBlock Text="ФИО студента" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
                     <TextBox Text="{Binding StudentName, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"

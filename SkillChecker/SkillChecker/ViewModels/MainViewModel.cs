@@ -26,6 +26,8 @@ namespace SkillChecker.ViewModels
         private string _studentName;
         private string _studentGroup;
         private string _statusMessage;
+        private bool _isConnected;
+        private string _testCountText;
         private List<string> _testNames;
         private List<ScheduledTest> _scheduledTests;
         private List<TestCardItem> _testCards;
@@ -85,6 +87,8 @@ namespace SkillChecker.ViewModels
             _studentName = "";
             _studentGroup = "";
             _statusMessage = "Введите IP сервера и подключитесь";
+            _isConnected = false;
+            _testCountText = "";
             _testNames = new List<string>();
             _scheduledTests = new List<ScheduledTest>();
             _testCards = new List<TestCardItem>();
@@ -164,6 +168,18 @@ namespace SkillChecker.ViewModels
         {
             get => _statusMessage;
             set { _statusMessage = value; OnPropertyChanged(); }
+        }
+
+        public bool IsConnected
+        {
+            get => _isConnected;
+            set { _isConnected = value; OnPropertyChanged(); }
+        }
+
+        public string TestCountText
+        {
+            get => _testCountText;
+            set { _testCountText = value; OnPropertyChanged(); }
         }
 
         public List<string> TestNames
@@ -414,20 +430,24 @@ namespace SkillChecker.ViewModels
 
                 if (tests.Count > 0)
                 {
-                    StatusMessage = "Подключено. Доступно тестов: " + tests.Count;
+                    TestCountText = "Доступно тестов: " + tests.Count;
                 }
                 else
                 {
-                    StatusMessage = "Подключено, но тестов на сервере нет";
+                    TestCountText = "Тестов нет";
                 }
 
                 if (scheduled.Count > 0)
                 {
-                    StatusMessage += ". Запланировано: " + scheduled.Count;
+                    TestCountText += " | Запланировано: " + scheduled.Count;
                 }
+
+                IsConnected = true;
             }
             catch (Exception ex)
             {
+                IsConnected = false;
+                TestCountText = "";
                 StatusMessage = "Ошибка подключения: " + ex.Message;
             }
         }
@@ -844,6 +864,8 @@ namespace SkillChecker.ViewModels
             ProgressValue = 0;
             TimerVisibility = Visibility.Collapsed;
             TimerText = "";
+            IsConnected = false;
+            TestCountText = "";
             StatusMessage = "Введите IP сервера и подключитесь";
             AppState = "Auth";
         }
