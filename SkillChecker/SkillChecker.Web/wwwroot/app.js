@@ -332,6 +332,18 @@ function saveSettings() {
     });
 }
 
+function clearResults() {
+    if (!confirm("Удалить все результаты тестирования?")) return;
+
+    fetch("/api/results", {
+        method: "DELETE"
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+        loadResults();
+    });
+}
+
 function loadResults() {
     fetch("/api/results")
         .then(function (r) { return r.json(); })

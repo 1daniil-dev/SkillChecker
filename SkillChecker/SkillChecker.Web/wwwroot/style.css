@@ -97,6 +97,14 @@ h1 {
     background: #3A7BC8;
 }
 
+.btn-danger {
+    background: #F44336;
+}
+
+.btn-danger:hover {
+    background: #D32F2F;
+}
+
 .btn-secondary {
     background: #e0e0e0;
     color: #555;

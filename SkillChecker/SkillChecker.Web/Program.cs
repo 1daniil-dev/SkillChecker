@@ -102,6 +102,19 @@ app.MapGet("/api/results", () =>
     return Results.Json(list);
 });
 
+app.MapDelete("/api/results", () =>
+{
+    if (Directory.Exists(resultsFolder))
+    {
+        string[] files = Directory.GetFiles(resultsFolder, "*.json");
+        for (int i = 0; i < files.Length; i++)
+        {
+            File.Delete(files[i]);
+        }
+    }
+    return Results.Json(new { ok = true });
+});
+
 app.MapGet("/api/settings", () =>
 {
     if (!File.Exists(settingsFile))
