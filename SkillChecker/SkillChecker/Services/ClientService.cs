@@ -124,13 +124,21 @@ namespace SkillChecker.Services
             return list;
         }
 
-        public TestResult SubmitAnswers(string studentName, string group, string testName, List<int> answers)
+        public TestResult SubmitAnswers(string studentName, string group, string testName, List<List<int>> answers)
         {
             string answersStr = "";
             for (int i = 0; i < answers.Count; i++)
             {
                 if (i > 0) answersStr += ",";
-                answersStr += answers[i].ToString();
+                for (int j = 0; j < answers[i].Count; j++)
+                {
+                    if (j > 0) answersStr += ";";
+                    answersStr += answers[i][j].ToString();
+                }
+                if (answers[i].Count == 0)
+                {
+                    answersStr += "-1";
+                }
             }
 
             string response = Send(ProtocolHelper.BuildMessage(Cmd.SubmitAnswers, studentName, group, testName, answersStr));
@@ -149,8 +157,33 @@ namespace SkillChecker.Services
                 for (int i = 0; i < correctParts.Length; i++)
                 {
                     StudentAnswer sa = new StudentAnswer();
-                    if (int.TryParse(correctParts[i], out int idx)) sa.CorrectIndex = idx;
-                    if (i < answers.Count) sa.SelectedIndex = answers[i];
+
+                    string[] subParts = correctParts[i].Split(';');
+                    if (subParts.Length > 1)
+                    {
+                        sa.QuestionType = "Multiple";
+                        if (int.TryParse(subParts[0], out int firstCorrect)) sa.CorrectIndex = firstCorrect;
+
+                        for (int j = 0; j < subParts.Length; j++)
+                        {
+                            if (int.TryParse(subParts[j], out int idx)) sa.SelectedIndices.Add(idx);
+                        }
+                    }
+                    else
+                    {
+                        if (int.TryParse(correctParts[i], out int idx)) sa.CorrectIndex = idx;
+                    }
+
+                    if (i < answers.Count && answers[i].Count > 0)
+                    {
+                        sa.SelectedIndex = answers[i][0];
+                        if (answers[i].Count > 1)
+                        {
+                            sa.QuestionType = "Multiple";
+                            sa.SelectedIndices = answers[i];
+                        }
+                    }
+
                     sa.IsCorrect = sa.SelectedIndex == sa.CorrectIndex;
                     result.Answers.Add(sa);
                 }

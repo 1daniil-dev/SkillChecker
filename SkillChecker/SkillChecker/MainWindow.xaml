@@ -312,6 +312,16 @@
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                              AutomationProperties.Name="Варианты ответа"
                              AutomationProperties.HelpText="Выберите один вариант ответа">
+                        <ListBox.Style>
+                            <Style TargetType="ListBox">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCurrentMultiple}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.Style>
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="Padding" Value="0"/>
@@ -340,10 +350,65 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding}" FontSize="16" Foreground="#1E293B" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding Text}" FontSize="16" Foreground="#1E293B" TextWrapping="Wrap"/>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+
+                    <ItemsControl Grid.Row="3" ItemsSource="{Binding CurrentOptions}"
+                                  AutomationProperties.Name="Варианты ответа"
+                                  AutomationProperties.HelpText="Выберите несколько вариантов ответа">
+                        <ItemsControl.Style>
+                            <Style TargetType="ItemsControl">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCurrentMultiple}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.Style>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Margin="0,0,0,10" Padding="14,12" HorizontalContentAlignment="Stretch"
+                                        Command="{Binding DataContext.ToggleOptionCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding Index}"
+                                        BorderThickness="0" Background="Transparent" Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="optBorder" CornerRadius="10" Padding="14,12"
+                                                    BorderBrush="#E2E8F0" BorderThickness="1.5" Background="White">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Border x:Name="checkBox" Width="22" Height="22" CornerRadius="4"
+                                                            BorderBrush="#94A3B8" BorderThickness="1.5" Margin="0,0,12,0"
+                                                            VerticalAlignment="Center" Background="White">
+                                                        <TextBlock x:Name="checkMark" FontSize="14" FontWeight="Bold"
+                                                                   Foreground="#4F46E5" HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center" Text=""/>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Text}" FontSize="16" Foreground="#1E293B"
+                                                               TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter TargetName="optBorder" Property="BorderBrush" Value="#4F46E5"/>
+                                                    <Setter TargetName="optBorder" Property="Background" Value="#EEF2FF"/>
+                                                    <Setter TargetName="checkBox" Property="BorderBrush" Value="#4F46E5"/>
+                                                    <Setter TargetName="checkBox" Property="Background" Value="#4F46E5"/>
+                                                    <Setter TargetName="checkMark" Property="Text" Value="&#x2713;"/>
+                                                    <Setter TargetName="checkMark" Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="optBorder" Property="BorderBrush" Value="#A5B4FC"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
                     <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
                         <Button Content="Назад" Height="48" Width="160" Margin="0,0,12,0"

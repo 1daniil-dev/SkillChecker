@@ -279,19 +279,25 @@ namespace SkillCheckerServer
                 }
 
                 List<Question> questions = _tests[testName];
-                List<int> selectedAnswers = new List<int>();
+                List<List<int>> selectedAnswers = new List<List<int>>();
 
                 string[] answerParts = answersStr.Split(',');
                 for (int i = 0; i < answerParts.Length; i++)
                 {
-                    if (int.TryParse(answerParts[i], out int val))
+                    List<int> questionAnswers = new List<int>();
+                    string[] subParts = answerParts[i].Split(';');
+                    for (int j = 0; j < subParts.Length; j++)
                     {
-                        selectedAnswers.Add(val);
+                        if (int.TryParse(subParts[j], out int val))
+                        {
+                            questionAnswers.Add(val);
+                        }
+                        else
+                        {
+                            questionAnswers.Add(-1);
+                        }
                     }
-                    else
-                    {
-                        selectedAnswers.Add(-1);
-                    }
+                    selectedAnswers.Add(questionAnswers);
                 }
 
                 TestResult result = CalculateResult(studentName, group, testName, questions, selectedAnswers);
@@ -305,7 +311,18 @@ namespace SkillCheckerServer
                 for (int i = 0; i < questions.Count; i++)
                 {
                     if (i > 0) correctIndices += ",";
-                    correctIndices += questions[i].CorrectAnswerIndex.ToString();
+                    if (questions[i].Type == "Multiple" && questions[i].CorrectAnswerIndices.Count > 0)
+                    {
+                        for (int j = 0; j < questions[i].CorrectAnswerIndices.Count; j++)
+                        {
+                            if (j > 0) correctIndices += ";";
+                            correctIndices += questions[i].CorrectAnswerIndices[j].ToString();
+                        }
+                    }
+                    else
+                    {
+                        correctIndices += questions[i].CorrectAnswerIndex.ToString();
+                    }
                 }
 
                 return ProtocolHelper.BuildMessage(Commands.Result,
@@ -318,7 +335,7 @@ namespace SkillCheckerServer
             return ProtocolHelper.BuildMessage(Commands.Error, "Неизвестная команда");
         }
 
-        private TestResult CalculateResult(string studentName, string group, string testName, List<Question> questions, List<int> selectedAnswers)
+        private TestResult CalculateResult(string studentName, string group, string testName, List<Question> questions, List<List<int>> selectedAnswers)
         {
             TestResult result = new TestResult();
             result.StudentName = studentName;
@@ -333,12 +350,52 @@ namespace SkillCheckerServer
                 StudentAnswer answer = new StudentAnswer();
                 answer.QuestionText = questions[i].Text;
                 answer.CorrectIndex = questions[i].CorrectAnswerIndex;
+                answer.QuestionType = questions[i].Type;
 
-                if (i < selectedAnswers.Count)
+                if (i < selectedAnswers.Count && selectedAnswers[i].Count > 0)
                 {
-                    answer.SelectedIndex = selectedAnswers[i];
-                    answer.IsCorrect = selectedAnswers[i] == questions[i].CorrectAnswerIndex;
-                    if (answer.IsCorrect) correctCount++;
+                    if (questions[i].Type == "Multiple")
+                    {
+                        answer.SelectedIndices = selectedAnswers[i];
+                        answer.SelectedIndex = selectedAnswers[i][0];
+
+                        List<int> correct = questions[i].CorrectAnswerIndices;
+                        bool isCorrect = true;
+
+                        if (selectedAnswers[i].Count != correct.Count)
+                        {
+                            isCorrect = false;
+                        }
+                        else
+                        {
+                            for (int j = 0; j < selectedAnswers[i].Count; j++)
+                            {
+                                bool found = false;
+                                for (int k = 0; k < correct.Count; k++)
+                                {
+                                    if (selectedAnswers[i][j] == correct[k])
+                                    {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found)
+                                {
+                                    isCorrect = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        answer.IsCorrect = isCorrect;
+                        if (isCorrect) correctCount++;
+                    }
+                    else
+                    {
+                        answer.SelectedIndex = selectedAnswers[i][0];
+                        answer.IsCorrect = selectedAnswers[i][0] == questions[i].CorrectAnswerIndex;
+                        if (answer.IsCorrect) correctCount++;
+                    }
                 }
                 else
                 {

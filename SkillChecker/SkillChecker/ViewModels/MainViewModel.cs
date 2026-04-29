@@ -12,7 +12,7 @@ namespace SkillChecker.ViewModels
     {
         private ClientService _clientService;
         private List<Question> _questions;
-        private List<int> _selectedAnswers;
+        private List<List<int>> _selectedAnswers;
         private int _currentQuestionIndex;
         private string _selectedTestName;
         private DispatcherTimer _waitTimer;
@@ -35,8 +35,10 @@ namespace SkillChecker.ViewModels
         private List<TestCardItem> _testCards;
 
         private string _questionText;
-        private List<string> _currentOptions;
+        private List<OptionItem> _currentOptions;
         private int _selectedOptionIndex;
+        private bool _isCurrentMultiple;
+        private List<int> _currentMultipleSelected;
         private int _questionNumber;
         private int _totalQuestions;
         private double _progressValue;
@@ -71,7 +73,8 @@ namespace SkillChecker.ViewModels
         {
             _clientService = new ClientService();
             _questions = new List<Question>();
-            _selectedAnswers = new List<int>();
+            _selectedAnswers = new List<List<int>>();
+            _currentQuestionIndex = 0;
             _selectedTestName = "";
             _waitTimer = new DispatcherTimer();
             _waitTimer.Interval = TimeSpan.FromSeconds(1);
@@ -98,8 +101,10 @@ namespace SkillChecker.ViewModels
             _testCards = new List<TestCardItem>();
 
             _questionText = "";
-            _currentOptions = new List<string>();
+            _currentOptions = new List<OptionItem>();
             _selectedOptionIndex = -1;
+            _isCurrentMultiple = false;
+            _currentMultipleSelected = new List<int>();
             _questionNumber = 0;
             _totalQuestions = 0;
             _progressValue = 0;
@@ -134,6 +139,7 @@ namespace SkillChecker.ViewModels
             SubmitCommand = new RelayCommand(ExecuteSubmit);
             SelectTestCardCommand = new RelayCommand(ExecuteSelectTestCard);
             StartFromWaitCommand = new RelayCommand(ExecuteStartFromWait, CheckCanStartFromWait);
+            ToggleOptionCommand = new RelayCommand(ExecuteToggleOption);
             RestartCommand = new RelayCommand(ExecuteRestart);
             ExitCommand = new RelayCommand(ExecuteExit);
         }
@@ -228,7 +234,7 @@ namespace SkillChecker.ViewModels
             set { _questionText = value; OnPropertyChanged(); }
         }
 
-        public List<string> CurrentOptions
+        public List<OptionItem> CurrentOptions
         {
             get => _currentOptions;
             set { _currentOptions = value; OnPropertyChanged(); }
@@ -238,6 +244,18 @@ namespace SkillChecker.ViewModels
         {
             get => _selectedOptionIndex;
             set { _selectedOptionIndex = value; OnPropertyChanged(); }
+        }
+
+        public bool IsCurrentMultiple
+        {
+            get => _isCurrentMultiple;
+            set { _isCurrentMultiple = value; OnPropertyChanged(); }
+        }
+
+        public List<int> CurrentMultipleSelected
+        {
+            get => _currentMultipleSelected;
+            set { _currentMultipleSelected = value; OnPropertyChanged(); }
         }
 
         public int QuestionNumber
@@ -374,6 +392,7 @@ namespace SkillChecker.ViewModels
         public RelayCommand SubmitCommand { get; private set; }
         public RelayCommand SelectTestCardCommand { get; private set; }
         public RelayCommand StartFromWaitCommand { get; private set; }
+        public RelayCommand ToggleOptionCommand { get; private set; }
         public RelayCommand RestartCommand { get; private set; }
         public RelayCommand ExitCommand { get; private set; }
 
@@ -586,10 +605,10 @@ namespace SkillChecker.ViewModels
                 }
 
                 _questions = testResult.Questions;
-                _selectedAnswers = new List<int>();
+                _selectedAnswers = new List<List<int>>();
                 for (int i = 0; i < _questions.Count; i++)
                 {
-                    _selectedAnswers.Add(-1);
+                    _selectedAnswers.Add(new List<int>());
                 }
                 _currentQuestionIndex = 0;
                 TotalQuestions = _questions.Count;
@@ -640,11 +659,7 @@ namespace SkillChecker.ViewModels
 
         private void AutoSubmit()
         {
-            if (SelectedOptionIndex >= 0)
-            {
-                _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
-            }
-
+            SaveCurrentAnswer();
             MessageBox.Show("Время вышло! Ответы отправлены.", "SkillChecker", MessageBoxButton.OK, MessageBoxImage.Warning);
             ShowResult();
         }
@@ -731,6 +746,26 @@ namespace SkillChecker.ViewModels
             StartTestByName(_waitTestName);
         }
 
+        private void SaveCurrentAnswer()
+        {
+            if (_currentQuestionIndex >= 0 && _currentQuestionIndex < _selectedAnswers.Count)
+            {
+                if (_isCurrentMultiple)
+                {
+                    _selectedAnswers[_currentQuestionIndex] = new List<int>(_currentMultipleSelected);
+                }
+                else
+                {
+                    List<int> single = new List<int>();
+                    if (_selectedOptionIndex >= 0)
+                    {
+                        single.Add(_selectedOptionIndex);
+                    }
+                    _selectedAnswers[_currentQuestionIndex] = single;
+                }
+            }
+        }
+
         private bool CanNextQuestion(object? parameter)
         {
             return true;
@@ -738,10 +773,7 @@ namespace SkillChecker.ViewModels
 
         private void ExecuteNextQuestion(object? parameter)
         {
-            if (SelectedOptionIndex >= 0)
-            {
-                _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
-            }
+            SaveCurrentAnswer();
 
             if (_currentQuestionIndex < _questions.Count - 1)
             {
@@ -760,10 +792,7 @@ namespace SkillChecker.ViewModels
 
         private void ExecutePrevQuestion(object? parameter)
         {
-            if (SelectedOptionIndex >= 0)
-            {
-                _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
-            }
+            SaveCurrentAnswer();
             ShowQuestion(_currentQuestionIndex - 1);
         }
 
@@ -773,12 +802,66 @@ namespace SkillChecker.ViewModels
             {
                 if (index >= 0 && index < _questions.Count)
                 {
-                    if (SelectedOptionIndex >= 0)
-                    {
-                        _selectedAnswers[_currentQuestionIndex] = SelectedOptionIndex;
-                    }
+                    SaveCurrentAnswer();
                     ShowQuestion(index);
                     AppState = "Testing";
+                }
+            }
+        }
+
+        private void ExecuteToggleOption(object? parameter)
+        {
+            if (parameter != null && int.TryParse(parameter.ToString(), out int optionIndex))
+            {
+                if (_isCurrentMultiple)
+                {
+                    int existingIndex = -1;
+                    for (int i = 0; i < _currentMultipleSelected.Count; i++)
+                    {
+                        if (_currentMultipleSelected[i] == optionIndex)
+                        {
+                            existingIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (existingIndex >= 0)
+                    {
+                        _currentMultipleSelected.RemoveAt(existingIndex);
+                    }
+                    else
+                    {
+                        _currentMultipleSelected.Add(optionIndex);
+                    }
+
+                    List<int> updated = new List<int>(_currentMultipleSelected);
+                    CurrentMultipleSelected = updated;
+
+                    for (int i = 0; i < _currentOptions.Count; i++)
+                    {
+                        _currentOptions[i].IsSelected = false;
+                        for (int j = 0; j < updated.Count; j++)
+                        {
+                            if (updated[j] == _currentOptions[i].Index)
+                            {
+                                _currentOptions[i].IsSelected = true;
+                                break;
+                            }
+                        }
+                    }
+                    List<OptionItem> updatedOptions = new List<OptionItem>(_currentOptions);
+                    CurrentOptions = updatedOptions;
+                }
+                else
+                {
+                    SelectedOptionIndex = optionIndex;
+
+                    for (int i = 0; i < _currentOptions.Count; i++)
+                    {
+                        _currentOptions[i].IsSelected = _currentOptions[i].Index == optionIndex;
+                    }
+                    List<OptionItem> updatedOptions = new List<OptionItem>(_currentOptions);
+                    CurrentOptions = updatedOptions;
                 }
             }
         }
@@ -793,8 +876,52 @@ namespace SkillChecker.ViewModels
             _currentQuestionIndex = index;
             Question q = _questions[index];
             QuestionText = q.Text;
-            CurrentOptions = q.Options;
-            SelectedOptionIndex = _selectedAnswers[index];
+            IsCurrentMultiple = q.Type == "Multiple";
+
+            List<int> savedAnswers = _selectedAnswers[index];
+
+            List<OptionItem> options = new List<OptionItem>();
+            for (int i = 0; i < q.Options.Count; i++)
+            {
+                OptionItem opt = new OptionItem();
+                opt.Index = i;
+                opt.Text = q.Options[i];
+                opt.IsSelected = false;
+
+                if (_isCurrentMultiple)
+                {
+                    for (int j = 0; j < savedAnswers.Count; j++)
+                    {
+                        if (savedAnswers[j] == i)
+                        {
+                            opt.IsSelected = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    if (savedAnswers.Count > 0 && savedAnswers[0] == i)
+                    {
+                        opt.IsSelected = true;
+                    }
+                }
+
+                options.Add(opt);
+            }
+            CurrentOptions = options;
+
+            if (_isCurrentMultiple)
+            {
+                CurrentMultipleSelected = new List<int>(savedAnswers);
+                SelectedOptionIndex = -1;
+            }
+            else
+            {
+                SelectedOptionIndex = savedAnswers.Count > 0 ? savedAnswers[0] : -1;
+                CurrentMultipleSelected = new List<int>();
+            }
+
             QuestionNumber = index + 1;
             CanGoBack = index > 0;
             NextButtonText = "Далее";
@@ -815,12 +942,12 @@ namespace SkillChecker.ViewModels
                 ReviewItem item = new ReviewItem();
                 item.Number = (i + 1).ToString();
                 item.QuestionText = _questions[i].Text;
-                item.IsAnswered = _selectedAnswers[i] >= 0;
+                item.IsAnswered = _selectedAnswers[i].Count > 0;
                 item.Index = i;
-                item.ReviewAccessibilityName = "Вопрос " + (i + 1) + ": " + _questions[i].Text + (_selectedAnswers[i] >= 0 ? ", отвечен" : ", не отвечен");
+                item.ReviewAccessibilityName = "Вопрос " + (i + 1) + ": " + _questions[i].Text + (_selectedAnswers[i].Count > 0 ? ", отвечен" : ", не отвечен");
                 items.Add(item);
 
-                if (_selectedAnswers[i] >= 0)
+                if (_selectedAnswers[i].Count > 0)
                 {
                     answeredCount++;
                 }
@@ -832,6 +959,7 @@ namespace SkillChecker.ViewModels
 
         private void ShowResult()
         {
+            SaveCurrentAnswer();
             _testTimer.Stop();
             ProgressValue = 100;
 
@@ -846,12 +974,47 @@ namespace SkillChecker.ViewModels
                 for (int i = 0; i < _questions.Count; i++)
                 {
                     Question q = _questions[i];
-                    int selected = i < _selectedAnswers.Count ? _selectedAnswers[i] : -1;
+                    List<int> selectedList = i < _selectedAnswers.Count ? _selectedAnswers[i] : new List<int>();
                     int correctIdx = i < result.Answers.Count ? result.Answers[i].CorrectIndex : 0;
-                    bool isCorrect = selected == correctIdx;
+                    bool isCorrect = i < result.Answers.Count && result.Answers[i].IsCorrect;
 
-                    string selectedText = selected >= 0 && selected < q.Options.Count ? q.Options[selected] : "Пропущен";
-                    string correctText = correctIdx < q.Options.Count ? q.Options[correctIdx] : "?";
+                    string selectedText = "";
+                    if (q.Type == "Multiple")
+                    {
+                        if (selectedList.Count > 0)
+                        {
+                            for (int j = 0; j < selectedList.Count; j++)
+                            {
+                                if (j > 0) selectedText += ", ";
+                                int s = selectedList[j];
+                                selectedText += s >= 0 && s < q.Options.Count ? q.Options[s] : "?";
+                            }
+                        }
+                        else
+                        {
+                            selectedText = "Пропущен";
+                        }
+                    }
+                    else
+                    {
+                        int selected = selectedList.Count > 0 ? selectedList[0] : -1;
+                        selectedText = selected >= 0 && selected < q.Options.Count ? q.Options[selected] : "Пропущен";
+                    }
+
+                    string correctText = "";
+                    if (q.Type == "Multiple" && q.CorrectAnswerIndices.Count > 0)
+                    {
+                        for (int j = 0; j < q.CorrectAnswerIndices.Count; j++)
+                        {
+                            if (j > 0) correctText += ", ";
+                            int c = q.CorrectAnswerIndices[j];
+                            correctText += c < q.Options.Count ? q.Options[c] : "?";
+                        }
+                    }
+                    else
+                    {
+                        correctText = correctIdx < q.Options.Count ? q.Options[correctIdx] : "?";
+                    }
 
                     ResultItem item = new ResultItem();
                     item.Number = (i + 1).ToString();
@@ -878,9 +1041,10 @@ namespace SkillChecker.ViewModels
         {
             _waitTimer.Stop();
             _testTimer.Stop();
-            _selectedAnswers = new List<int>();
+            _selectedAnswers = new List<List<int>>();
             _currentQuestionIndex = 0;
             SelectedOptionIndex = -1;
+            CurrentMultipleSelected = new List<int>();
             SelectedTestName = "";
             ProgressValue = 0;
             TimerVisibility = Visibility.Collapsed;
@@ -963,6 +1127,24 @@ namespace SkillChecker.ViewModels
             _selectedAnswer = "";
             _correctAnswer = "";
             _isCorrect = false;
+        }
+    }
+
+    public class OptionItem
+    {
+        private int _index;
+        private string _text;
+        private bool _isSelected;
+
+        public int Index { get => _index; set => _index = value; }
+        public string Text { get => _text; set => _text = value; }
+        public bool IsSelected { get => _isSelected; set => _isSelected = value; }
+
+        public OptionItem()
+        {
+            _index = 0;
+            _text = "";
+            _isSelected = false;
         }
     }
 }

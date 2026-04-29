@@ -32,7 +32,7 @@ namespace SkillChecker.Common.Protocol
             for (int i = 0; i < questions.Count; i++)
             {
                 var q = questions[i];
-                safeList.Add(new { Text = q.Text, Options = q.Options });
+                safeList.Add(new { Text = q.Text, Options = q.Options, Type = q.Type });
             }
             return JsonSerializer.Serialize(safeList);
         }
