@@ -58,6 +58,8 @@ namespace SkillChecker.ViewModels
 
         private string _resultScore;
         private string _resultCorrect;
+        private int _scoreLevel;
+        private bool _isPerfectScore;
         private List<ResultItem> _resultItems;
 
         private List<ReviewItem> _reviewItems;
@@ -124,6 +126,8 @@ namespace SkillChecker.ViewModels
 
             _resultScore = "";
             _resultCorrect = "";
+            _scoreLevel = 0;
+            _isPerfectScore = false;
             _resultItems = new List<ResultItem>();
             _reviewItems = new List<ReviewItem>();
 
@@ -350,6 +354,18 @@ namespace SkillChecker.ViewModels
         {
             get => _resultCorrect;
             set { _resultCorrect = value; OnPropertyChanged(); }
+        }
+
+        public int ScoreLevel
+        {
+            get => _scoreLevel;
+            set { _scoreLevel = value; OnPropertyChanged(); }
+        }
+
+        public bool IsPerfectScore
+        {
+            get => _isPerfectScore;
+            set { _isPerfectScore = value; OnPropertyChanged(); }
         }
 
         public List<ResultItem> ResultItems
@@ -1021,6 +1037,20 @@ namespace SkillChecker.ViewModels
 
                 ResultScore = result.Score + "%";
                 ResultCorrect = "Правильных ответов: " + result.CorrectAnswers + " из " + result.TotalQuestions;
+
+                IsPerfectScore = result.Score >= 100.0;
+
+                if (result.Score >= 100.0) ScoreLevel = 5;
+                else if (result.Score >= 90.0) ScoreLevel = 4;
+                else if (result.Score >= 75.0) ScoreLevel = 3;
+                else if (result.Score >= 50.0) ScoreLevel = 2;
+                else if (result.Score >= 25.0) ScoreLevel = 1;
+                else ScoreLevel = 0;
+
+                if (_isPerfectScore)
+                {
+                    ResultScore = "100%";
+                }
 
                 List<ResultItem> items = new List<ResultItem>();
                 for (int i = 0; i < _questions.Count; i++)

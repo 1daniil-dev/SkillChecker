@@ -566,10 +566,45 @@
                         <TextBlock Text="Результат тестирования" FontSize="28" FontWeight="Bold"
                                    Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,16"
                                    AutomationProperties.Name="Заголовок результата"/>
-                        <Border Width="100" Height="100" CornerRadius="50" Background="#EEF2FF" HorizontalAlignment="Center" Margin="0,0,0,10">
-                            <TextBlock Text="{Binding ResultScore}" FontSize="30" FontWeight="Black"
-                                       Foreground="#4F46E5" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                       AutomationProperties.Name="Оценка"/>
+                        <Border Width="100" Height="100" CornerRadius="50" Background="White"
+                                BorderThickness="5" HorizontalAlignment="Center" Margin="0,0,0,10">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="BorderBrush" Value="#EF4444"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ScoreLevel}" Value="1">
+                                            <Setter Property="BorderBrush" Value="#F97316"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ScoreLevel}" Value="2">
+                                            <Setter Property="BorderBrush" Value="#EAB308"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ScoreLevel}" Value="3">
+                                            <Setter Property="BorderBrush" Value="#22C55E"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ScoreLevel}" Value="4">
+                                            <Setter Property="BorderBrush" Value="#15803D"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ScoreLevel}" Value="5">
+                                            <Setter Property="BorderBrush" Value="#F59E0B"/>
+                                            <Setter Property="BorderThickness" Value="8"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{Binding ResultScore}" FontSize="26" FontWeight="Black"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       AutomationProperties.Name="Оценка">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#4F46E5"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPerfectScore}" Value="True">
+                                                <Setter Property="Foreground" Value="#F59E0B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </Border>
                         <TextBlock Text="{Binding ResultCorrect}" FontSize="16" Foreground="#64748B"
                                    HorizontalAlignment="Center"
