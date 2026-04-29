@@ -24,7 +24,8 @@ namespace SkillCheckerServer
             _tests = new Dictionary<string, List<Question>>();
             _testSettings = new Dictionary<string, TestSettings>();
             _results = new List<TestResult>();
-            _testsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tests");
+            string solutionDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".."));
+            _testsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Tests");
             _settingsFile = Path.Combine(_testsFolder, "test_settings.json");
         }
 
@@ -213,6 +214,8 @@ namespace SkillCheckerServer
 
         private string ProcessCommand(string command, string[] parts, string clientEndPoint)
         {
+            LoadSettings();
+
             if (command == Commands.GetTests)
             {
                 ReloadTestsIfNeeded();
@@ -441,7 +444,7 @@ namespace SkillCheckerServer
 
         private void SaveResultToFile(TestResult result)
         {
-            string solutionDir = Path.GetFullPath(Path.Combine(_testsFolder, "..", "..", "..", "..", ".."));
+            string solutionDir = Path.GetFullPath(Path.Combine(_testsFolder, "..", ".."));
             string resultsFolder = Path.Combine(solutionDir, "Results");
             Directory.CreateDirectory(resultsFolder);
 
