@@ -291,12 +291,16 @@
                                 HorizontalAlignment="Left"
                                 AutomationProperties.Name="Выйти из теста"
                                 AutomationProperties.HelpText="Отменить тест и вернуться к выбору"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                                    AutomationProperties.Name="{Binding QuestionNumber, StringFormat='Вопрос {0}'}">
-                            <TextBlock Text="{Binding QuestionNumber, StringFormat='Вопрос {0}'}"
-                                       FontSize="14" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalQuestions, StringFormat=' из {0}'}"
-                                       FontSize="14" Foreground="#94A3B8"/>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding SelectedTestName}" FontSize="26" Foreground="#4F46E5"
+                                       FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                                        AutomationProperties.Name="{Binding QuestionNumber, StringFormat='Вопрос {0}'}">
+                                <TextBlock Text="{Binding QuestionNumber, StringFormat='Вопрос {0}'}"
+                                           FontSize="14" Foreground="#64748B" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding TotalQuestions, StringFormat=' из {0}'}"
+                                           FontSize="14" Foreground="#94A3B8"/>
+                            </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                                     Visibility="{Binding TimerVisibility}"

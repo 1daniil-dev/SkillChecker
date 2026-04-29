@@ -593,7 +593,7 @@ namespace SkillChecker.ViewModels
                     IsNameError = false;
                     IsGroupError = false;
 
-                    _selectedTestName = testName;
+                    SelectedTestName = testName;
 
                     bool isScheduled = false;
                     for (int i = 0; i < _testCards.Count; i++)
