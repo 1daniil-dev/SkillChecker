@@ -153,38 +153,86 @@ namespace SkillChecker.Services
                 if (int.TryParse(parts[2], out correct)) result.CorrectAnswers = correct;
                 if (int.TryParse(parts[3], out total)) result.TotalQuestions = total;
 
+                List<List<int>> correctIndicesList = new List<List<int>>();
                 string[] correctParts = parts[4].Split(',');
                 for (int i = 0; i < correctParts.Length; i++)
                 {
-                    StudentAnswer sa = new StudentAnswer();
-
+                    List<int> correctForQuestion = new List<int>();
                     string[] subParts = correctParts[i].Split(';');
-                    if (subParts.Length > 1)
+                    for (int j = 0; j < subParts.Length; j++)
+                    {
+                        if (int.TryParse(subParts[j], out int idx))
+                        {
+                            correctForQuestion.Add(idx);
+                        }
+                    }
+                    correctIndicesList.Add(correctForQuestion);
+                }
+
+                for (int i = 0; i < correctIndicesList.Count; i++)
+                {
+                    StudentAnswer sa = new StudentAnswer();
+                    List<int> correctIndices = correctIndicesList[i];
+
+                    if (correctIndices.Count > 1)
                     {
                         sa.QuestionType = "Multiple";
-                        if (int.TryParse(subParts[0], out int firstCorrect)) sa.CorrectIndex = firstCorrect;
-
-                        for (int j = 0; j < subParts.Length; j++)
-                        {
-                            if (int.TryParse(subParts[j], out int idx)) sa.SelectedIndices.Add(idx);
-                        }
+                        sa.CorrectIndex = correctIndices.Count > 0 ? correctIndices[0] : 0;
                     }
                     else
                     {
-                        if (int.TryParse(correctParts[i], out int idx)) sa.CorrectIndex = idx;
+                        sa.CorrectIndex = correctIndices.Count > 0 ? correctIndices[0] : 0;
                     }
 
                     if (i < answers.Count && answers[i].Count > 0)
                     {
                         sa.SelectedIndex = answers[i][0];
+                        sa.SelectedIndices = new List<int>(answers[i]);
+
                         if (answers[i].Count > 1)
                         {
                             sa.QuestionType = "Multiple";
-                            sa.SelectedIndices = answers[i];
                         }
                     }
+                    else
+                    {
+                        sa.SelectedIndex = -1;
+                    }
 
-                    sa.IsCorrect = sa.SelectedIndex == sa.CorrectIndex;
+                    if (sa.QuestionType == "Multiple")
+                    {
+                        bool isCorrect = true;
+                        if (sa.SelectedIndices.Count != correctIndices.Count)
+                        {
+                            isCorrect = false;
+                        }
+                        else
+                        {
+                            for (int j = 0; j < sa.SelectedIndices.Count; j++)
+                            {
+                                bool found = false;
+                                for (int k = 0; k < correctIndices.Count; k++)
+                                {
+                                    if (sa.SelectedIndices[j] == correctIndices[k])
+                                    {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found)
+                                {
+                                    isCorrect = false;
+                                    break;
+                                }
+                            }
+                        }
+                        sa.IsCorrect = isCorrect;
+                    }
+                    else
+                    {
+                        sa.IsCorrect = sa.SelectedIndex == sa.CorrectIndex;
+                    }
+
                     result.Answers.Add(sa);
                 }
             }
