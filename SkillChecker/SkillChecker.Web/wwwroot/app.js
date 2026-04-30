@@ -364,7 +364,11 @@ function loadResults() {
                 card.setAttribute("aria-label", r.StudentName + ", группа " + r.Group + ", тест " + r.TestName + ", оценка " + r.Score + "%");
 
                 var header = document.createElement("div");
-                header.className = "result-header";
+                header.className = "result-header result-clickable";
+                header.setAttribute("data-index", i);
+                header.onclick = function () {
+                    toggleDetails(this.getAttribute("data-index"));
+                };
 
                 var left = document.createElement("div");
                 var nameDiv = document.createElement("div");
@@ -378,13 +382,24 @@ function loadResults() {
                 left.appendChild(groupDiv);
                 header.appendChild(left);
 
+                var rightGroup = document.createElement("div");
+                rightGroup.className = "result-right";
+
                 var scoreDiv = document.createElement("div");
                 scoreDiv.className = "result-score";
                 if (r.Score >= 70) scoreDiv.classList.add("badge-green");
                 else if (r.Score >= 40) scoreDiv.classList.add("badge-orange");
                 else scoreDiv.classList.add("badge-red");
                 scoreDiv.textContent = r.Score + "%";
-                header.appendChild(scoreDiv);
+                rightGroup.appendChild(scoreDiv);
+
+                var expandIcon = document.createElement("span");
+                expandIcon.className = "expand-icon";
+                expandIcon.id = "expand-icon-" + i;
+                expandIcon.textContent = "\u25B6";
+                rightGroup.appendChild(expandIcon);
+
+                header.appendChild(rightGroup);
 
                 card.appendChild(header);
 
@@ -405,7 +420,74 @@ function loadResults() {
                 meta.appendChild(dateSpan);
 
                 card.appendChild(meta);
+
+                var details = document.createElement("div");
+                details.className = "result-details hidden";
+                details.id = "result-details-" + i;
+
+                if (r.Answers && r.Answers.length > 0) {
+                    for (var j = 0; j < r.Answers.length; j++) {
+                        var a = r.Answers[j];
+                        var qDiv = document.createElement("div");
+                        qDiv.className = "question-detail";
+                        if (a.IsCorrect) {
+                            qDiv.classList.add("question-correct");
+                        } else {
+                            qDiv.classList.add("question-wrong");
+                        }
+
+                        var qNum = document.createElement("span");
+                        qNum.className = "question-num";
+                        qNum.textContent = (j + 1) + ".";
+                        qDiv.appendChild(qNum);
+
+                        var qText = document.createElement("span");
+                        qText.className = "question-text";
+                        qText.textContent = a.QuestionText;
+                        qDiv.appendChild(qText);
+
+                        var qStatus = document.createElement("span");
+                        qStatus.className = "question-status";
+                        if (a.IsCorrect) {
+                            qStatus.textContent = "\u2713";
+                        } else {
+                            qStatus.textContent = "\u2717";
+                        }
+                        qDiv.appendChild(qStatus);
+
+                        if (!a.IsCorrect) {
+                            var answerInfo = document.createElement("div");
+                            answerInfo.className = "answer-info";
+
+                            if (a.QuestionType === "Multiple") {
+                                var selText = a.SelectedIndices && a.SelectedIndices.length > 0 ? a.SelectedIndices.join(", ") : "нет ответа";
+                                answerInfo.textContent = "Выбрал: " + selText + " | Правильно: " + a.CorrectIndex;
+                            } else {
+                                var selText = a.SelectedIndex >= 0 ? a.SelectedIndex : "нет ответа";
+                                answerInfo.textContent = "Выбрал: " + selText + " | Правильно: " + a.CorrectIndex;
+                            }
+
+                            qDiv.appendChild(answerInfo);
+                        }
+
+                        details.appendChild(qDiv);
+                    }
+                }
+
+                card.appendChild(details);
                 div.appendChild(card);
             }
         });
+}
+
+function toggleDetails(index) {
+    var details = document.getElementById("result-details-" + index);
+    var icon = document.getElementById("expand-icon-" + index);
+    if (details.classList.contains("hidden")) {
+        details.classList.remove("hidden");
+        icon.textContent = "\u25BC";
+    } else {
+        details.classList.add("hidden");
+        icon.textContent = "\u25B6";
+    }
 }
