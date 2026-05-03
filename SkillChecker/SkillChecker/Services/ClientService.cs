@@ -7,24 +7,6 @@ using Cmd = SkillChecker.Common.Protocol.Commands;
 
 namespace SkillChecker.Services
 {
-    public class ScheduledTest
-    {
-        private string _name;
-        private DateTime _scheduledTime;
-        private int _timeMinutes;
-
-        public string Name { get => _name; set => _name = value; }
-        public DateTime ScheduledTime { get => _scheduledTime; set => _scheduledTime = value; }
-        public int TimeMinutes { get => _timeMinutes; set => _timeMinutes = value; }
-
-        public ScheduledTest()
-        {
-            _name = "";
-            _scheduledTime = DateTime.Now;
-            _timeMinutes = 0;
-        }
-    }
-
     public class ClientService
     {
         private string _serverIp;
@@ -258,27 +240,6 @@ namespace SkillChecker.Services
                     return reader.ReadLine() ?? "";
                 }
             }
-        }
-    }
-
-    public class TestQuestionsResult
-    {
-        private List<Question> _questions;
-        private int _timeMinutes;
-        private bool _isWaiting;
-        private DateTime _waitTime;
-
-        public List<Question> Questions { get => _questions; set => _questions = value; }
-        public int TimeMinutes { get => _timeMinutes; set => _timeMinutes = value; }
-        public bool IsWaiting { get => _isWaiting; set => _isWaiting = value; }
-        public DateTime WaitTime { get => _waitTime; set => _waitTime = value; }
-
-        public TestQuestionsResult()
-        {
-            _questions = new List<Question>();
-            _timeMinutes = 0;
-            _isWaiting = false;
-            _waitTime = DateTime.Now;
         }
     }
 }
