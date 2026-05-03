@@ -101,11 +101,11 @@ namespace SkillCheckerServer
             try
             {
                 string json = File.ReadAllText(_settingsFile, Encoding.UTF8);
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 Dictionary<string, JsonElement>? data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json, options);
                 if (data != null)
                 {
-                    foreach (var kvp in data)
+                    foreach (KeyValuePair<string, JsonElement> kvp in data)
                     {
                         TestSettings settings = new TestSettings();
 
@@ -154,7 +154,7 @@ namespace SkillCheckerServer
         private void SaveSettings()
         {
             Dictionary<string, object> data = new Dictionary<string, object>();
-            foreach (var kvp in _testSettings)
+            foreach (KeyValuePair<string, TestSettings> kvp in _testSettings)
             {
                 Dictionary<string, object> entry = new Dictionary<string, object>();
                 if (kvp.Value.StartTime != null)
@@ -170,7 +170,7 @@ namespace SkillCheckerServer
                 data[kvp.Key] = entry;
             }
 
-            var options = new JsonSerializerOptions
+            JsonSerializerOptions options = new JsonSerializerOptions
             {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -220,7 +220,7 @@ namespace SkillCheckerServer
             {
                 ReloadTestsIfNeeded();
                 string testNames = "";
-                foreach (var kvp in _tests)
+                foreach (KeyValuePair<string, List<Question>> kvp in _tests)
                 {
                     if (_testSettings.ContainsKey(kvp.Key) && !_testSettings[kvp.Key].Visible)
                     {
@@ -237,7 +237,7 @@ namespace SkillCheckerServer
                 ReloadTestsIfNeeded();
                 LoadSettings();
                 string settingsData = "";
-                foreach (var kvp in _testSettings)
+                foreach (KeyValuePair<string, TestSettings> kvp in _testSettings)
                 {
                     if (!kvp.Value.Visible)
                     {
@@ -450,7 +450,7 @@ namespace SkillCheckerServer
 
             string fileName = "result_" + result.StudentName.Replace(" ", "_") + "_" + result.TestName + "_" + result.Date.ToString("yyyyMMdd_HHmm") + ".json";
 
-            var options = new JsonSerializerOptions
+            JsonSerializerOptions options = new JsonSerializerOptions
             {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping

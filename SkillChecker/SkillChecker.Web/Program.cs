@@ -27,7 +27,7 @@ app.MapGet("/api/tests", () =>
     if (File.Exists(settingsFile))
     {
         string settingsJson = File.ReadAllText(settingsFile, Encoding.UTF8);
-        var sOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        JsonSerializerOptions sOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         Dictionary<string, JsonElement>? loaded = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(settingsJson, sOptions);
         if (loaded != null)
         {
@@ -42,7 +42,7 @@ app.MapGet("/api/tests", () =>
 
         string name = Path.GetFileNameWithoutExtension(files[i]);
         string json = File.ReadAllText(files[i], Encoding.UTF8);
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         List<Question>? questions = JsonSerializer.Deserialize<List<Question>>(json, options);
         int count = questions != null ? questions.Count : 0;
 
@@ -92,7 +92,7 @@ app.MapGet("/api/results", () =>
     for (int i = 0; i < files.Length; i++)
     {
         string json = File.ReadAllText(files[i], Encoding.UTF8);
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         TestResult? result = JsonSerializer.Deserialize<TestResult>(json, options);
         if (result != null)
         {
@@ -123,7 +123,7 @@ app.MapGet("/api/settings", () =>
     }
 
     string json = File.ReadAllText(settingsFile, Encoding.UTF8);
-    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+    JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     Dictionary<string, JsonElement>? data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json, options);
     if (data == null)
     {
@@ -131,7 +131,7 @@ app.MapGet("/api/settings", () =>
     }
 
     List<object> list = new List<object>();
-    foreach (var kvp in data)
+    foreach (KeyValuePair<string, JsonElement> kvp in data)
     {
         string startTime = "";
         int timeMinutes = 0;
@@ -181,11 +181,11 @@ app.MapPost("/api/settings", (SettingsRequest req) =>
     if (File.Exists(settingsFile))
     {
         string existingJson = File.ReadAllText(settingsFile, Encoding.UTF8);
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         Dictionary<string, JsonElement>? existing = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(existingJson, options);
         if (existing != null)
         {
-            foreach (var kvp in existing)
+            foreach (KeyValuePair<string, JsonElement> kvp in existing)
             {
                 if (kvp.Value.ValueKind == JsonValueKind.Object)
                 {
@@ -260,7 +260,7 @@ app.MapPost("/api/settings", (SettingsRequest req) =>
         data[req.TestName] = newEntry;
     }
 
-    var jsonOptions = new JsonSerializerOptions
+    JsonSerializerOptions jsonOptions = new JsonSerializerOptions
     {
         WriteIndented = true,
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -280,13 +280,13 @@ app.MapDelete("/api/settings/{testName}", (string testName) =>
     }
 
     string existingJson = File.ReadAllText(settingsFile, Encoding.UTF8);
-    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+    JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     Dictionary<string, JsonElement>? data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(existingJson, options);
     if (data != null && data.ContainsKey(testName))
     {
         data.Remove(testName);
 
-        var jsonOptions = new JsonSerializerOptions
+        JsonSerializerOptions jsonOptions = new JsonSerializerOptions
         {
             WriteIndented = true,
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -307,11 +307,11 @@ app.MapPatch("/api/settings/{testName}/visibility", (string testName, Visibility
     if (File.Exists(settingsFile))
     {
         string existingJson = File.ReadAllText(settingsFile, Encoding.UTF8);
-        var sOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        JsonSerializerOptions sOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         Dictionary<string, JsonElement>? existing = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(existingJson, sOptions);
         if (existing != null)
         {
-            foreach (var kvp in existing)
+            foreach (KeyValuePair<string, JsonElement> kvp in existing)
             {
                 if (kvp.Value.ValueKind == JsonValueKind.Object)
                 {
@@ -368,7 +368,7 @@ app.MapPatch("/api/settings/{testName}/visibility", (string testName, Visibility
         data[testName] = entry;
     }
 
-    var jsonOptions = new JsonSerializerOptions
+    JsonSerializerOptions jsonOptions = new JsonSerializerOptions
     {
         WriteIndented = true,
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -383,7 +383,7 @@ app.MapPatch("/api/settings/{testName}/visibility", (string testName, Visibility
 app.MapPost("/api/upload", async (HttpContext context) =>
 {
     Directory.CreateDirectory(testsFolder);
-    var form = await context.Request.ReadFormAsync();
+    IFormCollection form = await context.Request.ReadFormAsync();
     IFormFile? file = null;
     if (form.Files.Count > 0)
     {
@@ -401,7 +401,7 @@ app.MapPost("/api/upload", async (HttpContext context) =>
     }
 
     string filePath = Path.Combine(testsFolder, name + ".json");
-    using (var stream = new FileStream(filePath, FileMode.Create))
+    using (FileStream stream = new FileStream(filePath, FileMode.Create))
     {
         await file.CopyToAsync(stream);
     }

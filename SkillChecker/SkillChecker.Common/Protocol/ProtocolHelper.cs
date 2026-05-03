@@ -28,10 +28,10 @@ namespace SkillChecker.Common.Protocol
 
         public static string SerializeQuestionsWithoutAnswers(List<Models.Question> questions)
         {
-            var safeList = new List<object>();
+            List<object> safeList = new List<object>();
             for (int i = 0; i < questions.Count; i++)
             {
-                var q = questions[i];
+                Models.Question q = questions[i];
                 safeList.Add(new { Text = q.Text, Options = q.Options, Type = q.Type });
             }
             return JsonSerializer.Serialize(safeList);
@@ -39,7 +39,7 @@ namespace SkillChecker.Common.Protocol
 
         public static List<Models.Question> DeserializeQuestions(string json)
         {
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             List<Models.Question>? list = JsonSerializer.Deserialize<List<Models.Question>>(json, options);
             return list ?? new List<Models.Question>();
         }
