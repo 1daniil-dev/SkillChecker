@@ -384,7 +384,11 @@ app.MapPost("/api/upload", async (HttpContext context) =>
 {
     Directory.CreateDirectory(testsFolder);
     var form = await context.Request.ReadFormAsync();
-    var file = form.Files.FirstOrDefault();
+    IFormFile? file = null;
+    if (form.Files.Count > 0)
+    {
+        file = form.Files[0];
+    }
     if (file == null || file.Length == 0)
     {
         return Results.BadRequest(new { error = "Файл не выбран" });
