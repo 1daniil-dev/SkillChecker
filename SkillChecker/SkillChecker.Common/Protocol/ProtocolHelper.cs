@@ -28,11 +28,15 @@ namespace SkillChecker.Common.Protocol
 
         public static string SerializeQuestionsWithoutAnswers(List<Models.Question> questions)
         {
-            List<object> safeList = new List<object>();
+            List<Models.QuestionView> safeList = new List<Models.QuestionView>();
             for (int i = 0; i < questions.Count; i++)
             {
                 Models.Question q = questions[i];
-                safeList.Add(new { Text = q.Text, Options = q.Options, Type = q.Type });
+                Models.QuestionView qv = new Models.QuestionView();
+                qv.Text = q.Text;
+                qv.Options = q.Options;
+                qv.Type = q.Type;
+                safeList.Add(qv);
             }
             return JsonSerializer.Serialize(safeList);
         }

@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using SkillChecker.Common.Models;
+using SkillChecker.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -79,7 +80,7 @@ app.MapGet("/api/tests", () =>
             }
         }
 
-        list.Add(new { Name = name, QuestionCount = count, Visible = visible, HasSettings = hasSettings, DisplayTime = displayTime, TimeMinutes = timeMinutes });
+        list.Add(new TestListItem { Name = name, QuestionCount = count, Visible = visible, HasSettings = hasSettings, DisplayTime = displayTime, TimeMinutes = timeMinutes });
     }
     return Results.Json(list);
 });
@@ -112,7 +113,7 @@ app.MapDelete("/api/results", () =>
             File.Delete(files[i]);
         }
     }
-    return Results.Json(new { ok = true });
+    return Results.Json(new OperationResult { Ok = true });
 });
 
 app.MapGet("/api/settings", () =>
@@ -168,7 +169,7 @@ app.MapGet("/api/settings", () =>
             displayTime = dt.ToString("dd.MM.yyyy HH:mm");
         }
 
-        list.Add(new { TestName = kvp.Key, StartTime = startTime, DisplayTime = displayTime, TimeMinutes = timeMinutes, Visible = visible });
+        list.Add(new SettingsListItem { TestName = kvp.Key, StartTime = startTime, DisplayTime = displayTime, TimeMinutes = timeMinutes, Visible = visible });
     }
     return Results.Json(list);
 });
@@ -269,14 +270,14 @@ app.MapPost("/api/settings", (SettingsRequest req) =>
     string outJson = JsonSerializer.Serialize(data, jsonOptions);
     File.WriteAllText(settingsFile, outJson, Encoding.UTF8);
 
-    return Results.Json(new { ok = true });
+    return Results.Json(new OperationResult { Ok = true });
 });
 
 app.MapDelete("/api/settings/{testName}", (string testName) =>
 {
     if (!File.Exists(settingsFile))
     {
-        return Results.Json(new { ok = true });
+        return Results.Json(new OperationResult { Ok = true });
     }
 
     string existingJson = File.ReadAllText(settingsFile, Encoding.UTF8);
@@ -296,7 +297,7 @@ app.MapDelete("/api/settings/{testName}", (string testName) =>
         File.WriteAllText(settingsFile, outJson, Encoding.UTF8);
     }
 
-    return Results.Json(new { ok = true });
+    return Results.Json(new OperationResult { Ok = true });
 });
 
 app.MapPatch("/api/settings/{testName}/visibility", (string testName, VisibilityRequest req) =>
@@ -377,7 +378,7 @@ app.MapPatch("/api/settings/{testName}/visibility", (string testName, Visibility
     string outJson = JsonSerializer.Serialize(data, jsonOptions);
     File.WriteAllText(settingsFile, outJson, Encoding.UTF8);
 
-    return Results.Json(new { ok = true });
+    return Results.Json(new OperationResult { Ok = true });
 });
 
 app.MapPost("/api/upload", async (HttpContext context) =>
@@ -391,7 +392,7 @@ app.MapPost("/api/upload", async (HttpContext context) =>
     }
     if (file == null || file.Length == 0)
     {
-        return Results.BadRequest(new { error = "Файл не выбран" });
+        return Results.BadRequest(new ErrorResult { Error = "Файл не выбран" });
     }
 
     string name = form["name"].ToString();
@@ -406,7 +407,7 @@ app.MapPost("/api/upload", async (HttpContext context) =>
         await file.CopyToAsync(stream);
     }
 
-    return Results.Json(new { ok = true, name = name });
+    return Results.Json(new OperationResult { Ok = true, Name = name });
 });
 
 app.MapDelete("/api/test/{name}", (string name) =>
@@ -414,11 +415,11 @@ app.MapDelete("/api/test/{name}", (string name) =>
     string filePath = Path.Combine(testsFolder, name + ".json");
     if (!File.Exists(filePath))
     {
-        return Results.NotFound(new { error = "Тест не найден" });
+        return Results.NotFound(new ErrorResult { Error = "Тест не найден" });
     }
 
     File.Delete(filePath);
-    return Results.Json(new { ok = true });
+    return Results.Json(new OperationResult { Ok = true });
 });
 
 app.Run();
