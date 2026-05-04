@@ -7,7 +7,7 @@ using SkillChecker.Common.Protocol;
 
 namespace SkillCheckerServer
 {
-    class Server
+    internal class Server
     {
         private TcpListener _listener;
         private bool _isRunning;
