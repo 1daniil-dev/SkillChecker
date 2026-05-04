@@ -13,9 +13,18 @@ var app = builder.Build();
 app.UseStaticFiles();
 app.MapGet("/", () => Results.Redirect("/index.html"));
 
-string solutionDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".."));
-string testsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Tests");
-string resultsFolder = Path.Combine(solutionDir, "Results");
+string testsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tests");
+if (!Directory.Exists(testsFolder))
+{
+    string solutionDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".."));
+    testsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Tests");
+}
+string resultsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Results");
+if (!Directory.Exists(resultsFolder))
+{
+    string solutionDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".."));
+    resultsFolder = Path.Combine(solutionDir, "Results");
+}
 string settingsFile = Path.Combine(testsFolder, "test_settings.json");
 
 app.MapGet("/api/tests", () =>

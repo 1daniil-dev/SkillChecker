@@ -24,8 +24,12 @@ namespace SkillCheckerServer
             _tests = new Dictionary<string, List<Question>>();
             _testSettings = new Dictionary<string, TestSettings>();
             _results = new List<TestResult>();
-            string solutionDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".."));
-            _testsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Tests");
+            _testsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tests");
+            if (!Directory.Exists(_testsFolder))
+            {
+                string solutionDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".."));
+                _testsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Tests");
+            }
             _settingsFile = Path.Combine(_testsFolder, "test_settings.json");
         }
 
@@ -444,8 +448,12 @@ namespace SkillCheckerServer
 
         private void SaveResultToFile(TestResult result)
         {
-            string solutionDir = Path.GetFullPath(Path.Combine(_testsFolder, "..", ".."));
-            string resultsFolder = Path.Combine(solutionDir, "Results");
+            string resultsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Results");
+            if (!Directory.Exists(resultsFolder))
+            {
+                string solutionDir = Path.GetFullPath(Path.Combine(_testsFolder, "..", ".."));
+                resultsFolder = Path.Combine(solutionDir, "Results");
+            }
             Directory.CreateDirectory(resultsFolder);
 
             string fileName = "result_" + result.StudentName.Replace(" ", "_") + "_" + result.TestName + "_" + result.Date.ToString("yyyyMMdd_HHmm") + ".json";
