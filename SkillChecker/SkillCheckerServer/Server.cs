@@ -448,12 +448,7 @@ namespace SkillCheckerServer
 
         private void SaveResultToFile(TestResult result)
         {
-            string resultsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Results");
-            if (!Directory.Exists(resultsFolder))
-            {
-                string solutionDir = Path.GetFullPath(Path.Combine(_testsFolder, "..", ".."));
-                resultsFolder = Path.Combine(solutionDir, "Results");
-            }
+            string resultsFolder = Path.Combine(Path.GetDirectoryName(_testsFolder) ?? "", "Results");
             Directory.CreateDirectory(resultsFolder);
 
             string fileName = "result_" + result.StudentName.Replace(" ", "_") + "_" + result.TestName + "_" + result.Date.ToString("yyyyMMdd_HHmm") + ".json";
