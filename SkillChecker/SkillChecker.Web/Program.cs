@@ -104,10 +104,32 @@ app.MapGet("/api/results", () =>
         TestResult? result = JsonSerializer.Deserialize<TestResult>(json, options);
         if (result != null)
         {
-            list.Add(result);
+            ResultListItem item = new ResultListItem();
+            item.StudentName = result.StudentName;
+            item.Group = result.Group;
+            item.TestName = result.TestName;
+            item.Date = result.Date;
+            item.TotalQuestions = result.TotalQuestions;
+            item.CorrectAnswers = result.CorrectAnswers;
+            item.Score = result.Score;
+            item.Answers = result.Answers;
+            item.FileName = Path.GetFileName(files[i]);
+            list.Add(item);
         }
     }
     return Results.Json(list);
+});
+
+app.MapDelete("/api/results/{fileName}", (string fileName) =>
+{
+    string filePath = Path.Combine(resultsFolder, fileName);
+    if (!File.Exists(filePath))
+    {
+        return Results.NotFound(new ErrorResult { Error = "Результат не найден" });
+    }
+
+    File.Delete(filePath);
+    return Results.Json(new OperationResult { Ok = true });
 });
 
 app.MapDelete("/api/results", () =>

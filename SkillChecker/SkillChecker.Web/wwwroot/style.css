@@ -501,6 +501,22 @@ h1 {
     gap: 20px;
     color: #666;
     font-size: 14px;
+    align-items: center;
+}
+
+.btn-delete-result {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+    margin-left: auto;
+}
+
+.btn-delete-result:hover {
+    color: #F44336;
 }
 
 .badge-green {

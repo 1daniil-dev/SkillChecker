@@ -342,6 +342,18 @@ function saveSettings() {
     });
 }
 
+function deleteResult(fileName, studentName) {
+    if (!confirm("Удалить результат \"" + studentName + "\"?")) return;
+
+    fetch("/api/results/" + encodeURIComponent(fileName), {
+        method: "DELETE"
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+        loadResults();
+    });
+}
+
 function clearResults() {
     if (!confirm("Удалить все результаты тестирования?")) return;
 
@@ -428,6 +440,16 @@ function loadResults() {
                 var d = new Date(r.Date);
                 dateSpan.textContent = d.toLocaleString("ru-RU");
                 meta.appendChild(dateSpan);
+
+                var deleteBtn = document.createElement("button");
+                deleteBtn.className = "btn-delete-result";
+                deleteBtn.textContent = "Удалить";
+                deleteBtn.setAttribute("data-filename", r.FileName);
+                deleteBtn.setAttribute("data-name", r.StudentName);
+                deleteBtn.onclick = function () {
+                    deleteResult(this.getAttribute("data-filename"), this.getAttribute("data-name"));
+                };
+                meta.appendChild(deleteBtn);
 
                 card.appendChild(meta);
 
