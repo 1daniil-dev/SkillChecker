@@ -375,8 +375,26 @@ function loadResults() {
 
             if (results.length === 0) {
                 div.innerHTML = '<div class="empty" role="status">Пока нет результатов</div>';
+                document.getElementById("resultsStats").classList.add("hidden");
                 return;
             }
+
+            var totalScore = 0;
+            var bestScore = 0;
+            var worstScore = 101;
+            for (var s = 0; s < results.length; s++) {
+                totalScore += results[s].Score;
+                if (results[s].Score > bestScore) bestScore = results[s].Score;
+                if (results[s].Score < worstScore) worstScore = results[s].Score;
+            }
+            var avgScore = (totalScore / results.length).toFixed(1);
+
+            var statsDiv = document.getElementById("resultsStats");
+            statsDiv.classList.remove("hidden");
+            statsDiv.innerHTML = "<div class='stat-item'><span class='stat-value'>" + results.length + "</span><span class='stat-label'>Результатов</span></div>" +
+                "<div class='stat-item'><span class='stat-value'>" + avgScore + "%</span><span class='stat-label'>Средний балл</span></div>" +
+                "<div class='stat-item'><span class='stat-value'>" + bestScore + "%</span><span class='stat-label'>Лучший</span></div>" +
+                "<div class='stat-item'><span class='stat-value'>" + worstScore + "%</span><span class='stat-label'>Худший</span></div>";
 
             for (var i = 0; i < results.length; i++) {
                 var r = results[i];

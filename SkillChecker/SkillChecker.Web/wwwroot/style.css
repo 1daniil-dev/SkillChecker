@@ -519,6 +519,34 @@ h1 {
     color: #F44336;
 }
 
+.results-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f5f7fa;
+    border-radius: 12px;
+}
+
+.stat-item {
+    flex: 1;
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 22px;
+    font-weight: bold;
+    color: #4A90D9;
+}
+
+.stat-label {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+}
+
 .badge-green {
     color: #4CAF50;
 }
