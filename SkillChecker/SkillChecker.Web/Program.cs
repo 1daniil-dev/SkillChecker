@@ -414,6 +414,25 @@ app.MapPost("/api/upload", async (HttpContext context) =>
     return Results.Json(new OperationResult { Ok = true, Name = name });
 });
 
+app.MapGet("/api/test/{name}/preview", (string name) =>
+{
+    string filePath = Path.Combine(testsFolder, name + ".json");
+    if (!File.Exists(filePath))
+    {
+        return Results.NotFound(new ErrorResult { Error = "Тест не найден" });
+    }
+
+    string json = File.ReadAllText(filePath, Encoding.UTF8);
+    JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+    List<Question>? questions = JsonSerializer.Deserialize<List<Question>>(json, options);
+    if (questions == null)
+    {
+        return Results.NotFound(new ErrorResult { Error = "Ошибка чтения теста" });
+    }
+
+    return Results.Json(questions);
+});
+
 app.MapDelete("/api/test/{name}", (string name) =>
 {
     string filePath = Path.Combine(testsFolder, name + ".json");

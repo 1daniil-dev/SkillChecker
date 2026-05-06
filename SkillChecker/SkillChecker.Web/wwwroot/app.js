@@ -124,6 +124,16 @@ function loadTests() {
                 };
                 actions.appendChild(configBtn);
 
+                var previewBtn = document.createElement("button");
+                previewBtn.className = "btn-preview";
+                previewBtn.textContent = "Просмотр";
+                previewBtn.setAttribute("data-name", test.Name);
+                previewBtn.setAttribute("aria-label", "Предпросмотр теста " + test.Name);
+                previewBtn.onclick = function () {
+                    previewTest(this.getAttribute("data-name"));
+                };
+                actions.appendChild(previewBtn);
+
                 var delBtn = document.createElement("button");
                 delBtn.textContent = "Удалить";
                 delBtn.setAttribute("data-name", test.Name);
@@ -490,4 +500,98 @@ function toggleDetails(index) {
         details.classList.add("hidden");
         icon.textContent = "\u25B6";
     }
+}
+
+function previewTest(name) {
+    var existing = document.getElementById("preview-" + name);
+    if (existing) {
+        existing.parentElement.removeChild(existing);
+        return;
+    }
+
+    fetch("/api/test/" + encodeURIComponent(name) + "/preview")
+        .then(function (r) { return r.json(); })
+        .then(function (questions) {
+            var card = null;
+            var cards = document.getElementById("testsList").children;
+            for (var i = 0; i < cards.length; i++) {
+                var btns = cards[i].querySelectorAll(".btn-preview");
+                for (var j = 0; j < btns.length; j++) {
+                    if (btns[j].getAttribute("data-name") === name) {
+                        card = cards[i];
+                        break;
+                    }
+                }
+                if (card) break;
+            }
+            if (!card) return;
+
+            var previewDiv = document.createElement("div");
+            previewDiv.className = "preview-inline";
+            previewDiv.id = "preview-" + name;
+
+            for (var i = 0; i < questions.length; i++) {
+                var q = questions[i];
+                var qBlock = document.createElement("div");
+                qBlock.className = "preview-question";
+
+                var qHeader = document.createElement("div");
+                qHeader.className = "preview-q-header";
+
+                var qNum = document.createElement("span");
+                qNum.className = "preview-q-num";
+                qNum.textContent = (i + 1) + ".";
+                qHeader.appendChild(qNum);
+
+                var qText = document.createElement("span");
+                qText.className = "preview-q-text";
+                qText.textContent = q.Text;
+                qHeader.appendChild(qText);
+
+                if (q.Type && q.Type === "Multiple") {
+                    var typeLabel = document.createElement("span");
+                    typeLabel.className = "preview-type-label";
+                    typeLabel.textContent = "Множественный";
+                    qHeader.appendChild(typeLabel);
+                }
+
+                qBlock.appendChild(qHeader);
+
+                var optionsList = document.createElement("div");
+                optionsList.className = "preview-options";
+
+                for (var j = 0; j < q.Options.length; j++) {
+                    var optDiv = document.createElement("div");
+                    optDiv.className = "preview-option";
+                    if (q.Type === "Multiple") {
+                        if (q.CorrectAnswerIndices && q.CorrectAnswerIndices.indexOf(j) >= 0) {
+                            optDiv.classList.add("preview-correct");
+                        }
+                    } else {
+                        if (j === q.CorrectAnswerIndex) {
+                            optDiv.classList.add("preview-correct");
+                        }
+                    }
+
+                    var optLabel = document.createElement("span");
+                    optLabel.className = "preview-opt-letter";
+                    optLabel.textContent = String.fromCharCode(1040 + j);
+                    optDiv.appendChild(optLabel);
+
+                    var optText = document.createElement("span");
+                    optText.textContent = q.Options[j];
+                    optDiv.appendChild(optText);
+
+                    optionsList.appendChild(optDiv);
+                }
+
+                qBlock.appendChild(optionsList);
+                previewDiv.appendChild(qBlock);
+            }
+
+            card.appendChild(previewDiv);
+        });
+}
+
+function hidePreview() {
 }
