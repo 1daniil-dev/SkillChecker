@@ -188,7 +188,6 @@ namespace SkillCheckerServer
         private void HandleClient(TcpClient client)
         {
             string endPoint = client.Client.RemoteEndPoint?.ToString() ?? "?";
-            Log("Подключён: " + endPoint);
 
             try
             {
@@ -204,6 +203,11 @@ namespace SkillCheckerServer
                         string[] parts = ProtocolHelper.ParseMessage(line);
                         string command = parts[0];
 
+                        if (command == Commands.GetTest || command == Commands.CheckStart)
+                        {
+                            LogInfo("Запрос теста от " + endPoint);
+                        }
+
                         string response = ProcessCommand(command, parts, endPoint);
                         writer.Write(response);
                     }
@@ -211,10 +215,8 @@ namespace SkillCheckerServer
             }
             catch (Exception ex)
             {
-                Log("Ошибка клиента " + endPoint + ": " + ex.Message);
+                LogError("Ошибка клиента " + endPoint + ": " + ex.Message);
             }
-
-            Log("Отключён: " + endPoint);
         }
 
         private string ProcessCommand(string command, string[] parts, string clientEndPoint)
@@ -335,7 +337,7 @@ namespace SkillCheckerServer
                 TestResult result = CalculateResult(studentName, group, testName, questions, selectedAnswers);
                 _results.Add(result);
 
-                Log("Результат: " + studentName + " (" + group + ") — " + result.Score + "% (" + result.CorrectAnswers + "/" + result.TotalQuestions + ") " + testName);
+                LogSuccess("Результат: " + studentName + " (" + group + ") — " + result.Score + "% (" + result.CorrectAnswers + "/" + result.TotalQuestions + ") " + testName);
 
                 SaveResultToFile(result);
 
@@ -478,18 +480,85 @@ namespace SkillCheckerServer
 
         public void ShowResults()
         {
-            Log("--- РЕЗУЛЬТАТЫ ---");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("  ┌──────────────────────────────────────────────────────────┐");
+            Console.WriteLine("  │  РЕЗУЛЬТАТЫ                                             │");
+            Console.WriteLine("  ├──────────────────────────────────────────────────────────┤");
+            Console.ResetColor();
             for (int i = 0; i < _results.Count; i++)
             {
                 TestResult r = _results[i];
-                Log((i + 1) + ". " + r.StudentName + " (" + r.Group + ") " + r.TestName + " = " + r.Score + "% (" + r.CorrectAnswers + "/" + r.TotalQuestions + ") " + r.Date.ToString("HH:mm"));
+                string num = (i + 1).ToString().PadLeft(3);
+                string name = (r.StudentName + " (" + r.Group + ")").PadRight(25);
+                string test = r.TestName.PadRight(15);
+                string score = (r.Score + "%").PadLeft(7);
+                string correct = (r.CorrectAnswers + "/" + r.TotalQuestions).PadLeft(5);
+                string time = r.Date.ToString("HH:mm");
+
+                if (r.Score >= 75)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+                else if (r.Score >= 50)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                Console.WriteLine("  │  " + num + ". " + name + " " + test + " " + score + " " + correct + "  " + time + " │");
+                Console.ResetColor();
             }
-            Log("------------------");
+            if (_results.Count == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("  │  Пока нет результатов                                  │");
+                Console.ResetColor();
+            }
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("  └──────────────────────────────────────────────────────────┘");
+            Console.ResetColor();
+        }
+
+        public List<string> GetTestNames()
+        {
+            List<string> names = new List<string>();
+            foreach (KeyValuePair<string, List<Question>> kvp in _tests)
+            {
+                if (_testSettings.ContainsKey(kvp.Key) && !_testSettings[kvp.Key].Visible)
+                {
+                    continue;
+                }
+                names.Add(kvp.Key);
+            }
+            return names;
         }
 
         private void Log(string message)
         {
             Console.WriteLine("[" + DateTime.Now.ToString("HH:mm:ss") + "] " + message);
+        }
+
+        private void LogSuccess(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("[" + DateTime.Now.ToString("HH:mm:ss") + "] " + message);
+            Console.ResetColor();
+        }
+
+        private void LogInfo(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("[" + DateTime.Now.ToString("HH:mm:ss") + "] " + message);
+            Console.ResetColor();
+        }
+
+        private void LogError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("[" + DateTime.Now.ToString("HH:mm:ss") + "] " + message);
+            Console.ResetColor();
         }
     }
 }

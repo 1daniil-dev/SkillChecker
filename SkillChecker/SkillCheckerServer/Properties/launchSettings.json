@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "SkillCheckerServer": {
+      "commandName": "Executable",
+      "executablePath": "dotnet",
+      "commandLineArgs": "SkillCheckerServer.dll",
+      "workingDirectory": "$(OutDir)"
+    }
+  }
+}

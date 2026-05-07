@@ -16,6 +16,8 @@ Thread serverThread = new Thread(() => server.Start());
 serverThread.IsBackground = true;
 serverThread.Start();
 
+Thread.Sleep(500);
+
 NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
 List<string> ipList = new List<string>();
 for (int i = 0; i < interfaces.Length; i++)
@@ -36,55 +38,133 @@ for (int i = 0; i < interfaces.Length; i++)
     }
 }
 
-Console.WriteLine("=== SkillChecker Server ===");
+Console.ForegroundColor = ConsoleColor.Cyan;
+Console.WriteLine("  ╔══════════════════════════╗");
+Console.WriteLine("  ║      SkillChecker        ║");
+Console.WriteLine("  ╚══════════════════════════╝");
+Console.ResetColor();
+Console.WriteLine();
+
+Console.ForegroundColor = ConsoleColor.Green;
+Console.Write("  Сервер запущен: ");
+Console.ResetColor();
 if (ipList.Count > 0)
 {
     for (int i = 0; i < ipList.Count; i++)
     {
-        Console.WriteLine("IP: " + ipList[i] + ":" + port);
+        Console.WriteLine(ipList[i] + ":" + port);
     }
 }
 else
 {
-    Console.WriteLine("IP: 127.0.0.1:" + port);
+    Console.WriteLine("127.0.0.1:" + port);
 }
-Console.WriteLine("Команды:");
-Console.WriteLine("  results     — показать результаты");
-Console.WriteLine("  schedule ИМЯ_ТЕСТА HH:mm — запланировать начало");
-Console.WriteLine("  reload      — перезагрузить тесты");
-Console.WriteLine("  exit        — остановить сервер");
+
+List<string> testNames = server.GetTestNames();
+Console.ForegroundColor = ConsoleColor.DarkGray;
+Console.Write("  Загружено тестов: ");
+Console.ResetColor();
+Console.WriteLine(testNames.Count.ToString());
+if (testNames.Count > 0)
+{
+    Console.ForegroundColor = ConsoleColor.DarkGray;
+    Console.Write("  Тесты: ");
+    Console.ResetColor();
+    for (int i = 0; i < testNames.Count; i++)
+    {
+        if (i > 0) Console.Write(", ");
+        Console.Write(testNames[i]);
+    }
+    Console.WriteLine();
+}
+
+Console.ForegroundColor = ConsoleColor.DarkGray;
+Console.Write("  Порт: ");
+Console.ResetColor();
+Console.WriteLine(port.ToString());
 Console.WriteLine();
+
+ShowMenu();
 
 while (true)
 {
+    Console.ForegroundColor = ConsoleColor.DarkGray;
+    Console.Write("> ");
+    Console.ResetColor();
     string? input = Console.ReadLine();
     if (input == null) continue;
 
     string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-    if (parts.Length == 0) continue;
+    if (parts.Length == 0)
+    {
+        ShowMenu();
+        continue;
+    }
 
     string cmd = parts[0].ToLower();
 
-    if (cmd == "exit")
+    if (cmd == "1" || cmd == "results")
+    {
+        server.ShowResults();
+    }
+    else if (cmd == "2" || cmd == "reload")
+    {
+        server.LoadAllTests();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("  Тесты перезагружены");
+        Console.ResetColor();
+    }
+    else if (cmd == "3" || cmd == "schedule")
+    {
+        if (parts.Length >= 3)
+        {
+            server.SetSchedule(parts[1], parts[2]);
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("  Формат: schedule ИМЯ_ТЕСТА HH:mm");
+            Console.ResetColor();
+        }
+    }
+    else if (cmd == "4" || cmd == "tests")
+    {
+        List<string> names = server.GetTestNames();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("  Тесты (" + names.Count + "):");
+        Console.ResetColor();
+        for (int i = 0; i < names.Count; i++)
+        {
+            Console.WriteLine("    " + (i + 1) + ". " + names[i]);
+        }
+    }
+    else if (cmd == "5" || cmd == "exit")
     {
         server.Stop();
         break;
     }
-    else if (cmd == "results")
+    else if (cmd == "?" || cmd == "help" || cmd == "меню")
     {
-        server.ShowResults();
-    }
-    else if (cmd == "schedule" && parts.Length >= 3)
-    {
-        server.SetSchedule(parts[1], parts[2]);
-    }
-    else if (cmd == "reload")
-    {
-        server.LoadAllTests();
-        Console.WriteLine("Тесты перезагружены");
+        ShowMenu();
     }
     else
     {
-        Console.WriteLine("Неизвестная команда");
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("  Неизвестная команда. Введите ? для меню.");
+        Console.ResetColor();
     }
+}
+
+void ShowMenu()
+{
+    Console.ForegroundColor = ConsoleColor.DarkGray;
+    Console.WriteLine("  ┌─────────────────────────────────────┐");
+    Console.WriteLine("  │  1. Результаты                      │");
+    Console.WriteLine("  │  2. Перезагрузить тесты             │");
+    Console.WriteLine("  │  3. Запланировать тест              │");
+    Console.WriteLine("  │  4. Список тестов                   │");
+    Console.WriteLine("  │  5. Выход                           │");
+    Console.WriteLine("  └─────────────────────────────────────┘");
+    Console.WriteLine("  Введите номер или команду (? — меню)");
+    Console.ResetColor();
 }
