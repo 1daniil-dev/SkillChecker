@@ -4,6 +4,23 @@
         Title="SkillChecker - Система тестирования" Height="800" Width="900"
         WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
         Background="#F0F4F8">
+    <Window.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}"/>
+    </Window.InputBindings>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" Background="White" Foreground="#334155" FontSize="14" Padding="4,2">
+            <MenuItem Header="Действия" Padding="8,4">
+                <MenuItem Header="Начать заново" Command="{Binding RestartCommand}" InputGestureText="Ctrl+R"/>
+                <Separator/>
+                <MenuItem Header="Выход" Command="{Binding ExitCommand}" InputGestureText="Alt+F4"/>
+            </MenuItem>
+            <MenuItem Header="Справка" Padding="8,4">
+                <MenuItem Header="Горячие клавиши" Click="ShowHotkeys_Click"/>
+                <Separator/>
+                <MenuItem Header="О программе" Click="ShowAbout_Click"/>
+            </MenuItem>
+        </Menu>
 
     <Grid Margin="20">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -687,4 +704,5 @@
             </StackPanel>
         </ScrollViewer>
     </Grid>
+    </DockPanel>
 </Window>

@@ -91,5 +91,32 @@ namespace SkillChecker
                 }
             }
         }
+
+        private void ShowHotkeys_Click(object sender, RoutedEventArgs e)
+        {
+            string text = "Горячие клавиши:\n\n" +
+                "Тестирование:\n" +
+                "  Enter — следующий вопрос\n" +
+                "  Esc — выйти из теста\n" +
+                "  1-6 — выбрать вариант ответа\n\n" +
+                "Проверка ответов:\n" +
+                "  Enter — отправить результат\n" +
+                "  Esc — выйти из теста\n\n" +
+                "Ожидание теста:\n" +
+                "  Enter — начать тест\n\n" +
+                "Результат:\n" +
+                "  Enter — начать заново";
+            MessageBox.Show(text, "Горячие клавиши", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void ShowAbout_Click(object sender, RoutedEventArgs e)
+        {
+            string text = "SkillChecker — Система тестирования учащихся\n\n" +
+                "Версия 1.0\n\n" +
+                "Клиент-серверная система для проведения тестов.\n" +
+                "Преподаватель запускает сервер, студенты\n" +
+                "подключаются через клиент и проходят тестирование.";
+            MessageBox.Show(text, "О программе", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
     }
 }
