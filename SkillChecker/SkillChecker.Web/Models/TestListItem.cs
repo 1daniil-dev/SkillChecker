@@ -1,4 +1,4 @@
-namespace SkillChecker.Web.Models
+﻿namespace SkillChecker.Web.Models
 {
     public class TestListItem
     {

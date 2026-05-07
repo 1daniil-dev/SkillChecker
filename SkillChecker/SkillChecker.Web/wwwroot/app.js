@@ -1,4 +1,4 @@
-var allTests = [];
+﻿var allTests = [];
 
 window.onload = function () {
     loadTests();

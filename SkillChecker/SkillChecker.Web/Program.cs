@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using SkillChecker.Common.Models;
 using SkillChecker.Web.Models;

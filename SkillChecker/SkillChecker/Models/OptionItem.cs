@@ -1,4 +1,4 @@
-namespace SkillChecker.ViewModels
+﻿namespace SkillChecker.ViewModels
 {
     public class OptionItem
     {

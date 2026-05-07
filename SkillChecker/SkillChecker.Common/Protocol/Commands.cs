@@ -1,4 +1,4 @@
-namespace SkillChecker.Common.Protocol
+﻿namespace SkillChecker.Common.Protocol
 {
     public static class Commands
     {

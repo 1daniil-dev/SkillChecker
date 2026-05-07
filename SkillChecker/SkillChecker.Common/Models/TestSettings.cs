@@ -1,4 +1,4 @@
-namespace SkillChecker.Common.Models
+﻿namespace SkillChecker.Common.Models
 {
     public class TestSettings
     {

@@ -1,4 +1,4 @@
-using SkillChecker.Common.Models;
+﻿using SkillChecker.Common.Models;
 
 namespace SkillChecker.Services
 {

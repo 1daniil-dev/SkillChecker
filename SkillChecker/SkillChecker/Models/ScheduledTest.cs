@@ -1,4 +1,4 @@
-namespace SkillChecker.Services
+﻿namespace SkillChecker.Services
 {
     public class ScheduledTest
     {
