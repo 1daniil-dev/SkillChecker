@@ -8,6 +8,15 @@ using SkillChecker.Services;
 
 namespace SkillChecker.ViewModels
 {
+    public enum AppState
+    {
+        Auth,
+        Wait,
+        Testing,
+        Review,
+        Result
+    }
+
     public class MainViewModel : INotifyPropertyChanged
     {
         private ClientService _clientService;
@@ -20,7 +29,7 @@ namespace SkillChecker.ViewModels
         private DateTime _testEndTime;
         private int _testTimeMinutes;
 
-        private string _appState;
+        private AppState _appState;
         private string _serverIp;
         private string _serverPort;
         private string _studentName;
@@ -89,7 +98,7 @@ namespace SkillChecker.ViewModels
 
             _testTimeMinutes = 0;
 
-            _appState = "Auth";
+            _appState = AppState.Auth;
             _serverIp = "127.0.0.1";
             _serverPort = "9000";
             _studentName = "";
@@ -152,7 +161,7 @@ namespace SkillChecker.ViewModels
             ExitCommand = new RelayCommand(ExecuteExit);
         }
 
-        public string AppState
+        public AppState AppState
         {
             get => _appState;
             set { _appState = value; OnPropertyChanged(); UpdateVisibility(); }
@@ -431,7 +440,7 @@ namespace SkillChecker.ViewModels
 
         private void UpdateVisibility()
         {
-            if (_appState == "Auth")
+            if (_appState == AppState.Auth)
             {
                 AuthVisibility = Visibility.Visible;
                 WaitVisibility = Visibility.Collapsed;
@@ -439,7 +448,7 @@ namespace SkillChecker.ViewModels
                 ReviewVisibility = Visibility.Collapsed;
                 ResultVisibility = Visibility.Collapsed;
             }
-            else if (_appState == "Wait")
+            else if (_appState == AppState.Wait)
             {
                 AuthVisibility = Visibility.Collapsed;
                 WaitVisibility = Visibility.Visible;
@@ -447,7 +456,7 @@ namespace SkillChecker.ViewModels
                 ReviewVisibility = Visibility.Collapsed;
                 ResultVisibility = Visibility.Collapsed;
             }
-            else if (_appState == "Testing")
+            else if (_appState == AppState.Testing)
             {
                 AuthVisibility = Visibility.Collapsed;
                 WaitVisibility = Visibility.Collapsed;
@@ -455,7 +464,7 @@ namespace SkillChecker.ViewModels
                 ReviewVisibility = Visibility.Collapsed;
                 ResultVisibility = Visibility.Collapsed;
             }
-            else if (_appState == "Review")
+            else if (_appState == AppState.Review)
             {
                 AuthVisibility = Visibility.Collapsed;
                 WaitVisibility = Visibility.Collapsed;
@@ -463,7 +472,7 @@ namespace SkillChecker.ViewModels
                 ReviewVisibility = Visibility.Visible;
                 ResultVisibility = Visibility.Collapsed;
             }
-            else if (_appState == "Result")
+            else if (_appState == AppState.Result)
             {
                 AuthVisibility = Visibility.Collapsed;
                 WaitVisibility = Visibility.Collapsed;
@@ -680,7 +689,7 @@ namespace SkillChecker.ViewModels
                 _currentQuestionIndex = 0;
                 TotalQuestions = _questions.Count;
                 ShowQuestion(0);
-                AppState = "Testing";
+                AppState = AppState.Testing;
 
                 _testTimeMinutes = testResult.TimeMinutes;
                 if (_testTimeMinutes > 0)
@@ -741,7 +750,7 @@ namespace SkillChecker.ViewModels
             }
             UpdateWaitCountdown(scheduledTime);
             _waitTimer.Start();
-            AppState = "Wait";
+            AppState = AppState.Wait;
         }
 
         private void WaitTimerTick(object? sender, EventArgs e)
@@ -805,7 +814,7 @@ namespace SkillChecker.ViewModels
             {
                 StatusMessage = "Введите ФИО и группу перед началом теста";
                 _waitTimer.Stop();
-                AppState = "Auth";
+                AppState = AppState.Auth;
                 return;
             }
 
@@ -871,7 +880,7 @@ namespace SkillChecker.ViewModels
                 {
                     SaveCurrentAnswer();
                     ShowQuestion(index);
-                    AppState = "Testing";
+                    AppState = AppState.Testing;
                 }
             }
         }
@@ -1022,7 +1031,7 @@ namespace SkillChecker.ViewModels
             }
 
             ReviewItems = items;
-            AppState = "Review";
+            AppState = AppState.Review;
         }
 
         private void ShowResult()
@@ -1108,14 +1117,14 @@ namespace SkillChecker.ViewModels
                 }
 
                 ResultItems = items;
-                AppState = "Result";
+                AppState = AppState.Result;
             }
             catch (Exception ex)
             {
                 ResultScore = "Ошибка";
                 ResultCorrect = ex.Message;
                 ResultItems = new List<ResultItem>();
-                AppState = "Result";
+                AppState = AppState.Result;
             }
         }
 
@@ -1138,7 +1147,7 @@ namespace SkillChecker.ViewModels
                 ProgressValue = 0;
                 TimerVisibility = Visibility.Collapsed;
                 TimerText = "";
-                AppState = "Auth";
+                AppState = AppState.Auth;
             }
         }
 
@@ -1157,7 +1166,7 @@ namespace SkillChecker.ViewModels
             IsConnected = false;
             TestCountText = "";
             StatusMessage = "Введите IP сервера и подключитесь";
-            AppState = "Auth";
+            AppState = AppState.Auth;
         }
 
         private void ExecuteExit(object? parameter)
