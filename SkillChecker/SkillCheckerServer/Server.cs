@@ -25,10 +25,11 @@ namespace SkillCheckerServer
             _testSettings = new Dictionary<string, TestSettings>();
             _results = new List<TestResult>();
             _testsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tests");
-            if (!Directory.Exists(_testsFolder))
+            string solutionDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".."));
+            string sourceTestsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Tests");
+            if (Directory.Exists(sourceTestsFolder))
             {
-                string solutionDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".."));
-                _testsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Tests");
+                _testsFolder = sourceTestsFolder;
             }
             _settingsFile = Path.Combine(_testsFolder, "test_settings.json");
         }
