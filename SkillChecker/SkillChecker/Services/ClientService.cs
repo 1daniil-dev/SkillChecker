@@ -181,39 +181,10 @@ namespace SkillChecker.Services
                         sa.SelectedIndex = -1;
                     }
 
-                    if (sa.QuestionType == "Multiple")
-                    {
-                        bool isCorrect = true;
-                        if (sa.SelectedIndices.Count != correctIndices.Count)
-                        {
-                            isCorrect = false;
-                        }
-                        else
-                        {
-                            for (int j = 0; j < sa.SelectedIndices.Count; j++)
-                            {
-                                bool found = false;
-                                for (int k = 0; k < correctIndices.Count; k++)
-                                {
-                                    if (sa.SelectedIndices[j] == correctIndices[k])
-                                    {
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found)
-                                {
-                                    isCorrect = false;
-                                    break;
-                                }
-                            }
-                        }
-                        sa.IsCorrect = isCorrect;
-                    }
-                    else
-                    {
-                        sa.IsCorrect = sa.SelectedIndex == sa.CorrectIndex;
-                    }
+                    sa.IsCorrect = AnswerChecker.CheckAnswer(
+                        sa.SelectedIndices.Count > 0 ? sa.SelectedIndices : new List<int>(),
+                        correctIndices,
+                        sa.QuestionType);
 
                     result.Answers.Add(sa);
                 }

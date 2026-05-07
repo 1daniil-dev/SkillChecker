@@ -390,41 +390,13 @@ namespace SkillCheckerServer
                         answer.SelectedIndices = selectedAnswers[i];
                         answer.SelectedIndex = selectedAnswers[i][0];
 
-                        List<int> correct = questions[i].CorrectAnswerIndices;
-                        bool isCorrect = true;
-
-                        if (selectedAnswers[i].Count != correct.Count)
-                        {
-                            isCorrect = false;
-                        }
-                        else
-                        {
-                            for (int j = 0; j < selectedAnswers[i].Count; j++)
-                            {
-                                bool found = false;
-                                for (int k = 0; k < correct.Count; k++)
-                                {
-                                    if (selectedAnswers[i][j] == correct[k])
-                                    {
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found)
-                                {
-                                    isCorrect = false;
-                                    break;
-                                }
-                            }
-                        }
-
-                        answer.IsCorrect = isCorrect;
-                        if (isCorrect) correctCount++;
+                        answer.IsCorrect = AnswerChecker.CheckAnswer(selectedAnswers[i], questions[i].CorrectAnswerIndices, "Multiple");
+                        if (answer.IsCorrect) correctCount++;
                     }
                     else
                     {
                         answer.SelectedIndex = selectedAnswers[i][0];
-                        answer.IsCorrect = selectedAnswers[i][0] == questions[i].CorrectAnswerIndex;
+                        answer.IsCorrect = AnswerChecker.CheckAnswer(selectedAnswers[i], new List<int> { questions[i].CorrectAnswerIndex }, "Single");
                         if (answer.IsCorrect) correctCount++;
                     }
                 }
