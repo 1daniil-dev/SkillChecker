@@ -6,7 +6,7 @@ namespace SkillCheckerServer
 {
     internal partial class Server
     {
-        private TestResult CalculateResult(string studentName, string group, string testName, List<Question> questions, List<List<int>> selectedAnswers)
+        private TestResult CalculateResult(string studentName, string group, string testName, List<Question> questions, List<List<int>> selectedAnswers, List<string> textAnswers)
         {
             TestResult result = new TestResult();
             result.StudentName = studentName;
@@ -23,7 +23,16 @@ namespace SkillCheckerServer
                 answer.CorrectIndex = questions[i].CorrectAnswerIndex;
                 answer.QuestionType = questions[i].Type;
 
-                if (i < selectedAnswers.Count && selectedAnswers[i].Count > 0)
+                if (questions[i].Type == "Text")
+                {
+                    string typed = i < textAnswers.Count ? textAnswers[i] : "";
+                    answer.TextAnswer = typed;
+                    answer.AcceptableAnswers = questions[i].AcceptableAnswers;
+                    answer.SelectedIndex = -1;
+                    answer.IsCorrect = AnswerChecker.CheckTextAnswer(typed, questions[i].AcceptableAnswers);
+                    if (answer.IsCorrect) correctCount++;
+                }
+                else if (i < selectedAnswers.Count && selectedAnswers[i].Count > 0)
                 {
                     if (questions[i].Type == "Multiple")
                     {

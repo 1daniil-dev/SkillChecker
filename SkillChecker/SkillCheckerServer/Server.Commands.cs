@@ -100,27 +100,37 @@ namespace SkillCheckerServer
 
                 List<Question> questions = _tests[testName];
                 List<List<int>> selectedAnswers = new List<List<int>>();
+                List<string> textAnswers = new List<string>();
 
                 string[] answerParts = answersStr.Split(',');
                 for (int i = 0; i < answerParts.Length; i++)
                 {
                     List<int> questionAnswers = new List<int>();
-                    string[] subParts = answerParts[i].Split(';');
-                    for (int j = 0; j < subParts.Length; j++)
+                    string textAnswer = "";
+                    if (ProtocolHelper.IsEncodedTextAnswer(answerParts[i]))
                     {
-                        if (int.TryParse(subParts[j], out int val))
+                        textAnswer = ProtocolHelper.DecodeTextAnswer(answerParts[i]);
+                    }
+                    else
+                    {
+                        string[] subParts = answerParts[i].Split(';');
+                        for (int j = 0; j < subParts.Length; j++)
                         {
-                            questionAnswers.Add(val);
-                        }
-                        else
-                        {
-                            questionAnswers.Add(-1);
+                            if (int.TryParse(subParts[j], out int val))
+                            {
+                                questionAnswers.Add(val);
+                            }
+                            else
+                            {
+                                questionAnswers.Add(-1);
+                            }
                         }
                     }
                     selectedAnswers.Add(questionAnswers);
+                    textAnswers.Add(textAnswer);
                 }
 
-                TestResult result = CalculateResult(studentName, group, testName, questions, selectedAnswers);
+                TestResult result = CalculateResult(studentName, group, testName, questions, selectedAnswers, textAnswers);
                 _results.Add(result);
 
                 LogSuccess("Результат: " + studentName + " (" + group + ") — " + result.Score + "% (" + result.CorrectAnswers + "/" + result.TotalQuestions + ") " + testName);
@@ -131,7 +141,11 @@ namespace SkillCheckerServer
                 for (int i = 0; i < questions.Count; i++)
                 {
                     if (i > 0) correctIndices += ",";
-                    if (questions[i].Type == "Multiple" && questions[i].CorrectAnswerIndices.Count > 0)
+                    if (questions[i].Type == "Text")
+                    {
+                        correctIndices += ProtocolHelper.EncodeAcceptableAnswers(questions[i].AcceptableAnswers);
+                    }
+                    else if (questions[i].Type == "Multiple" && questions[i].CorrectAnswerIndices.Count > 0)
                     {
                         for (int j = 0; j < questions[i].CorrectAnswerIndices.Count; j++)
                         {

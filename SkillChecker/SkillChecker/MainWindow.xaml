@@ -356,6 +356,9 @@
                                     <DataTrigger Binding="{Binding IsCurrentMultiple}" Value="True">
                                         <Setter Property="Visibility" Value="Collapsed"/>
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsCurrentText}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </ListBox.Style>
@@ -391,6 +394,28 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+
+                    <Grid Grid.Row="3" VerticalAlignment="Top">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCurrentText}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Border Background="White" CornerRadius="10"
+                                BorderBrush="#E2E8F0" BorderThickness="1.5" Padding="14,12">
+                            <TextBox Text="{Binding CurrentTextAnswer, UpdateSourceTrigger=PropertyChanged}"
+                                     MaxLength="200" MinHeight="44" FontSize="16" Foreground="#1E293B"
+                                     BorderThickness="0" Background="Transparent"
+                                     TextWrapping="Wrap" AcceptsReturn="False" VerticalContentAlignment="Center"
+                                     AutomationProperties.Name="Поле для ввода текстового ответа"
+                                     AutomationProperties.HelpText="Введите ответ текстом, до 200 символов"/>
+                        </Border>
+                    </Grid>
 
                     <ItemsControl Grid.Row="3" ItemsSource="{Binding CurrentOptions}"
                                   AutomationProperties.Name="Варианты ответа"

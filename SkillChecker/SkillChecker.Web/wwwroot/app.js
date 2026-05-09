@@ -593,39 +593,72 @@ function previewTest(name) {
                     typeLabel.className = "preview-type-label";
                     typeLabel.textContent = "Множественный";
                     qHeader.appendChild(typeLabel);
+                } else if (q.Type && q.Type === "Text") {
+                    var typeLabel = document.createElement("span");
+                    typeLabel.className = "preview-type-label";
+                    typeLabel.textContent = "Текстовый";
+                    qHeader.appendChild(typeLabel);
                 }
 
                 qBlock.appendChild(qHeader);
 
-                var optionsList = document.createElement("div");
-                optionsList.className = "preview-options";
+                if (q.Type === "Text") {
+                    var acceptableList = document.createElement("div");
+                    acceptableList.className = "preview-acceptable";
 
-                for (var j = 0; j < q.Options.length; j++) {
-                    var optDiv = document.createElement("div");
-                    optDiv.className = "preview-option";
-                    if (q.Type === "Multiple") {
-                        if (q.CorrectAnswerIndices && q.CorrectAnswerIndices.indexOf(j) >= 0) {
-                            optDiv.classList.add("preview-correct");
-                        }
+                    var acceptableLabel = document.createElement("div");
+                    acceptableLabel.className = "preview-acceptable-label";
+                    acceptableLabel.textContent = "Допустимые ответы:";
+                    acceptableList.appendChild(acceptableLabel);
+
+                    var acceptable = q.AcceptableAnswers || [];
+                    if (acceptable.length === 0) {
+                        var emptyDiv = document.createElement("div");
+                        emptyDiv.className = "preview-acceptable-empty";
+                        emptyDiv.textContent = "не указаны";
+                        acceptableList.appendChild(emptyDiv);
                     } else {
-                        if (j === q.CorrectAnswerIndex) {
-                            optDiv.classList.add("preview-correct");
+                        for (var j = 0; j < acceptable.length; j++) {
+                            var ansDiv = document.createElement("div");
+                            ansDiv.className = "preview-acceptable-item";
+                            ansDiv.textContent = acceptable[j];
+                            acceptableList.appendChild(ansDiv);
                         }
                     }
 
-                    var optLabel = document.createElement("span");
-                    optLabel.className = "preview-opt-letter";
-                    optLabel.textContent = String.fromCharCode(1040 + j);
-                    optDiv.appendChild(optLabel);
+                    qBlock.appendChild(acceptableList);
+                } else {
+                    var optionsList = document.createElement("div");
+                    optionsList.className = "preview-options";
 
-                    var optText = document.createElement("span");
-                    optText.textContent = q.Options[j];
-                    optDiv.appendChild(optText);
+                    for (var j = 0; j < q.Options.length; j++) {
+                        var optDiv = document.createElement("div");
+                        optDiv.className = "preview-option";
+                        if (q.Type === "Multiple") {
+                            if (q.CorrectAnswerIndices && q.CorrectAnswerIndices.indexOf(j) >= 0) {
+                                optDiv.classList.add("preview-correct");
+                            }
+                        } else {
+                            if (j === q.CorrectAnswerIndex) {
+                                optDiv.classList.add("preview-correct");
+                            }
+                        }
 
-                    optionsList.appendChild(optDiv);
+                        var optLabel = document.createElement("span");
+                        optLabel.className = "preview-opt-letter";
+                        optLabel.textContent = String.fromCharCode(1040 + j);
+                        optDiv.appendChild(optLabel);
+
+                        var optText = document.createElement("span");
+                        optText.textContent = q.Options[j];
+                        optDiv.appendChild(optText);
+
+                        optionsList.appendChild(optDiv);
+                    }
+
+                    qBlock.appendChild(optionsList);
                 }
 
-                qBlock.appendChild(optionsList);
                 previewDiv.appendChild(qBlock);
             }
 

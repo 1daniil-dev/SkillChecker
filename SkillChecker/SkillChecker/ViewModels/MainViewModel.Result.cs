@@ -12,7 +12,7 @@ namespace SkillChecker.ViewModels
 
             try
             {
-                TestResult result = _clientService.SubmitAnswers(StudentName, StudentGroup, _selectedTestName, _selectedAnswers);
+                TestResult result = _clientService.SubmitAnswers(StudentName, StudentGroup, _selectedTestName, _selectedAnswers, _textAnswers);
 
                 ResultScore = result.Score + "%";
                 ResultCorrect = "Правильных ответов: " + result.CorrectAnswers + " из " + result.TotalQuestions;
@@ -40,7 +40,28 @@ namespace SkillChecker.ViewModels
                     bool isCorrect = i < result.Answers.Count && result.Answers[i].IsCorrect;
 
                     string selectedText = "";
-                    if (q.Type == "Multiple")
+                    string correctText = "";
+
+                    if (q.Type == "Text")
+                    {
+                        string typed = i < _textAnswers.Count ? _textAnswers[i] : "";
+                        selectedText = typed.Length > 0 ? typed : "Пропущен";
+
+                        List<string> acceptable = i < result.Answers.Count ? result.Answers[i].AcceptableAnswers : new List<string>();
+                        if (acceptable != null && acceptable.Count > 0)
+                        {
+                            for (int j = 0; j < acceptable.Count; j++)
+                            {
+                                if (j > 0) correctText += ", ";
+                                correctText += acceptable[j];
+                            }
+                        }
+                        else
+                        {
+                            correctText = "?";
+                        }
+                    }
+                    else if (q.Type == "Multiple")
                     {
                         if (selectedList.Count > 0)
                         {
@@ -55,25 +76,25 @@ namespace SkillChecker.ViewModels
                         {
                             selectedText = "Пропущен";
                         }
+
+                        if (q.CorrectAnswerIndices.Count > 0)
+                        {
+                            for (int j = 0; j < q.CorrectAnswerIndices.Count; j++)
+                            {
+                                if (j > 0) correctText += ", ";
+                                int c = q.CorrectAnswerIndices[j];
+                                correctText += c < q.Options.Count ? q.Options[c] : "?";
+                            }
+                        }
+                        else
+                        {
+                            correctText = correctIdx < q.Options.Count ? q.Options[correctIdx] : "?";
+                        }
                     }
                     else
                     {
                         int selected = selectedList.Count > 0 ? selectedList[0] : -1;
                         selectedText = selected >= 0 && selected < q.Options.Count ? q.Options[selected] : "Пропущен";
-                    }
-
-                    string correctText = "";
-                    if (q.Type == "Multiple" && q.CorrectAnswerIndices.Count > 0)
-                    {
-                        for (int j = 0; j < q.CorrectAnswerIndices.Count; j++)
-                        {
-                            if (j > 0) correctText += ", ";
-                            int c = q.CorrectAnswerIndices[j];
-                            correctText += c < q.Options.Count ? q.Options[c] : "?";
-                        }
-                    }
-                    else
-                    {
                         correctText = correctIdx < q.Options.Count ? q.Options[correctIdx] : "?";
                     }
 

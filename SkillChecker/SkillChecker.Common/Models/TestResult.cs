@@ -8,6 +8,8 @@
         private bool _isCorrect;
         private string _questionType;
         private List<int> _selectedIndices;
+        private string _textAnswer;
+        private List<string> _acceptableAnswers;
 
         public string QuestionText { get => _questionText; set => _questionText = value; }
         public int SelectedIndex { get => _selectedIndex; set => _selectedIndex = value; }
@@ -15,6 +17,8 @@
         public bool IsCorrect { get => _isCorrect; set => _isCorrect = value; }
         public string QuestionType { get => _questionType; set => _questionType = value; }
         public List<int> SelectedIndices { get => _selectedIndices; set => _selectedIndices = value; }
+        public string TextAnswer { get => _textAnswer; set => _textAnswer = value; }
+        public List<string> AcceptableAnswers { get => _acceptableAnswers; set => _acceptableAnswers = value; }
 
         public StudentAnswer()
         {
@@ -24,6 +28,8 @@
             _isCorrect = false;
             _questionType = "Single";
             _selectedIndices = new List<int>();
+            _textAnswer = "";
+            _acceptableAnswers = new List<string>();
         }
     }
 

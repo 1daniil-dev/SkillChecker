@@ -37,5 +37,25 @@
                 return false;
             }
         }
+
+        public static bool CheckTextAnswer(string typedAnswer, List<string> acceptableAnswers)
+        {
+            if (typedAnswer == null || typedAnswer.Length == 0)
+            {
+                return false;
+            }
+            if (acceptableAnswers == null || acceptableAnswers.Count == 0)
+            {
+                return false;
+            }
+            for (int i = 0; i < acceptableAnswers.Count; i++)
+            {
+                if (string.Equals(typedAnswer, acceptableAnswers[i], StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

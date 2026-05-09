@@ -22,6 +22,7 @@ namespace SkillChecker.ViewModels
         private ClientService _clientService;
         private List<Question> _questions;
         private List<List<int>> _selectedAnswers;
+        private List<string> _textAnswers;
         private int _currentQuestionIndex;
         private string _selectedTestName;
         private DispatcherTimer _waitTimer;
@@ -48,6 +49,8 @@ namespace SkillChecker.ViewModels
         private List<OptionItem> _currentOptions;
         private int _selectedOptionIndex;
         private bool _isCurrentMultiple;
+        private bool _isCurrentText;
+        private string _currentTextAnswer;
         private List<int> _currentMultipleSelected;
         private int _questionNumber;
         private int _totalQuestions;
@@ -86,6 +89,7 @@ namespace SkillChecker.ViewModels
             _clientService = new ClientService();
             _questions = new List<Question>();
             _selectedAnswers = new List<List<int>>();
+            _textAnswers = new List<string>();
             _currentQuestionIndex = 0;
             _selectedTestName = "";
             _waitTimer = new DispatcherTimer();
@@ -117,6 +121,8 @@ namespace SkillChecker.ViewModels
             _currentOptions = new List<OptionItem>();
             _selectedOptionIndex = -1;
             _isCurrentMultiple = false;
+            _isCurrentText = false;
+            _currentTextAnswer = "";
             _currentMultipleSelected = new List<int>();
             _questionNumber = 0;
             _totalQuestions = 0;
@@ -273,6 +279,18 @@ namespace SkillChecker.ViewModels
         {
             get => _isCurrentMultiple;
             set { _isCurrentMultiple = value; OnPropertyChanged(); }
+        }
+
+        public bool IsCurrentText
+        {
+            get => _isCurrentText;
+            set { _isCurrentText = value; OnPropertyChanged(); }
+        }
+
+        public string CurrentTextAnswer
+        {
+            get => _currentTextAnswer;
+            set { _currentTextAnswer = value; OnPropertyChanged(); }
         }
 
         public List<int> CurrentMultipleSelected

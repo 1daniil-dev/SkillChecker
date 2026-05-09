@@ -106,18 +106,26 @@ namespace SkillChecker.Services
             return list;
         }
 
-        public TestResult SubmitAnswers(string studentName, string group, string testName, List<List<int>> answers)
+        public TestResult SubmitAnswers(string studentName, string group, string testName, List<List<int>> answers, List<string> textAnswers)
         {
             string answersStr = "";
             for (int i = 0; i < answers.Count; i++)
             {
                 if (i > 0) answersStr += ",";
-                for (int j = 0; j < answers[i].Count; j++)
+                string textAt = textAnswers != null && i < textAnswers.Count ? textAnswers[i] : "";
+                if (textAt != null && textAt.Length > 0)
                 {
-                    if (j > 0) answersStr += ";";
-                    answersStr += answers[i][j].ToString();
+                    answersStr += ProtocolHelper.EncodeTextAnswer(textAt);
                 }
-                if (answers[i].Count == 0)
+                else if (answers[i].Count > 0)
+                {
+                    for (int j = 0; j < answers[i].Count; j++)
+                    {
+                        if (j > 0) answersStr += ";";
+                        answersStr += answers[i][j].ToString();
+                    }
+                }
+                else
                 {
                     answersStr += "-1";
                 }
@@ -135,56 +143,60 @@ namespace SkillChecker.Services
                 if (int.TryParse(parts[2], out correct)) result.CorrectAnswers = correct;
                 if (int.TryParse(parts[3], out total)) result.TotalQuestions = total;
 
-                List<List<int>> correctIndicesList = new List<List<int>>();
                 string[] correctParts = parts[4].Split(',');
                 for (int i = 0; i < correctParts.Length; i++)
                 {
-                    List<int> correctForQuestion = new List<int>();
-                    string[] subParts = correctParts[i].Split(';');
-                    for (int j = 0; j < subParts.Length; j++)
-                    {
-                        if (int.TryParse(subParts[j], out int idx))
-                        {
-                            correctForQuestion.Add(idx);
-                        }
-                    }
-                    correctIndicesList.Add(correctForQuestion);
-                }
-
-                for (int i = 0; i < correctIndicesList.Count; i++)
-                {
                     StudentAnswer sa = new StudentAnswer();
-                    List<int> correctIndices = correctIndicesList[i];
 
-                    if (correctIndices.Count > 1)
+                    if (ProtocolHelper.IsEncodedTextAnswer(correctParts[i]))
                     {
-                        sa.QuestionType = "Multiple";
-                        sa.CorrectIndex = correctIndices.Count > 0 ? correctIndices[0] : 0;
+                        sa.QuestionType = "Text";
+                        sa.AcceptableAnswers = ProtocolHelper.DecodeAcceptableAnswers(correctParts[i]);
+                        sa.CorrectIndex = -1;
+                        sa.SelectedIndex = -1;
+                        if (textAnswers != null && i < textAnswers.Count)
+                        {
+                            sa.TextAnswer = textAnswers[i];
+                        }
+                        sa.IsCorrect = AnswerChecker.CheckTextAnswer(sa.TextAnswer, sa.AcceptableAnswers);
                     }
                     else
                     {
-                        sa.CorrectIndex = correctIndices.Count > 0 ? correctIndices[0] : 0;
-                    }
+                        List<int> correctIndices = new List<int>();
+                        string[] subParts = correctParts[i].Split(';');
+                        for (int j = 0; j < subParts.Length; j++)
+                        {
+                            if (int.TryParse(subParts[j], out int idx))
+                            {
+                                correctIndices.Add(idx);
+                            }
+                        }
 
-                    if (i < answers.Count && answers[i].Count > 0)
-                    {
-                        sa.SelectedIndex = answers[i][0];
-                        sa.SelectedIndices = new List<int>(answers[i]);
-
-                        if (answers[i].Count > 1)
+                        if (correctIndices.Count > 1)
                         {
                             sa.QuestionType = "Multiple";
                         }
-                    }
-                    else
-                    {
-                        sa.SelectedIndex = -1;
-                    }
+                        sa.CorrectIndex = correctIndices.Count > 0 ? correctIndices[0] : 0;
 
-                    sa.IsCorrect = AnswerChecker.CheckAnswer(
-                        sa.SelectedIndices.Count > 0 ? sa.SelectedIndices : new List<int>(),
-                        correctIndices,
-                        sa.QuestionType);
+                        if (i < answers.Count && answers[i].Count > 0)
+                        {
+                            sa.SelectedIndex = answers[i][0];
+                            sa.SelectedIndices = new List<int>(answers[i]);
+                            if (answers[i].Count > 1)
+                            {
+                                sa.QuestionType = "Multiple";
+                            }
+                        }
+                        else
+                        {
+                            sa.SelectedIndex = -1;
+                        }
+
+                        sa.IsCorrect = AnswerChecker.CheckAnswer(
+                            sa.SelectedIndices.Count > 0 ? sa.SelectedIndices : new List<int>(),
+                            correctIndices,
+                            sa.QuestionType);
+                    }
 
                     result.Answers.Add(sa);
                 }

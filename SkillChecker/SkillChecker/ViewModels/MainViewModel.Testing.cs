@@ -26,9 +26,11 @@ namespace SkillChecker.ViewModels
 
                 _questions = testResult.Questions;
                 _selectedAnswers = new List<List<int>>();
+                _textAnswers = new List<string>();
                 for (int i = 0; i < _questions.Count; i++)
                 {
                     _selectedAnswers.Add(new List<int>());
+                    _textAnswers.Add("");
                 }
                 _currentQuestionIndex = 0;
                 TotalQuestions = _questions.Count;
@@ -88,9 +90,16 @@ namespace SkillChecker.ViewModels
         {
             if (_currentQuestionIndex >= 0 && _currentQuestionIndex < _selectedAnswers.Count)
             {
-                if (_isCurrentMultiple)
+                if (_isCurrentText)
+                {
+                    string trimmed = _currentTextAnswer == null ? "" : _currentTextAnswer.Trim();
+                    _textAnswers[_currentQuestionIndex] = trimmed;
+                    _selectedAnswers[_currentQuestionIndex] = new List<int>();
+                }
+                else if (_isCurrentMultiple)
                 {
                     _selectedAnswers[_currentQuestionIndex] = new List<int>(_currentMultipleSelected);
+                    _textAnswers[_currentQuestionIndex] = "";
                 }
                 else
                 {
@@ -100,6 +109,7 @@ namespace SkillChecker.ViewModels
                         single.Add(_selectedOptionIndex);
                     }
                     _selectedAnswers[_currentQuestionIndex] = single;
+                    _textAnswers[_currentQuestionIndex] = "";
                 }
             }
         }
@@ -209,51 +219,75 @@ namespace SkillChecker.ViewModels
             _currentQuestionIndex = index;
             Question q = _questions[index];
             QuestionText = q.Text;
+            IsCurrentText = q.Type == "Text";
             IsCurrentMultiple = q.Type == "Multiple";
-            QuestionTypeHint = _isCurrentMultiple ? "Выберите несколько вариантов ответа" : "Выберите один вариант ответа";
-
-            List<int> savedAnswers = _selectedAnswers[index];
-
-            List<OptionItem> options = new List<OptionItem>();
-            for (int i = 0; i < q.Options.Count; i++)
+            if (_isCurrentText)
             {
-                OptionItem opt = new OptionItem();
-                opt.Index = i;
-                opt.Text = q.Options[i];
-                opt.IsSelected = false;
-
-                if (_isCurrentMultiple)
-                {
-                    for (int j = 0; j < savedAnswers.Count; j++)
-                    {
-                        if (savedAnswers[j] == i)
-                        {
-                            opt.IsSelected = true;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    if (savedAnswers.Count > 0 && savedAnswers[0] == i)
-                    {
-                        opt.IsSelected = true;
-                    }
-                }
-
-                options.Add(opt);
+                QuestionTypeHint = "Введите ответ";
             }
-            CurrentOptions = options;
-
-            if (_isCurrentMultiple)
+            else if (_isCurrentMultiple)
             {
-                CurrentMultipleSelected = new List<int>(savedAnswers);
-                SelectedOptionIndex = -1;
+                QuestionTypeHint = "Выберите несколько вариантов ответа";
             }
             else
             {
-                SelectedOptionIndex = savedAnswers.Count > 0 ? savedAnswers[0] : -1;
+                QuestionTypeHint = "Выберите один вариант ответа";
+            }
+
+            List<int> savedAnswers = _selectedAnswers[index];
+            string savedText = index < _textAnswers.Count ? _textAnswers[index] : "";
+
+            if (_isCurrentText)
+            {
+                CurrentOptions = new List<OptionItem>();
                 CurrentMultipleSelected = new List<int>();
+                SelectedOptionIndex = -1;
+                CurrentTextAnswer = savedText;
+            }
+            else
+            {
+                List<OptionItem> options = new List<OptionItem>();
+                for (int i = 0; i < q.Options.Count; i++)
+                {
+                    OptionItem opt = new OptionItem();
+                    opt.Index = i;
+                    opt.Text = q.Options[i];
+                    opt.IsSelected = false;
+
+                    if (_isCurrentMultiple)
+                    {
+                        for (int j = 0; j < savedAnswers.Count; j++)
+                        {
+                            if (savedAnswers[j] == i)
+                            {
+                                opt.IsSelected = true;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (savedAnswers.Count > 0 && savedAnswers[0] == i)
+                        {
+                            opt.IsSelected = true;
+                        }
+                    }
+
+                    options.Add(opt);
+                }
+                CurrentOptions = options;
+
+                if (_isCurrentMultiple)
+                {
+                    CurrentMultipleSelected = new List<int>(savedAnswers);
+                    SelectedOptionIndex = -1;
+                }
+                else
+                {
+                    SelectedOptionIndex = savedAnswers.Count > 0 ? savedAnswers[0] : -1;
+                    CurrentMultipleSelected = new List<int>();
+                }
+                CurrentTextAnswer = "";
             }
 
             QuestionNumber = index + 1;
@@ -278,9 +312,11 @@ namespace SkillChecker.ViewModels
             {
                 _testTimer.Stop();
                 _selectedAnswers = new List<List<int>>();
+                _textAnswers = new List<string>();
                 _currentQuestionIndex = 0;
                 SelectedOptionIndex = -1;
                 CurrentMultipleSelected = new List<int>();
+                CurrentTextAnswer = "";
                 SelectedTestName = "";
                 ProgressValue = 0;
                 TimerVisibility = Visibility.Collapsed;
