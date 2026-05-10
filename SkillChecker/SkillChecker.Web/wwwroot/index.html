@@ -12,8 +12,8 @@
         <p class="subtitle">Панель преподавателя</p>
 
         <div class="tabs" role="tablist" aria-label="Разделы панели">
-            <button class="tab active" role="tab" aria-selected="true" aria-controls="tab-tests" onclick="showTab('tests')">Тесты</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-results" onclick="showTab('results')">Результаты</button>
+            <button class="tab active" role="tab" aria-selected="true" aria-controls="tab-tests" onclick="showTab(event, 'tests')">Тесты</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-results" onclick="showTab(event, 'results')">Результаты</button>
         </div>
 
         <div id="tab-tests" class="tab-content" role="tabpanel" aria-label="Управление тестами">
@@ -80,5 +80,7 @@
         </div>
     </div>
     <script src="app.js"></script>
+    <script src="tests.js"></script>
+    <script src="results.js"></script>
 </body>
 </html>
