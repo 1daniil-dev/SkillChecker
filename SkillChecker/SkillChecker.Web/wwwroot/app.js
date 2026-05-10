@@ -1,4 +1,6 @@
 ﻿var allTests = [];
+var allResults = [];
+var resultsSort = { field: "date", direction: "desc" };
 
 window.onload = function () {
     loadTests();
@@ -370,33 +372,111 @@ function loadResults() {
     fetch("/api/results")
         .then(function (r) { return r.json(); })
         .then(function (results) {
-            var div = document.getElementById("resultsList");
-            div.innerHTML = "";
+            allResults = results;
+            renderResults();
+        });
+}
 
-            if (results.length === 0) {
-                div.innerHTML = '<div class="empty" role="status">Пока нет результатов</div>';
-                document.getElementById("resultsStats").classList.add("hidden");
-                return;
-            }
+function changeSort(field) {
+    if (resultsSort.field === field) {
+        if (resultsSort.direction === "desc") {
+            resultsSort.direction = "asc";
+        }
+        else {
+            resultsSort.direction = "desc";
+        }
+    }
+    else {
+        resultsSort.field = field;
+        resultsSort.direction = "desc";
+    }
+    renderResults();
+}
 
-            var totalScore = 0;
-            var bestScore = 0;
-            var worstScore = 101;
-            for (var s = 0; s < results.length; s++) {
-                totalScore += results[s].Score;
-                if (results[s].Score > bestScore) bestScore = results[s].Score;
-                if (results[s].Score < worstScore) worstScore = results[s].Score;
-            }
-            var avgScore = (totalScore / results.length).toFixed(1);
+function getSortValue(result) {
+    if (resultsSort.field === "score") {
+        return result.Score;
+    }
+    return new Date(result.Date).getTime();
+}
 
-            var statsDiv = document.getElementById("resultsStats");
-            statsDiv.classList.remove("hidden");
-            statsDiv.innerHTML = "<div class='stat-item'><span class='stat-value'>" + results.length + "</span><span class='stat-label'>Результатов</span></div>" +
-                "<div class='stat-item'><span class='stat-value'>" + avgScore + "%</span><span class='stat-label'>Средний балл</span></div>" +
-                "<div class='stat-item'><span class='stat-value'>" + bestScore + "%</span><span class='stat-label'>Лучший</span></div>" +
-                "<div class='stat-item'><span class='stat-value'>" + worstScore + "%</span><span class='stat-label'>Худший</span></div>";
+function sortResults(list) {
+    var copy = [];
+    for (var k = 0; k < list.length; k++) {
+        copy.push(list[k]);
+    }
+    copy.sort(function (a, b) {
+        var aValue = getSortValue(a);
+        var bValue = getSortValue(b);
+        if (resultsSort.direction === "desc") {
+            return bValue - aValue;
+        }
+        return aValue - bValue;
+    });
+    return copy;
+}
 
-            for (var i = 0; i < results.length; i++) {
+function updateSortButtons() {
+    var dateBtn = document.getElementById("sortByDate");
+    var scoreBtn = document.getElementById("sortByScore");
+    var dateArrow = dateBtn.querySelector(".sort-arrow");
+    var scoreArrow = scoreBtn.querySelector(".sort-arrow");
+    var arrow;
+    if (resultsSort.direction === "desc") {
+        arrow = "\u25BC";
+    }
+    else {
+        arrow = "\u25B2";
+    }
+    if (resultsSort.field === "date") {
+        dateBtn.classList.add("sort-active");
+        scoreBtn.classList.remove("sort-active");
+        dateArrow.textContent = arrow;
+        scoreArrow.textContent = "";
+    }
+    else {
+        scoreBtn.classList.add("sort-active");
+        dateBtn.classList.remove("sort-active");
+        scoreArrow.textContent = arrow;
+        dateArrow.textContent = "";
+    }
+}
+
+function renderResults() {
+    var div = document.getElementById("resultsList");
+    div.innerHTML = "";
+    var sortDiv = document.getElementById("resultsSort");
+
+    if (allResults.length === 0) {
+        div.innerHTML = '<div class="empty" role="status">Пока нет результатов</div>';
+        document.getElementById("resultsStats").classList.add("hidden");
+        sortDiv.classList.add("hidden");
+        return;
+    }
+
+    sortDiv.classList.remove("hidden");
+    updateSortButtons();
+
+    var totalScore = 0;
+    var bestScore = 0;
+    var worstScore = 101;
+    for (var s = 0; s < allResults.length; s++) {
+        totalScore += allResults[s].Score;
+        if (allResults[s].Score > bestScore) bestScore = allResults[s].Score;
+        if (allResults[s].Score < worstScore) worstScore = allResults[s].Score;
+    }
+    var avgScore = (totalScore / allResults.length).toFixed(1);
+
+    var statsDiv = document.getElementById("resultsStats");
+    statsDiv.classList.remove("hidden");
+    statsDiv.innerHTML = "<div class='stat-item'><span class='stat-value'>" + allResults.length + "</span><span class='stat-label'>Результатов</span></div>" +
+        "<div class='stat-item'><span class='stat-value'>" + avgScore + "%</span><span class='stat-label'>Средний балл</span></div>" +
+        "<div class='stat-item'><span class='stat-value'>" + bestScore + "%</span><span class='stat-label'>Лучший</span></div>" +
+        "<div class='stat-item'><span class='stat-value'>" + worstScore + "%</span><span class='stat-label'>Худший</span></div>";
+
+    var results = sortResults(allResults);
+
+    for (var i = 0; i < results.length; i++) {
                 var r = results[i];
                 var card = document.createElement("div");
                 card.className = "result-card";
@@ -527,7 +607,6 @@ function loadResults() {
                 card.appendChild(details);
                 div.appendChild(card);
             }
-        });
 }
 
 function toggleDetails(index) {

@@ -71,6 +71,11 @@
                 </div>
             </div>
             <div id="resultsStats" class="results-stats hidden" role="status" aria-label="Статистика результатов"></div>
+            <div id="resultsSort" class="results-sort hidden" role="group" aria-label="Сортировка результатов">
+                <span class="results-sort-label">Сортировка:</span>
+                <button id="sortByDate" class="sort-btn sort-active" onclick="changeSort('date')" aria-label="Сортировать по времени">Время <span class="sort-arrow">▼</span></button>
+                <button id="sortByScore" class="sort-btn" onclick="changeSort('score')" aria-label="Сортировать по результату">Результат <span class="sort-arrow"></span></button>
+            </div>
             <div id="resultsList" role="list" aria-label="Список результатов" aria-live="polite"></div>
         </div>
     </div>
