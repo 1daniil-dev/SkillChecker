@@ -1,7 +1,7 @@
 ﻿function deleteResult(fileName, studentName) {
     if (!confirm("Удалить результат \"" + studentName + "\"?")) return;
 
-    fetch("/api/results/" + encodeURIComponent(fileName), {
+    authFetch("/api/results/" + encodeURIComponent(fileName), {
         method: "DELETE"
     })
     .then(function (r) { return r.json(); })
@@ -13,7 +13,7 @@
 function clearResults() {
     if (!confirm("Удалить все результаты тестирования?")) return;
 
-    fetch("/api/results", {
+    authFetch("/api/results", {
         method: "DELETE"
     })
     .then(function (r) { return r.json(); })
@@ -23,7 +23,7 @@ function clearResults() {
 }
 
 function loadResults() {
-    fetch("/api/results")
+    authFetch("/api/results")
         .then(function (r) { return r.json(); })
         .then(function (results) {
             allResults = results;

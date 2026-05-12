@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SkillChecker — Вход</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container auth-container" role="main">
+        <h1>SkillChecker</h1>
+        <p class="subtitle">Вход в панель преподавателя</p>
+        <div class="auth-form">
+            <div class="form-group">
+                <label for="loginPassword">Пароль</label>
+                <input type="password" id="loginPassword" autofocus aria-label="Пароль">
+            </div>
+            <div id="loginError" class="auth-error hidden" role="alert"></div>
+            <button class="auth-submit" onclick="doLogin()" aria-label="Войти">Войти</button>
+        </div>
+    </div>
+    <script src="auth.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

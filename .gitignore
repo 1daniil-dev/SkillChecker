@@ -425,5 +425,8 @@ SkillChecker/SkillChecker.Web/Tests/*
 # Результаты тестирования
 Results/
 
+# Хеш пароля веб-панели
+SkillChecker/SkillCheckerServer/Data/
+
 # GitHub auto-generated
 .github/

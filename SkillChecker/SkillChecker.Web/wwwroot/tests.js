@@ -1,5 +1,5 @@
 ﻿function loadTests() {
-    fetch("/api/tests")
+    authFetch("/api/tests")
         .then(function (r) { return r.json(); })
         .then(function (tests) {
             allTests = tests;
@@ -159,7 +159,7 @@
 }
 
 function toggleVisibility(testName, visible) {
-    fetch("/api/settings/" + encodeURIComponent(testName) + "/visibility", {
+    authFetch("/api/settings/" + encodeURIComponent(testName) + "/visibility", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Visible: visible })
@@ -196,7 +196,7 @@ function uploadTest() {
         formData.append("name", name);
     }
 
-    fetch("/api/upload", {
+    authFetch("/api/upload", {
         method: "POST",
         body: formData
     })
@@ -214,7 +214,7 @@ function uploadTest() {
 function deleteTest(name) {
     if (!confirm("Удалить тест \"" + name + "\"?")) return;
 
-    fetch("/api/test/" + encodeURIComponent(name), {
+    authFetch("/api/test/" + encodeURIComponent(name), {
         method: "DELETE"
     })
     .then(function (r) { return r.json(); })
@@ -226,7 +226,7 @@ function deleteTest(name) {
 function deleteSettings(testName) {
     if (!confirm("Удалить настройки для \"" + testName + "\"?")) return;
 
-    fetch("/api/settings/" + encodeURIComponent(testName), {
+    authFetch("/api/settings/" + encodeURIComponent(testName), {
         method: "DELETE"
     })
     .then(function (r) { return r.json(); })
@@ -258,7 +258,7 @@ function openSettingsForTest(testName) {
         var dateObj = null;
         for (var i = 0; i < allTests.length; i++) {
             if (allTests[i].Name === testName) {
-                fetch("/api/settings")
+                authFetch("/api/settings")
                     .then(function (r) { return r.json(); })
                     .then(function (items) {
                         for (var j = 0; j < items.length; j++) {
@@ -302,7 +302,7 @@ function saveSettings() {
         return;
     }
 
-    fetch("/api/settings", {
+    authFetch("/api/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ TestName: testName, StartTime: time, TimeMinutes: timeLimit })
@@ -323,7 +323,7 @@ function previewTest(name) {
         return;
     }
 
-    fetch("/api/test/" + encodeURIComponent(name) + "/preview")
+    authFetch("/api/test/" + encodeURIComponent(name) + "/preview")
         .then(function (r) { return r.json(); })
         .then(function (questions) {
             var card = null;

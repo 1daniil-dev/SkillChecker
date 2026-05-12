@@ -3,7 +3,9 @@ var allResults = [];
 var resultsSort = { field: "date", direction: "desc" };
 
 window.onload = function () {
-    loadTests();
+    initAuth(function () {
+        loadTests();
+    });
 };
 
 function showTab(event, name) {

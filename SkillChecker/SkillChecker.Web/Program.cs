@@ -17,12 +17,71 @@ string solutionDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseD
 string testsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Tests");
 string resultsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Results");
 string settingsFile = Path.Combine(testsFolder, "test_settings.json");
+string authFile = Path.Combine(solutionDir, "SkillCheckerServer", "Data", "auth.json");
 
 if (!Directory.Exists(testsFolder))
 {
     testsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tests");
     resultsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Results");
     settingsFile = Path.Combine(testsFolder, "test_settings.json");
+    authFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "auth.json");
+}
+
+string HashPassword(string password)
+{
+    byte[] bytes = Encoding.UTF8.GetBytes(password);
+    byte[] hash = System.Security.Cryptography.SHA256.HashData(bytes);
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < hash.Length; i++)
+    {
+        sb.Append(hash[i].ToString("x2"));
+    }
+    return sb.ToString();
+}
+
+AuthData? LoadAuthData()
+{
+    if (!File.Exists(authFile)) return null;
+    try
+    {
+        string json = File.ReadAllText(authFile, Encoding.UTF8);
+        JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        return JsonSerializer.Deserialize<AuthData>(json, options);
+    }
+    catch
+    {
+        return null;
+    }
+}
+
+bool IsAuthSetup()
+{
+    AuthData? data = LoadAuthData();
+    return data != null && data.PasswordHash.Length > 0;
+}
+
+bool VerifyPassword(string password)
+{
+    AuthData? data = LoadAuthData();
+    if (data == null || data.PasswordHash.Length == 0) return false;
+    return HashPassword(password) == data.PasswordHash;
+}
+
+void SaveAuth(string passwordHash)
+{
+    string? dir = Path.GetDirectoryName(authFile);
+    if (dir != null) Directory.CreateDirectory(dir);
+    AuthData data = new AuthData();
+    data.PasswordHash = passwordHash;
+    JsonSerializerOptions jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+    File.WriteAllText(authFile, JsonSerializer.Serialize(data, jsonOptions), Encoding.UTF8);
+}
+
+bool IsAuthorized(HttpContext context)
+{
+    string? password = context.Request.Headers["X-Auth-Password"];
+    if (string.IsNullOrEmpty(password)) return false;
+    return VerifyPassword(password);
 }
 
 ParsedSettings ParseTestSettings(JsonElement elem)
@@ -95,6 +154,53 @@ void SaveSettingsData(Dictionary<string, object> data)
     string outJson = JsonSerializer.Serialize(data, jsonOptions);
     File.WriteAllText(settingsFile, outJson, Encoding.UTF8);
 }
+
+app.Use(async (HttpContext context, Func<Task> next) =>
+{
+    string path = context.Request.Path.Value ?? "";
+    if (path.StartsWith("/api/") && !path.StartsWith("/api/auth/"))
+    {
+        if (!IsAuthorized(context))
+        {
+            context.Response.StatusCode = 401;
+            await context.Response.WriteAsJsonAsync(new ErrorResult { Error = "Не авторизован" });
+            return;
+        }
+    }
+    await next();
+});
+
+app.MapGet("/api/auth/state", () =>
+{
+    return Results.Json(new AuthState { Setup = IsAuthSetup() });
+});
+
+app.MapPost("/api/auth/setup", (AuthRequest req) =>
+{
+    if (IsAuthSetup())
+    {
+        return Results.BadRequest(new ErrorResult { Error = "Пароль уже установлен" });
+    }
+    if (req.Password == null || req.Password.Length < 4)
+    {
+        return Results.BadRequest(new ErrorResult { Error = "Пароль должен быть не менее 4 символов" });
+    }
+    SaveAuth(HashPassword(req.Password));
+    return Results.Json(new OperationResult { Ok = true });
+});
+
+app.MapPost("/api/auth/login", (AuthRequest req) =>
+{
+    if (!IsAuthSetup())
+    {
+        return Results.BadRequest(new ErrorResult { Error = "Пароль ещё не установлен" });
+    }
+    if (req.Password == null || !VerifyPassword(req.Password))
+    {
+        return Results.Json(new OperationResult { Ok = false });
+    }
+    return Results.Json(new OperationResult { Ok = true });
+});
 
 app.MapGet("/api/tests", () =>
 {
@@ -367,6 +473,34 @@ public class SettingsRequest
 public class VisibilityRequest
 {
     public bool Visible { get; set; } = true;
+}
+
+public class AuthData
+{
+    private string _passwordHash;
+    public string PasswordHash { get => _passwordHash; set => _passwordHash = value; }
+    public AuthData()
+    {
+        _passwordHash = "";
+    }
+}
+
+public class AuthRequest
+{
+    public string Password { get; set; } = "";
+}
+
+public class AuthState
+{
+    private bool _setup;
+
+    [System.Text.Json.Serialization.JsonPropertyName("setup")]
+    public bool Setup { get => _setup; set => _setup = value; }
+
+    public AuthState()
+    {
+        _setup = false;
+    }
 }
 
 public class ParsedSettings
