@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="SkillChecker.Common/SkillChecker.Common.csproj" />
+  <Project Path="SkillChecker.Tests/SkillChecker.Tests.csproj" />
   <Project Path="SkillChecker.Web/SkillChecker.Web.csproj" />
   <Project Path="SkillChecker/SkillChecker.csproj" />
   <Project Path="SkillCheckerServer/SkillCheckerServer.csproj" />
