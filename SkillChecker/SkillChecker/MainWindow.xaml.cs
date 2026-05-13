@@ -112,7 +112,7 @@ namespace SkillChecker
         private void ShowAbout_Click(object sender, RoutedEventArgs e)
         {
             string text = "SkillChecker — Система тестирования учащихся\n\n" +
-                "Версия 1.0\n\n" +
+                "Версия 1.1\n\n" +
                 "Клиент-серверная система для проведения тестов.\n" +
                 "Преподаватель запускает сервер, студенты\n" +
                 "подключаются через клиент и проходят тестирование.";
