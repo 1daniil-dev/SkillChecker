@@ -427,6 +427,7 @@ Results/
 
 # Хеш пароля веб-панели
 SkillChecker/SkillCheckerServer/Data/
+auth.json
 
 # GitHub auto-generated
 .github/
