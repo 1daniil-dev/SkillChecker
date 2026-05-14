@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using SkillChecker.Common.Models;
+using SkillChecker.Common.Security;
 using SkillChecker.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,18 +28,6 @@ if (!Directory.Exists(testsFolder))
     authFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "auth.json");
 }
 
-string HashPassword(string password)
-{
-    byte[] bytes = Encoding.UTF8.GetBytes(password);
-    byte[] hash = System.Security.Cryptography.SHA256.HashData(bytes);
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < hash.Length; i++)
-    {
-        sb.Append(hash[i].ToString("x2"));
-    }
-    return sb.ToString();
-}
-
 AuthData? LoadAuthData()
 {
     if (!File.Exists(authFile)) return null;
@@ -60,11 +49,12 @@ bool IsAuthSetup()
     return data != null && data.PasswordHash.Length > 0;
 }
 
-bool VerifyPassword(string password)
+bool VerifyPassword(string password, out bool needsMigration)
 {
+    needsMigration = false;
     AuthData? data = LoadAuthData();
     if (data == null || data.PasswordHash.Length == 0) return false;
-    return HashPassword(password) == data.PasswordHash;
+    return PasswordHasher.Verify(password, data.PasswordHash, out needsMigration);
 }
 
 void SaveAuth(string passwordHash)
@@ -81,7 +71,8 @@ bool IsAuthorized(HttpContext context)
 {
     string? password = context.Request.Headers["X-Auth-Password"];
     if (string.IsNullOrEmpty(password)) return false;
-    return VerifyPassword(password);
+    bool ignored;
+    return VerifyPassword(password, out ignored);
 }
 
 ParsedSettings ParseTestSettings(JsonElement elem)
@@ -185,7 +176,7 @@ app.MapPost("/api/auth/setup", (AuthRequest req) =>
     {
         return Results.BadRequest(new ErrorResult { Error = "Пароль должен быть не менее 4 символов" });
     }
-    SaveAuth(HashPassword(req.Password));
+    SaveAuth(PasswordHasher.Hash(req.Password));
     return Results.Json(new OperationResult { Ok = true });
 });
 
@@ -195,9 +186,18 @@ app.MapPost("/api/auth/login", (AuthRequest req) =>
     {
         return Results.BadRequest(new ErrorResult { Error = "Пароль ещё не установлен" });
     }
-    if (req.Password == null || !VerifyPassword(req.Password))
+    if (req.Password == null)
     {
         return Results.Json(new OperationResult { Ok = false });
+    }
+    bool needsMigration;
+    if (!VerifyPassword(req.Password, out needsMigration))
+    {
+        return Results.Json(new OperationResult { Ok = false });
+    }
+    if (needsMigration)
+    {
+        SaveAuth(PasswordHasher.Hash(req.Password));
     }
     return Results.Json(new OperationResult { Ok = true });
 });
