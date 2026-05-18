@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Net.Sockets;
-using System.Text;
+﻿using System.Net.Sockets;
 using SkillChecker.Common.Models;
 using SkillChecker.Common.Protocol;
 using Cmd = SkillChecker.Common.Protocol.Commands;
@@ -206,21 +204,14 @@ namespace SkillChecker.Services
 
         private string Send(string message)
         {
-            if (!message.EndsWith("\n"))
-            {
-                message += "\n";
-            }
-
             using (TcpClient client = new TcpClient())
             {
                 client.Connect(_serverIp, _serverPort);
 
                 using (NetworkStream stream = client.GetStream())
-                using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true })
-                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                 {
-                    writer.Write(message);
-                    return reader.ReadLine() ?? "";
+                    ProtocolFramer.WriteFrame(stream, message);
+                    return ProtocolFramer.ReadFrame(stream);
                 }
             }
         }

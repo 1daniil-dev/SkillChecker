@@ -18,7 +18,6 @@ namespace SkillChecker.Common.Protocol
                 sb.Append(Separator);
                 sb.Append(parts[i]);
             }
-            sb.Append('\n');
             return sb.ToString();
         }
 

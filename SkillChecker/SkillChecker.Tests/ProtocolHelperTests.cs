@@ -7,21 +7,21 @@ namespace SkillChecker.Tests
     public class ProtocolHelperTests
     {
         [Fact]
-        public void BuildMessage_CommandOnly_AppendsNewline()
+        public void BuildMessage_CommandOnly_NoTerminator()
         {
             string result = ProtocolHelper.BuildMessage("START");
-            Assert.Equal("START\n", result);
+            Assert.Equal("START", result);
         }
 
         [Fact]
         public void BuildMessage_WithParts_JoinedBySeparator()
         {
             string result = ProtocolHelper.BuildMessage("ANSWER", "1", "2", "3");
-            Assert.Equal("ANSWER|1|2|3\n", result);
+            Assert.Equal("ANSWER|1|2|3", result);
         }
 
         [Fact]
-        public void ParseMessage_TrimsTrailingNewline()
+        public void ParseMessage_TrimsTrailingNewline_BackwardsCompatible()
         {
             string[] parts = ProtocolHelper.ParseMessage("OK\n");
             Assert.Single(parts);
@@ -29,9 +29,9 @@ namespace SkillChecker.Tests
         }
 
         [Fact]
-        public void ParseMessage_SplitsBySeparator()
+        public void ParseMessage_NoTerminator_StillSplits()
         {
-            string[] parts = ProtocolHelper.ParseMessage("ANSWER|1|hello\n");
+            string[] parts = ProtocolHelper.ParseMessage("ANSWER|1|hello");
             Assert.Equal(3, parts.Length);
             Assert.Equal("ANSWER", parts[0]);
             Assert.Equal("1", parts[1]);

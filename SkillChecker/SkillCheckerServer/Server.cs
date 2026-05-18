@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using SkillChecker.Common.Models;
 using SkillChecker.Common.Protocol;
 
@@ -75,13 +74,23 @@ namespace SkillCheckerServer
             try
             {
                 using (NetworkStream stream = client.GetStream())
-                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
-                using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true })
                 {
                     while (client.Connected)
                     {
-                        string? line = reader.ReadLine();
-                        if (line == null) break;
+                        string line;
+                        try
+                        {
+                            line = ProtocolFramer.ReadFrame(stream);
+                        }
+                        catch (EndOfStreamException)
+                        {
+                            break;
+                        }
+                        catch (ProtocolException ex)
+                        {
+                            LogError("Некорректный фрейм от " + endPoint + ": " + ex.Message);
+                            break;
+                        }
 
                         string[] parts = ProtocolHelper.ParseMessage(line);
                         string command = parts[0];
@@ -92,7 +101,7 @@ namespace SkillCheckerServer
                         }
 
                         string response = ProcessCommand(command, parts, endPoint);
-                        writer.Write(response);
+                        ProtocolFramer.WriteFrame(stream, response);
                     }
                 }
             }
