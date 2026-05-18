@@ -12,7 +12,7 @@ namespace SkillChecker.ViewModels
             for (int i = 0; i < _questions.Count; i++)
             {
                 bool isAnswered;
-                if (_questions[i].Type == "Text")
+                if (_questions[i].Type == QuestionTypes.Text)
                 {
                     string saved = i < _textAnswers.Count ? _textAnswers[i] : "";
                     isAnswered = saved != null && saved.Length > 0;

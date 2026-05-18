@@ -14,7 +14,7 @@
         {
             _text = "";
             _options = new List<string>();
-            _type = "Single";
+            _type = QuestionTypes.Single;
         }
     }
 }

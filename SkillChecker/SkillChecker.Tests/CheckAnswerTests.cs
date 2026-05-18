@@ -12,7 +12,7 @@ namespace SkillChecker.Tests
             selected.Add(2);
             List<int> correct = new List<int>();
             correct.Add(2);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Single");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Single);
             Assert.True(result);
         }
 
@@ -23,7 +23,7 @@ namespace SkillChecker.Tests
             selected.Add(1);
             List<int> correct = new List<int>();
             correct.Add(2);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Single");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Single);
             Assert.False(result);
         }
 
@@ -33,7 +33,7 @@ namespace SkillChecker.Tests
             List<int> selected = new List<int>();
             List<int> correct = new List<int>();
             correct.Add(2);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Single");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Single);
             Assert.False(result);
         }
 
@@ -44,7 +44,7 @@ namespace SkillChecker.Tests
             selected.Add(0);
             List<int> correct = new List<int>();
             correct.Add(0);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Text");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Text);
             Assert.True(result);
         }
 
@@ -59,7 +59,7 @@ namespace SkillChecker.Tests
             correct.Add(0);
             correct.Add(1);
             correct.Add(2);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Multiple");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Multiple);
             Assert.True(result);
         }
 
@@ -74,7 +74,7 @@ namespace SkillChecker.Tests
             correct.Add(0);
             correct.Add(1);
             correct.Add(2);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Multiple");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Multiple);
             Assert.True(result);
         }
 
@@ -88,7 +88,7 @@ namespace SkillChecker.Tests
             correct.Add(0);
             correct.Add(1);
             correct.Add(2);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Multiple");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Multiple);
             Assert.False(result);
         }
 
@@ -104,7 +104,7 @@ namespace SkillChecker.Tests
             correct.Add(0);
             correct.Add(1);
             correct.Add(2);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Multiple");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Multiple);
             Assert.False(result);
         }
 
@@ -119,7 +119,7 @@ namespace SkillChecker.Tests
             correct.Add(0);
             correct.Add(1);
             correct.Add(2);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Multiple");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Multiple);
             Assert.False(result);
         }
 
@@ -130,7 +130,7 @@ namespace SkillChecker.Tests
             List<int> correct = new List<int>();
             correct.Add(0);
             correct.Add(1);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Multiple");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Multiple);
             Assert.False(result);
         }
 
@@ -141,7 +141,7 @@ namespace SkillChecker.Tests
             selected.Add(5);
             List<int> correct = new List<int>();
             correct.Add(5);
-            bool result = AnswerChecker.CheckAnswer(selected, correct, "Multiple");
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Multiple);
             Assert.True(result);
         }
     }

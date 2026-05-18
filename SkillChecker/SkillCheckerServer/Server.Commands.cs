@@ -143,11 +143,11 @@ namespace SkillCheckerServer
                     for (int i = 0; i < questions.Count; i++)
                     {
                         if (i > 0) correctIndices += ",";
-                        if (questions[i].Type == "Text")
+                        if (questions[i].Type == QuestionTypes.Text)
                         {
                             correctIndices += ProtocolHelper.EncodeAcceptableAnswers(questions[i].AcceptableAnswers);
                         }
-                        else if (questions[i].Type == "Multiple" && questions[i].CorrectAnswerIndices.Count > 0)
+                        else if (questions[i].Type == QuestionTypes.Multiple && questions[i].CorrectAnswerIndices.Count > 0)
                         {
                             for (int j = 0; j < questions[i].CorrectAnswerIndices.Count; j++)
                             {

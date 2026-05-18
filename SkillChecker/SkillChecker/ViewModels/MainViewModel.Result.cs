@@ -42,7 +42,7 @@ namespace SkillChecker.ViewModels
                     string selectedText = "";
                     string correctText = "";
 
-                    if (q.Type == "Text")
+                    if (q.Type == QuestionTypes.Text)
                     {
                         string typed = i < _textAnswers.Count ? _textAnswers[i] : "";
                         selectedText = typed.Length > 0 ? typed : "Пропущен";
@@ -61,7 +61,7 @@ namespace SkillChecker.ViewModels
                             correctText = "?";
                         }
                     }
-                    else if (q.Type == "Multiple")
+                    else if (q.Type == QuestionTypes.Multiple)
                     {
                         if (selectedList.Count > 0)
                         {

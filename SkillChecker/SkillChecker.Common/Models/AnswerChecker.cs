@@ -6,7 +6,7 @@ namespace SkillChecker.Common.Models
     {
         public static bool CheckAnswer(List<int> selected, List<int> correct, string questionType)
         {
-            if (questionType == "Multiple")
+            if (questionType == QuestionTypes.Multiple)
             {
                 if (selected.Count != correct.Count)
                 {

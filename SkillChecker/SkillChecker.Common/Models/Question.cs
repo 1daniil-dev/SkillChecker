@@ -23,7 +23,7 @@
             _correctAnswerIndex = 0;
             _correctAnswerIndices = new List<int>();
             _acceptableAnswers = new List<string>();
-            _type = "Single";
+            _type = QuestionTypes.Single;
         }
     }
 }

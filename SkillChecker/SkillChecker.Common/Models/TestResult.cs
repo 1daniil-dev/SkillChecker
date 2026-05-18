@@ -26,7 +26,7 @@
             _selectedIndex = -1;
             _correctIndex = 0;
             _isCorrect = false;
-            _questionType = "Single";
+            _questionType = QuestionTypes.Single;
             _selectedIndices = new List<int>();
             _textAnswer = "";
             _acceptableAnswers = new List<string>();

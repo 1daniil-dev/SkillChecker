@@ -219,8 +219,8 @@ namespace SkillChecker.ViewModels
             _currentQuestionIndex = index;
             Question q = _questions[index];
             QuestionText = q.Text;
-            IsCurrentText = q.Type == "Text";
-            IsCurrentMultiple = q.Type == "Multiple";
+            IsCurrentText = q.Type == QuestionTypes.Text;
+            IsCurrentMultiple = q.Type == QuestionTypes.Multiple;
             if (_isCurrentText)
             {
                 QuestionTypeHint = "Введите ответ";

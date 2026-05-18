@@ -23,7 +23,7 @@ namespace SkillCheckerServer
                 answer.CorrectIndex = questions[i].CorrectAnswerIndex;
                 answer.QuestionType = questions[i].Type;
 
-                if (questions[i].Type == "Text")
+                if (questions[i].Type == QuestionTypes.Text)
                 {
                     string typed = i < textAnswers.Count ? textAnswers[i] : "";
                     answer.TextAnswer = typed;
@@ -34,18 +34,18 @@ namespace SkillCheckerServer
                 }
                 else if (i < selectedAnswers.Count && selectedAnswers[i].Count > 0)
                 {
-                    if (questions[i].Type == "Multiple")
+                    if (questions[i].Type == QuestionTypes.Multiple)
                     {
                         answer.SelectedIndices = selectedAnswers[i];
                         answer.SelectedIndex = selectedAnswers[i][0];
 
-                        answer.IsCorrect = AnswerChecker.CheckAnswer(selectedAnswers[i], questions[i].CorrectAnswerIndices, "Multiple");
+                        answer.IsCorrect = AnswerChecker.CheckAnswer(selectedAnswers[i], questions[i].CorrectAnswerIndices, QuestionTypes.Multiple);
                         if (answer.IsCorrect) correctCount++;
                     }
                     else
                     {
                         answer.SelectedIndex = selectedAnswers[i][0];
-                        answer.IsCorrect = AnswerChecker.CheckAnswer(selectedAnswers[i], new List<int> { questions[i].CorrectAnswerIndex }, "Single");
+                        answer.IsCorrect = AnswerChecker.CheckAnswer(selectedAnswers[i], new List<int> { questions[i].CorrectAnswerIndex }, QuestionTypes.Single);
                         if (answer.IsCorrect) correctCount++;
                     }
                 }

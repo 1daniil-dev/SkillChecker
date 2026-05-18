@@ -144,7 +144,7 @@ namespace SkillChecker.Tests
             q.CorrectAnswerIndex = 1;
             q.AcceptableAnswers = new List<string>();
             q.AcceptableAnswers.Add("secret-answer");
-            q.Type = "Single";
+            q.Type = QuestionTypes.Single;
             List<Question> questions = new List<Question>();
             questions.Add(q);
 
@@ -169,7 +169,7 @@ namespace SkillChecker.Tests
             Assert.Equal("a", result[0].Options[0]);
             Assert.Equal("b", result[0].Options[1]);
             Assert.Equal(1, result[0].CorrectAnswerIndex);
-            Assert.Equal("Single", result[0].Type);
+            Assert.Equal(QuestionTypes.Single, result[0].Type);
         }
     }
 }

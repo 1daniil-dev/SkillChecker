@@ -148,7 +148,7 @@ namespace SkillChecker.Services
 
                     if (ProtocolHelper.IsEncodedTextAnswer(correctParts[i]))
                     {
-                        sa.QuestionType = "Text";
+                        sa.QuestionType = QuestionTypes.Text;
                         sa.AcceptableAnswers = ProtocolHelper.DecodeAcceptableAnswers(correctParts[i]);
                         sa.CorrectIndex = -1;
                         sa.SelectedIndex = -1;
@@ -172,7 +172,7 @@ namespace SkillChecker.Services
 
                         if (correctIndices.Count > 1)
                         {
-                            sa.QuestionType = "Multiple";
+                            sa.QuestionType = QuestionTypes.Multiple;
                         }
                         sa.CorrectIndex = correctIndices.Count > 0 ? correctIndices[0] : 0;
 
@@ -182,7 +182,7 @@ namespace SkillChecker.Services
                             sa.SelectedIndices = new List<int>(answers[i]);
                             if (answers[i].Count > 1)
                             {
-                                sa.QuestionType = "Multiple";
+                                sa.QuestionType = QuestionTypes.Multiple;
                             }
                         }
                         else
