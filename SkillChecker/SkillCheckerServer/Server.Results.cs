@@ -86,45 +86,48 @@ namespace SkillCheckerServer
 
         public void ShowResults()
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("  ┌──────────────────────────────────────────────────────────┐");
-            Console.WriteLine("  │  РЕЗУЛЬТАТЫ                                             │");
-            Console.WriteLine("  ├──────────────────────────────────────────────────────────┤");
-            Console.ResetColor();
-            for (int i = 0; i < _results.Count; i++)
+            lock (_stateLock)
             {
-                TestResult r = _results[i];
-                string num = (i + 1).ToString().PadLeft(3);
-                string name = (r.StudentName + " (" + r.Group + ")").PadRight(25);
-                string test = r.TestName.PadRight(15);
-                string score = (r.Score + "%").PadLeft(7);
-                string correct = (r.CorrectAnswers + "/" + r.TotalQuestions).PadLeft(5);
-                string time = r.Date.ToString("HH:mm");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("  ┌──────────────────────────────────────────────────────────┐");
+                Console.WriteLine("  │  РЕЗУЛЬТАТЫ                                             │");
+                Console.WriteLine("  ├──────────────────────────────────────────────────────────┤");
+                Console.ResetColor();
+                for (int i = 0; i < _results.Count; i++)
+                {
+                    TestResult r = _results[i];
+                    string num = (i + 1).ToString().PadLeft(3);
+                    string name = (r.StudentName + " (" + r.Group + ")").PadRight(25);
+                    string test = r.TestName.PadRight(15);
+                    string score = (r.Score + "%").PadLeft(7);
+                    string correct = (r.CorrectAnswers + "/" + r.TotalQuestions).PadLeft(5);
+                    string time = r.Date.ToString("HH:mm");
 
-                if (r.Score >= 75)
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
+                    if (r.Score >= 75)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                    }
+                    else if (r.Score >= 50)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                    }
+                    Console.WriteLine("  │  " + num + ". " + name + " " + test + " " + score + " " + correct + "  " + time + " │");
+                    Console.ResetColor();
                 }
-                else if (r.Score >= 50)
+                if (_results.Count == 0)
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine("  │  Пока нет результатов                                  │");
+                    Console.ResetColor();
                 }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                }
-                Console.WriteLine("  │  " + num + ". " + name + " " + test + " " + score + " " + correct + "  " + time + " │");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("  └──────────────────────────────────────────────────────────┘");
                 Console.ResetColor();
             }
-            if (_results.Count == 0)
-            {
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("  │  Пока нет результатов                                  │");
-                Console.ResetColor();
-            }
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("  └──────────────────────────────────────────────────────────┘");
-            Console.ResetColor();
         }
     }
 }

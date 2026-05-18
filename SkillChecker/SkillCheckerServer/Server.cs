@@ -14,6 +14,7 @@ namespace SkillCheckerServer
         private List<TestResult> _results;
         private string _testsFolder;
         private string _settingsFile;
+        private readonly object _stateLock = new object();
 
         public Server(int port)
         {
@@ -113,16 +114,19 @@ namespace SkillCheckerServer
 
         public List<string> GetTestNames()
         {
-            List<string> names = new List<string>();
-            foreach (KeyValuePair<string, List<Question>> kvp in _tests)
+            lock (_stateLock)
             {
-                if (_testSettings.ContainsKey(kvp.Key) && !_testSettings[kvp.Key].Visible)
+                List<string> names = new List<string>();
+                foreach (KeyValuePair<string, List<Question>> kvp in _tests)
                 {
-                    continue;
+                    if (_testSettings.ContainsKey(kvp.Key) && !_testSettings[kvp.Key].Visible)
+                    {
+                        continue;
+                    }
+                    names.Add(kvp.Key);
                 }
-                names.Add(kvp.Key);
+                return names;
             }
-            return names;
         }
 
         private void Log(string message)
