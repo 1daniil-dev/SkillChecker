@@ -39,9 +39,7 @@ for (int i = 0; i < interfaces.Length; i++)
 }
 
 Console.ForegroundColor = ConsoleColor.Cyan;
-Console.WriteLine("  ╔══════════════════════════╗");
-Console.WriteLine("  ║      SkillChecker        ║");
-Console.WriteLine("  ╚══════════════════════════╝");
+Console.WriteLine("  SkillChecker");
 Console.ResetColor();
 Console.WriteLine();
 
@@ -158,13 +156,12 @@ while (true)
 void ShowMenu()
 {
     Console.ForegroundColor = ConsoleColor.DarkGray;
-    Console.WriteLine("  ┌─────────────────────────────────────┐");
-    Console.WriteLine("  │  1. Результаты                      │");
-    Console.WriteLine("  │  2. Перезагрузить тесты             │");
-    Console.WriteLine("  │  3. Запланировать тест              │");
-    Console.WriteLine("  │  4. Список тестов                   │");
-    Console.WriteLine("  │  5. Выход                           │");
-    Console.WriteLine("  └─────────────────────────────────────┘");
+    Console.WriteLine("  Команды:");
+    Console.WriteLine("    1. Результаты");
+    Console.WriteLine("    2. Перезагрузить тесты");
+    Console.WriteLine("    3. Запланировать тест");
+    Console.WriteLine("    4. Список тестов");
+    Console.WriteLine("    5. Выход");
     Console.WriteLine("  Введите номер или команду (? — меню)");
     Console.ResetColor();
 }

@@ -89,19 +89,24 @@ namespace SkillCheckerServer
             lock (_stateLock)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("  ┌──────────────────────────────────────────────────────────┐");
-                Console.WriteLine("  │  РЕЗУЛЬТАТЫ                                             │");
-                Console.WriteLine("  ├──────────────────────────────────────────────────────────┤");
+                Console.WriteLine("  Результаты:");
                 Console.ResetColor();
+
+                if (_results.Count == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine("    Пока нет результатов");
+                    Console.ResetColor();
+                    return;
+                }
+
                 for (int i = 0; i < _results.Count; i++)
                 {
                     TestResult r = _results[i];
-                    string num = (i + 1).ToString().PadLeft(3);
-                    string name = (r.StudentName + " (" + r.Group + ")").PadRight(25);
-                    string test = r.TestName.PadRight(15);
-                    string score = (r.Score + "%").PadLeft(7);
-                    string correct = (r.CorrectAnswers + "/" + r.TotalQuestions).PadLeft(5);
-                    string time = r.Date.ToString("HH:mm");
+                    string num = (i + 1).ToString();
+                    string line = "    " + num + ". " + r.StudentName + " (" + r.Group + ") — "
+                        + r.TestName + " — " + r.Score + "% (" + r.CorrectAnswers + "/" + r.TotalQuestions + ") "
+                        + r.Date.ToString("HH:mm");
 
                     if (r.Score >= 75)
                     {
@@ -115,18 +120,9 @@ namespace SkillCheckerServer
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                     }
-                    Console.WriteLine("  │  " + num + ". " + name + " " + test + " " + score + " " + correct + "  " + time + " │");
+                    Console.WriteLine(line);
                     Console.ResetColor();
                 }
-                if (_results.Count == 0)
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine("  │  Пока нет результатов                                  │");
-                    Console.ResetColor();
-                }
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("  └──────────────────────────────────────────────────────────┘");
-                Console.ResetColor();
             }
         }
     }
