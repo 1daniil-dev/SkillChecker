@@ -67,12 +67,34 @@ namespace SkillCheckerServer
             return result;
         }
 
+        private string SanitizeFileName(string name)
+        {
+            char[] invalid = Path.GetInvalidFileNameChars();
+            StringBuilder sb = new StringBuilder(name.Length);
+            for (int i = 0; i < name.Length; i++)
+            {
+                bool isInvalid = false;
+                for (int j = 0; j < invalid.Length; j++)
+                {
+                    if (name[i] == invalid[j])
+                    {
+                        isInvalid = true;
+                        break;
+                    }
+                }
+                sb.Append(isInvalid ? '_' : name[i]);
+            }
+            return sb.ToString();
+        }
+
         private void SaveResultToFile(TestResult result)
         {
             string resultsFolder = Path.Combine(Path.GetDirectoryName(_testsFolder) ?? "", "Results");
             Directory.CreateDirectory(resultsFolder);
 
-            string fileName = "result_" + result.StudentName.Replace(" ", "_") + "_" + result.TestName + "_" + result.Date.ToString("yyyyMMdd_HHmm") + ".json";
+            string safeName = SanitizeFileName(result.StudentName.Replace(" ", "_"));
+            string safeTest = SanitizeFileName(result.TestName);
+            string fileName = "result_" + safeName + "_" + safeTest + "_" + result.Date.ToString("yyyyMMdd_HHmm") + ".json";
 
             JsonSerializerOptions options = new JsonSerializerOptions
             {
