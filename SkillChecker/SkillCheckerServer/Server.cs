@@ -74,6 +74,8 @@ namespace SkillCheckerServer
 
             try
             {
+                client.ReceiveTimeout = 60000;
+                client.SendTimeout = 30000;
                 using (NetworkStream stream = client.GetStream())
                 {
                     while (client.Connected)
