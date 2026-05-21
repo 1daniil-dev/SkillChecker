@@ -137,7 +137,8 @@ namespace SkillCheckerServer
 
                     LogSuccess("Результат: " + studentName + " (" + group + ") — " + result.Score + "% (" + result.CorrectAnswers + "/" + result.TotalQuestions + ") " + testName);
 
-                    SaveResultToFile(result);
+                    string savedFileName = SaveResultToFile(result);
+                    SaveResultToDb(result, savedFileName);
 
                     string correctIndices = "";
                     for (int i = 0; i < questions.Count; i++)

@@ -1,8 +1,10 @@
 ﻿using System.Text;
 using System.Text.Json;
 using ClosedXML.Excel;
+using Microsoft.EntityFrameworkCore;
 using SkillChecker.Common.Models;
 using SkillChecker.Common.Security;
+using SkillChecker.Data;
 using SkillChecker.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,7 @@ string testsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Tests");
 string resultsFolder = Path.Combine(solutionDir, "SkillCheckerServer", "Results");
 string settingsFile = Path.Combine(testsFolder, "test_settings.json");
 string authFile = Path.Combine(solutionDir, "SkillCheckerServer", "Data", "auth.json");
+string dbPath = Path.Combine(solutionDir, "SkillCheckerServer", "Data", "skillchecker.db");
 
 if (!Directory.Exists(testsFolder))
 {
@@ -27,7 +30,59 @@ if (!Directory.Exists(testsFolder))
     resultsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Results");
     settingsFile = Path.Combine(testsFolder, "test_settings.json");
     authFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "auth.json");
+    dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "skillchecker.db");
 }
+
+void InitializeDatabase()
+{
+    string? dbDir = Path.GetDirectoryName(dbPath);
+    if (dbDir != null) Directory.CreateDirectory(dbDir);
+    using (AppDbContext db = new AppDbContext(dbPath))
+    {
+        db.Database.EnsureCreated();
+    }
+}
+
+void SyncResultsToDb()
+{
+    if (!Directory.Exists(resultsFolder)) return;
+    string[] files = Directory.GetFiles(resultsFolder, "*.json");
+    using (AppDbContext db = new AppDbContext(dbPath))
+    {
+        for (int i = 0; i < files.Length; i++)
+        {
+            string fileName = Path.GetFileName(files[i]);
+            bool exists = db.Results.Any(r => r.SourceFile == fileName);
+            if (exists) continue;
+
+            try
+            {
+                string json = File.ReadAllText(files[i], Encoding.UTF8);
+                JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                TestResult? result = JsonSerializer.Deserialize<TestResult>(json, options);
+                if (result == null) continue;
+
+                ResultEntity entity = new ResultEntity();
+                entity.StudentName = result.StudentName;
+                entity.Group = result.Group;
+                entity.TestName = result.TestName;
+                entity.Date = result.Date;
+                entity.TotalQuestions = result.TotalQuestions;
+                entity.CorrectAnswers = result.CorrectAnswers;
+                entity.Score = result.Score;
+                entity.AnswersJson = JsonSerializer.Serialize(result.Answers,
+                    new JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+                entity.SourceFile = fileName;
+                db.Results.Add(entity);
+            }
+            catch { }
+        }
+        db.SaveChanges();
+    }
+}
+
+InitializeDatabase();
+SyncResultsToDb();
 
 AuthData? LoadAuthData()
 {
@@ -239,46 +294,61 @@ app.MapGet("/api/tests", () =>
 
 app.MapGet("/api/results", () =>
 {
-    Directory.CreateDirectory(resultsFolder);
-    string[] files = Directory.GetFiles(resultsFolder, "*.json");
-    List<object> list = new List<object>();
-    for (int i = 0; i < files.Length; i++)
+    SyncResultsToDb();
+    using (AppDbContext db = new AppDbContext(dbPath))
     {
-        string json = File.ReadAllText(files[i], Encoding.UTF8);
-        JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        TestResult? result = JsonSerializer.Deserialize<TestResult>(json, options);
-        if (result != null)
+        List<ResultEntity> entities = db.Results.OrderByDescending(r => r.Date).ToList();
+        List<object> list = new List<object>();
+        JsonSerializerOptions jsonOpts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        for (int i = 0; i < entities.Count; i++)
         {
+            ResultEntity e = entities[i];
+            List<StudentAnswer>? answers = null;
+            try { answers = JsonSerializer.Deserialize<List<StudentAnswer>>(e.AnswersJson, jsonOpts); } catch { }
             ResultListItem item = new ResultListItem();
-            item.StudentName = result.StudentName;
-            item.Group = result.Group;
-            item.TestName = result.TestName;
-            item.Date = result.Date;
-            item.TotalQuestions = result.TotalQuestions;
-            item.CorrectAnswers = result.CorrectAnswers;
-            item.Score = result.Score;
-            item.Answers = result.Answers;
-            item.FileName = Path.GetFileName(files[i]);
+            item.StudentName = e.StudentName;
+            item.Group = e.Group;
+            item.TestName = e.TestName;
+            item.Date = e.Date;
+            item.TotalQuestions = e.TotalQuestions;
+            item.CorrectAnswers = e.CorrectAnswers;
+            item.Score = e.Score;
+            item.Answers = answers ?? new List<StudentAnswer>();
+            item.FileName = e.SourceFile;
             list.Add(item);
         }
+        return Results.Json(list);
     }
-    return Results.Json(list);
 });
 
 app.MapDelete("/api/results/{fileName}", (string fileName) =>
 {
-    string filePath = Path.Combine(resultsFolder, fileName);
-    if (!File.Exists(filePath))
+    string safe = Path.GetFileName(fileName);
+    using (AppDbContext db = new AppDbContext(dbPath))
     {
-        return Results.NotFound(new ErrorResult { Error = "Результат не найден" });
+        ResultEntity? entity = db.Results.FirstOrDefault(r => r.SourceFile == safe);
+        if (entity != null)
+        {
+            db.Results.Remove(entity);
+            db.SaveChanges();
+        }
     }
-
-    File.Delete(filePath);
+    string filePath = Path.Combine(resultsFolder, safe);
+    if (File.Exists(filePath)) File.Delete(filePath);
     return Results.Json(new OperationResult { Ok = true });
 });
 
 app.MapDelete("/api/results", () =>
 {
+    using (AppDbContext db = new AppDbContext(dbPath))
+    {
+        List<ResultEntity> all = db.Results.ToList();
+        for (int i = 0; i < all.Count; i++)
+        {
+            db.Results.Remove(all[i]);
+        }
+        db.SaveChanges();
+    }
     if (Directory.Exists(resultsFolder))
     {
         string[] files = Directory.GetFiles(resultsFolder, "*.json");
@@ -303,16 +373,30 @@ app.MapPost("/api/results/export", async (HttpContext context) =>
         return Results.BadRequest(new ErrorResult { Error = "Нет выбранных результатов" });
     }
 
-    Directory.CreateDirectory(resultsFolder);
     List<TestResult> results = new List<TestResult>();
-    for (int i = 0; i < req.FileNames.Count; i++)
+    using (AppDbContext db = new AppDbContext(dbPath))
     {
-        string safe = Path.GetFileName(req.FileNames[i]);
-        string filePath = Path.Combine(resultsFolder, safe);
-        if (!File.Exists(filePath)) continue;
-        string json = File.ReadAllText(filePath, Encoding.UTF8);
-        TestResult? result = JsonSerializer.Deserialize<TestResult>(json, jsonOpts);
-        if (result != null) results.Add(result);
+        for (int i = 0; i < req.FileNames.Count; i++)
+        {
+            string safe = Path.GetFileName(req.FileNames[i]);
+            ResultEntity? entity = db.Results.FirstOrDefault(r => r.SourceFile == safe);
+            if (entity == null) continue;
+            TestResult tr = new TestResult();
+            tr.StudentName = entity.StudentName;
+            tr.Group = entity.Group;
+            tr.TestName = entity.TestName;
+            tr.Date = entity.Date;
+            tr.TotalQuestions = entity.TotalQuestions;
+            tr.CorrectAnswers = entity.CorrectAnswers;
+            tr.Score = entity.Score;
+            try
+            {
+                List<StudentAnswer>? answers = JsonSerializer.Deserialize<List<StudentAnswer>>(entity.AnswersJson, jsonOpts);
+                if (answers != null) tr.Answers = answers;
+            }
+            catch { }
+            results.Add(tr);
+        }
     }
 
     if (results.Count == 0)

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using SkillChecker.Common.Models;
+using SkillChecker.Data;
 
 namespace SkillCheckerServer
 {
@@ -87,7 +88,7 @@ namespace SkillCheckerServer
             return sb.ToString();
         }
 
-        private void SaveResultToFile(TestResult result)
+        private string SaveResultToFile(TestResult result)
         {
             string resultsFolder = Path.Combine(Path.GetDirectoryName(_testsFolder) ?? "", "Results");
             Directory.CreateDirectory(resultsFolder);
@@ -104,6 +105,38 @@ namespace SkillCheckerServer
 
             string json = JsonSerializer.Serialize(result, options);
             File.WriteAllText(Path.Combine(resultsFolder, fileName), json, Encoding.UTF8);
+            return fileName;
+        }
+
+        private void InitializeDatabase()
+        {
+            string? dbDir = Path.GetDirectoryName(_dbPath);
+            if (dbDir != null) Directory.CreateDirectory(dbDir);
+            using (AppDbContext db = new AppDbContext(_dbPath))
+            {
+                db.Database.EnsureCreated();
+            }
+            Log("База данных: " + _dbPath);
+        }
+
+        private void SaveResultToDb(TestResult result, string sourceFile)
+        {
+            using (AppDbContext db = new AppDbContext(_dbPath))
+            {
+                ResultEntity entity = new ResultEntity();
+                entity.StudentName = result.StudentName;
+                entity.Group = result.Group;
+                entity.TestName = result.TestName;
+                entity.Date = result.Date;
+                entity.TotalQuestions = result.TotalQuestions;
+                entity.CorrectAnswers = result.CorrectAnswers;
+                entity.Score = result.Score;
+                entity.AnswersJson = JsonSerializer.Serialize(result.Answers,
+                    new JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+                entity.SourceFile = sourceFile;
+                db.Results.Add(entity);
+                db.SaveChanges();
+            }
         }
 
         public void ShowResults()

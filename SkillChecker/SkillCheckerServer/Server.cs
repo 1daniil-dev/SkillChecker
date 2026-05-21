@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using SkillChecker.Common.Models;
 using SkillChecker.Common.Protocol;
+using SkillChecker.Data;
 
 namespace SkillCheckerServer
 {
@@ -14,6 +15,7 @@ namespace SkillCheckerServer
         private List<TestResult> _results;
         private string _testsFolder;
         private string _settingsFile;
+        private string _dbPath;
         private readonly object _stateLock = new object();
 
         public Server(int port)
@@ -31,6 +33,11 @@ namespace SkillCheckerServer
                 _testsFolder = sourceTestsFolder;
             }
             _settingsFile = Path.Combine(_testsFolder, "test_settings.json");
+            _dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "skillchecker.db");
+            if (Directory.Exists(sourceTestsFolder))
+            {
+                _dbPath = Path.Combine(solutionDir, "SkillCheckerServer", "Data", "skillchecker.db");
+            }
         }
 
         public void Start()
@@ -38,6 +45,7 @@ namespace SkillCheckerServer
             Directory.CreateDirectory(_testsFolder);
             LoadAllTests();
             LoadSettings();
+            InitializeDatabase();
 
             _isRunning = true;
             _listener.Start();
