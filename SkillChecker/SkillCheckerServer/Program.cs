@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Text;
+using SkillChecker.Common.Security;
 using SkillCheckerServer;
 
 int port = 9000;
@@ -11,6 +13,17 @@ if (args.Length > 0 && int.TryParse(args[0], out int customPort))
 }
 
 Server server = new Server(port);
+
+string solutionDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".."));
+string authFile;
+if (Directory.Exists(Path.Combine(solutionDir, "SkillCheckerServer", "Tests")))
+{
+    authFile = Path.Combine(solutionDir, "SkillCheckerServer", "Data", "auth.json");
+}
+else
+{
+    authFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "auth.json");
+}
 
 Thread serverThread = new Thread(() => server.Start());
 serverThread.IsBackground = true;
@@ -141,6 +154,10 @@ while (true)
         server.Stop();
         break;
     }
+    else if (cmd == "6" || cmd == "password")
+    {
+        ResetPassword();
+    }
     else if (cmd == "?" || cmd == "help" || cmd == "меню")
     {
         ShowMenu();
@@ -162,6 +179,51 @@ void ShowMenu()
     Console.WriteLine("    3. Запланировать тест");
     Console.WriteLine("    4. Список тестов");
     Console.WriteLine("    5. Выход");
+    Console.WriteLine("    6. Сброс пароля");
     Console.WriteLine("  Введите номер или команду (? — меню)");
     Console.ResetColor();
+}
+
+void ResetPassword()
+{
+    Console.ForegroundColor = ConsoleColor.Cyan;
+    Console.WriteLine("  Сброс / смена пароля веб-панели");
+    Console.ResetColor();
+    Console.Write("  Введите новый пароль (или Enter для полного сброса): ");
+    string? newPass = Console.ReadLine();
+
+    if (string.IsNullOrEmpty(newPass))
+    {
+        if (File.Exists(authFile))
+        {
+            File.Delete(authFile);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("  Пароль сброшен. При входе в веб-панель потребуется создать новый.");
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("  Пароль и так не установлен.");
+            Console.ResetColor();
+        }
+    }
+    else
+    {
+        if (newPass.Length < 4)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("  Пароль должен быть не менее 4 символов.");
+            Console.ResetColor();
+            return;
+        }
+        string hash = PasswordHasher.Hash(newPass);
+        string? dir = Path.GetDirectoryName(authFile);
+        if (dir != null) Directory.CreateDirectory(dir);
+        string json = "{\n  \"PasswordHash\": \"" + hash + "\"\n}";
+        File.WriteAllText(authFile, json, Encoding.UTF8);
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("  Пароль изменён.");
+        Console.ResetColor();
+    }
 }
