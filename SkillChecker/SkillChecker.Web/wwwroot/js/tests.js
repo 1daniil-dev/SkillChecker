@@ -284,7 +284,26 @@ function openSettingsForTest(testName) {
     }
 
     document.getElementById("settingsFormTitle").textContent = "Настройка: " + testName;
-    document.getElementById("settingsForm").classList.remove("hidden");
+
+    var form = document.getElementById("settingsForm");
+    var cards = document.getElementById("testsList").children;
+    var targetCard = null;
+    for (var ci = 0; ci < cards.length; ci++) {
+        var btns = cards[ci].querySelectorAll(".btn-configure");
+        for (var bi = 0; bi < btns.length; bi++) {
+            if (btns[bi].getAttribute("data-name") === testName) {
+                targetCard = cards[ci];
+                break;
+            }
+        }
+        if (targetCard) break;
+    }
+    if (targetCard) {
+        targetCard.appendChild(form);
+    }
+
+    form.classList.remove("hidden");
+    form.scrollIntoView({ behavior: "smooth", block: "nearest" });
     select.focus();
 }
 
