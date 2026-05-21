@@ -274,3 +274,159 @@ function toggleDetails(index) {
         icon.textContent = "\u25B6";
     }
 }
+
+var exportFiltered = [];
+
+function openExportModal() {
+    if (allResults.length === 0) {
+        alert("Нет результатов для экспорта");
+        return;
+    }
+
+    var groups = {};
+    for (var i = 0; i < allResults.length; i++) {
+        var g = allResults[i].Group.trim();
+        if (g.length === 0) g = "(без группы)";
+        if (!groups[g]) groups[g] = 0;
+        groups[g]++;
+    }
+
+    var groupsDiv = document.getElementById("exportGroups");
+    groupsDiv.innerHTML = "";
+    var groupNames = Object.keys(groups);
+    groupNames.sort();
+
+    for (var i = 0; i < groupNames.length; i++) {
+        var label = document.createElement("label");
+        label.className = "export-group-label";
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = true;
+        cb.value = groupNames[i];
+        cb.onchange = function () { filterExportResults(); };
+        label.appendChild(cb);
+        var text = document.createTextNode(" " + groupNames[i] + " (" + groups[groupNames[i]] + ")");
+        label.appendChild(text);
+        groupsDiv.appendChild(label);
+    }
+
+    filterExportResults();
+    document.getElementById("exportModal").classList.remove("hidden");
+}
+
+function closeExportModal() {
+    document.getElementById("exportModal").classList.add("hidden");
+}
+
+function getSelectedGroups() {
+    var checkboxes = document.getElementById("exportGroups").querySelectorAll("input[type=checkbox]");
+    var selected = [];
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) selected.push(checkboxes[i].value);
+    }
+    return selected;
+}
+
+function filterExportResults() {
+    var selected = getSelectedGroups();
+    exportFiltered = [];
+    for (var i = 0; i < allResults.length; i++) {
+        var g = allResults[i].Group.trim();
+        if (g.length === 0) g = "(без группы)";
+        var found = false;
+        for (var j = 0; j < selected.length; j++) {
+            if (selected[j] === g) { found = true; break; }
+        }
+        if (found) exportFiltered.push(allResults[i]);
+    }
+
+    var div = document.getElementById("exportResults");
+    div.innerHTML = "";
+
+    for (var i = 0; i < exportFiltered.length; i++) {
+        var r = exportFiltered[i];
+        var row = document.createElement("label");
+        row.className = "export-result-row";
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = true;
+        cb.className = "export-result-cb";
+        cb.setAttribute("data-filename", r.FileName);
+        cb.onchange = function () { updateExportCount(); };
+        row.appendChild(cb);
+        var text = document.createTextNode(
+            " " + r.StudentName + " — " + r.Group + " — " + r.TestName + " — " + r.Score + "%"
+        );
+        row.appendChild(text);
+        div.appendChild(row);
+    }
+
+    updateExportCount();
+}
+
+function updateExportCount() {
+    var checkboxes = document.getElementById("exportResults").querySelectorAll(".export-result-cb");
+    var count = 0;
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) count++;
+    }
+    document.getElementById("exportCount").textContent = "Выбрано: " + count + " из " + exportFiltered.length;
+}
+
+function selectAllExport() {
+    var checkboxes = document.getElementById("exportResults").querySelectorAll(".export-result-cb");
+    for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = true;
+    }
+    updateExportCount();
+}
+
+function deselectAllExport() {
+    var checkboxes = document.getElementById("exportResults").querySelectorAll(".export-result-cb");
+    for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = false;
+    }
+    updateExportCount();
+}
+
+function doExport() {
+    var checkboxes = document.getElementById("exportResults").querySelectorAll(".export-result-cb");
+    var fileNames = [];
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            fileNames.push(checkboxes[i].getAttribute("data-filename"));
+        }
+    }
+
+    if (fileNames.length === 0) {
+        alert("Выберите хотя бы один результат");
+        return;
+    }
+
+    authFetch("/api/results/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ FileNames: fileNames })
+    })
+    .then(function (r) {
+        if (!r.ok) {
+            return r.json().then(function (data) {
+                alert("Ошибка: " + (data.error || "неизвестная"));
+                return null;
+            });
+        }
+        return r.blob();
+    })
+    .then(function (blob) {
+        if (!blob) return;
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "results.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        closeExportModal();
+    });
+}

@@ -810,3 +810,108 @@ h1 {
 .auth-submit:hover {
     background: #3a7bc4;
 }
+
+.btn-export {
+    background: #2E7D32;
+}
+
+.btn-export:hover {
+    background: #1B5E20;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    width: 600px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h3 {
+    color: #4A90D9;
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+.modal-hint {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.export-groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.export-group-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #f0f2f5;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.export-group-label:hover {
+    background: #e0e5eb;
+}
+
+.export-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.export-count {
+    color: #888;
+    font-size: 13px;
+    margin-left: auto;
+}
+
+.export-results {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 14px;
+}
+
+.export-result-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.export-result-row:last-child {
+    border-bottom: none;
+}
+
+.export-result-row:hover {
+    background: #f8f9fa;
+}
