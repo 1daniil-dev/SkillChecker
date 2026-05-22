@@ -30,7 +30,6 @@ namespace SkillCheckerServer
                 if (command == Commands.GetTestSettings)
                 {
                     ReloadTestsIfNeeded();
-                    LoadSettings();
                     string settingsData = "";
                     foreach (KeyValuePair<string, TestSettings> kvp in _testSettings)
                     {
