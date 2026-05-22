@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Threading;
 using SkillChecker.Commands;
 using SkillChecker.Common.Models;
+using SkillChecker.Models;
 using SkillChecker.Services;
 
 namespace SkillChecker.ViewModels

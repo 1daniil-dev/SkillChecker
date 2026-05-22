@@ -1,5 +1,6 @@
 using System.Windows;
 using SkillChecker.Common.Models;
+using SkillChecker.Models;
 using SkillChecker.Services;
 
 namespace SkillChecker.ViewModels

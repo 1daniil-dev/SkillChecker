@@ -1,6 +1,6 @@
 ﻿using SkillChecker.Common.Models;
 
-namespace SkillChecker.Services
+namespace SkillChecker.Models
 {
     public class TestQuestionsResult
     {
