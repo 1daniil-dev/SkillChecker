@@ -6,7 +6,7 @@ namespace SkillChecker.Data
     {
         private string _dbPath;
 
-        public DbSet<ResultEntity> Results { get; set; }
+        public DbSet<ResultEntity> Results { get; set; } = null!;
 
         public AppDbContext(string dbPath)
         {
