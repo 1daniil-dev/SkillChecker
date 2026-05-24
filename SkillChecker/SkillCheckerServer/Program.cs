@@ -2,6 +2,7 @@
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using SkillChecker.Common.Security;
 using SkillCheckerServer;
 
@@ -220,7 +221,8 @@ void ResetPassword()
         string hash = PasswordHasher.Hash(newPass);
         string? dir = Path.GetDirectoryName(authFile);
         if (dir != null) Directory.CreateDirectory(dir);
-        string json = "{\n  \"PasswordHash\": \"" + hash + "\"\n}";
+        var data = new { PasswordHash = hash };
+string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(authFile, json, Encoding.UTF8);
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("  Пароль изменён.");
