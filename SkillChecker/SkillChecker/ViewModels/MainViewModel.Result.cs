@@ -26,11 +26,6 @@ namespace SkillChecker.ViewModels
                 else if (result.Score >= 25.0) ScoreLevel = 1;
                 else ScoreLevel = 0;
 
-                if (_isPerfectScore)
-                {
-                    ResultScore = "100%";
-                }
-
                 List<ResultItem> items = new List<ResultItem>();
                 for (int i = 0; i < _questions.Count; i++)
                 {
