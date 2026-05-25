@@ -23,80 +23,89 @@
         </Menu>
 
     <Grid Margin="20">
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <!-- Auth -->
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="440"
-                            Visibility="{Binding AuthVisibility}"
-                            x:Name="AuthPanel"
-                            AutomationProperties.Name="Экран авторизации">
-                    <TextBlock Text="SkillChecker" FontSize="32" FontWeight="Bold" Foreground="#1E293B"
-                               HorizontalAlignment="Center" Margin="0,0,0,8"
+        <!-- Auth screen: left form + right tests -->
+        <Grid Visibility="{Binding AuthVisibility}" x:Name="AuthPanel"
+              AutomationProperties.Name="Экран авторизации">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: form -->
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="0,0,16,0">
+                    <TextBlock Text="SkillChecker" FontSize="40" FontWeight="Bold" Foreground="#1E293B"
+                               Margin="0,0,0,2"
                                AutomationProperties.Name="Название приложения"/>
-                    <TextBlock Text="Система тестирования учащихся" FontSize="14" Foreground="#64748B"
-                               HorizontalAlignment="Center" Margin="0,0,0,32"
+                    <TextBlock Text="Система тестирования учащихся" FontSize="17" Foreground="#64748B"
+                               Margin="0,0,0,18"
                                AutomationProperties.Name="Подзаголовок"/>
 
-                    <TextBlock Text="IP адрес сервера" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
-                    <TextBox Text="{Binding ServerIp, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
-                             VerticalContentAlignment="Center" Margin="0,0,0,10"
-                             AutomationProperties.Name="IP адрес сервера"
-                             AutomationProperties.HelpText="IP адрес компьютера преподавателя"/>
+                    <StackPanel Margin="0,0,0,18">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="12" Height="12" Margin="0,0,10,0" VerticalAlignment="Center">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="#EF4444"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                <Setter Property="Fill" Value="#22C55E"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#94A3B8"/>
+                                        <Setter Property="Text" Value="Не подключено"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                <Setter Property="Foreground" Value="#166534"/>
+                                                <Setter Property="Text" Value="Подключено"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock Text="{Binding TestCountText}" FontSize="16" Foreground="#64748B"
+                                   Margin="22,4,0,0"/>
+                    </StackPanel>
 
-                    <TextBlock Text="Порт" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
-                    <TextBox Text="{Binding ServerPort, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
-                             VerticalContentAlignment="Center" Margin="0,0,0,10"
-                             AutomationProperties.Name="Порт сервера"
-                             AutomationProperties.HelpText="Порт сервера, по умолчанию 9000"/>
+                    <Border Height="2" Background="#E2E8F0" Margin="0,0,0,18"/>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-                        <Button Content="Подключиться к серверу" Height="44" Padding="20,0" Margin="0,0,8,0"
+                    <TextBlock Text="IP адрес сервера" FontSize="16" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,6"/>
+                    <TextBox Text="{Binding ServerIp, UpdateSourceTrigger=PropertyChanged}" Height="44" Padding="12,0"
+                             VerticalContentAlignment="Center" Margin="0,0,0,14"
+                             FontSize="16"
+                             AutomationProperties.Name="IP адрес сервера"/>
+
+                    <TextBlock Text="Порт" FontSize="16" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,6"/>
+                    <TextBox Text="{Binding ServerPort, UpdateSourceTrigger=PropertyChanged}" Height="44" Padding="12,0"
+                             VerticalContentAlignment="Center" Margin="0,0,0,14"
+                             FontSize="16"
+                             AutomationProperties.Name="Порт сервера"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
+                        <Button Content="Подключиться" Height="44" Padding="18,0" Margin="0,0,10,0"
                                 Command="{Binding ConnectCommand}" Background="#E2E8F0" Foreground="#334155"
-                                FontWeight="SemiBold" FontSize="14" BorderThickness="0"
-                                AutomationProperties.Name="Подключиться к серверу"
-                                AutomationProperties.HelpText="Установить соединение с сервером"/>
+                                FontWeight="SemiBold" FontSize="15" BorderThickness="0"
+                                AutomationProperties.Name="Подключиться к серверу"/>
                         <Button Content="Обновить" Height="44" Padding="16,0"
                                 Command="{Binding RefreshCommand}" Background="#4F46E5" Foreground="White"
-                                FontWeight="SemiBold" FontSize="14" BorderThickness="0"
-                                AutomationProperties.Name="Обновить список тестов"
-                                AutomationProperties.HelpText="Обновить список тестов и расписание с сервера"/>
+                                FontWeight="SemiBold" FontSize="15" BorderThickness="0"
+                                AutomationProperties.Name="Обновить список тестов"/>
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,18"
-                                AutomationProperties.Name="Статус подключения">
-                        <Ellipse Width="10" Height="10" Margin="0,0,8,0" VerticalAlignment="Center">
-                            <Ellipse.Style>
-                                <Style TargetType="Ellipse">
-                                    <Setter Property="Fill" Value="#EF4444"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsConnected}" Value="True">
-                                            <Setter Property="Fill" Value="#22C55E"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Ellipse.Style>
-                        </Ellipse>
-                        <TextBlock FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="#94A3B8"/>
-                                    <Setter Property="Text" Value="Не подключено"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsConnected}" Value="True">
-                                            <Setter Property="Foreground" Value="#166534"/>
-                                            <Setter Property="Text" Value="Подключено"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock Text="{Binding TestCountText}" FontSize="13" Foreground="#64748B"
-                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
-                    </StackPanel>
+                    <Border Height="2" Background="#E2E8F0" Margin="0,0,0,18"/>
 
-                    <TextBlock Text="ФИО студента" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
-                    <TextBox Text="{Binding StudentName, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
-                             VerticalContentAlignment="Center" Margin="0,0,0,10"
+                    <TextBlock Text="ФИО студента" FontSize="16" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,6"/>
+                    <TextBox Text="{Binding StudentName, UpdateSourceTrigger=PropertyChanged}" Height="44" Padding="12,0"
+                             VerticalContentAlignment="Center" Margin="0,0,0,14"
+                             FontSize="16"
                              AutomationProperties.Name="ФИО студента"
                              AutomationProperties.HelpText="Введите полное ФИО">
                         <TextBox.Style>
@@ -113,9 +122,10 @@
                         </TextBox.Style>
                     </TextBox>
 
-                    <TextBlock Text="Учебная группа" FontWeight="SemiBold" FontSize="13" Foreground="#334155" Margin="0,0,0,6"/>
-                    <TextBox Text="{Binding StudentGroup, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="10,0"
+                    <TextBlock Text="Учебная группа" FontSize="16" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,6"/>
+                    <TextBox Text="{Binding StudentGroup, UpdateSourceTrigger=PropertyChanged}" Height="44" Padding="12,0"
                              VerticalContentAlignment="Center" Margin="0,0,0,18"
+                             FontSize="16"
                              AutomationProperties.Name="Учебная группа"
                              AutomationProperties.HelpText="Введите номер группы">
                         <TextBox.Style>
@@ -132,19 +142,40 @@
                         </TextBox.Style>
                     </TextBox>
 
-                    <TextBlock Text="Выберите тест" FontWeight="SemiBold" FontSize="15" Foreground="#334155" Margin="0,0,0,12"/>
+                    <Button Content="Выход" Height="36"
+                            Command="{Binding ExitCommand}" Background="Transparent" Foreground="#94A3B8"
+                            BorderThickness="0" FontWeight="Normal" FontSize="14"
+                            HorizontalAlignment="Left" Padding="0"
+                            AutomationProperties.Name="Выход из программы"/>
+                </StackPanel>
+            </ScrollViewer>
 
-                    <ItemsControl ItemsSource="{Binding TestCards}">
+            <!-- Divider -->
+            <Border Grid.Column="1" Width="1" Background="#E2E8F0" Margin="0,0,16,0"/>
+
+            <!-- Right: test cards -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Доступные тесты" FontSize="22" FontWeight="Bold"
+                           Foreground="#1E293B" Margin="0,0,0,14"/>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                              AutomationProperties.Name="Список тестов">
+                    <ItemsControl ItemsSource="{Binding TestCards}" Margin="0,0,4,0">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Margin="0,0,0,10" Padding="16,14" HorizontalContentAlignment="Stretch"
+                                <Button Margin="0,0,0,14" Padding="20,18" HorizontalContentAlignment="Stretch"
                                         Command="{Binding DataContext.SelectTestCardCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                         CommandParameter="{Binding Name}"
                                         AutomationProperties.Name="{Binding Name}"
                                         AutomationProperties.HelpText="Нажмите чтобы начать тест">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
-                                            <Border x:Name="cardBorder" CornerRadius="10" Padding="16,14"
+                                            <Border x:Name="cardBorder" CornerRadius="12" Padding="20,18"
                                                     BorderThickness="2" Cursor="Hand">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
@@ -164,7 +195,7 @@
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" Margin="0,0,12,0"
+                                                    <Border Grid.Column="0" Width="44" Height="44" CornerRadius="22" Margin="0,0,16,0"
                                                             HorizontalAlignment="Center" VerticalAlignment="Center">
                                                         <Border.Style>
                                                             <Style TargetType="Border">
@@ -176,7 +207,7 @@
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </Border.Style>
-                                                        <TextBlock Foreground="#1E3A5F" FontWeight="Bold" FontSize="16"
+                                                        <TextBlock Foreground="#1E3A5F" FontWeight="Bold" FontSize="20"
                                                                    FontFamily="Segoe MDL2 Assets"
                                                                    HorizontalAlignment="Center" VerticalAlignment="Center">
                                                             <TextBlock.Style>
@@ -192,7 +223,7 @@
                                                         </TextBlock>
                                                     </Border>
                                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                        <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold">
+                                                        <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="Foreground" Value="#166534"/>
@@ -204,7 +235,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <TextBlock FontSize="12" Margin="0,2,0,0">
+                                                        <TextBlock FontSize="14" Margin="0,4,0,0">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="Foreground" Value="#64748B"/>
@@ -218,7 +249,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <TextBlock FontSize="11" Foreground="#EF4444" Margin="0,1,0,0"
+                                                        <TextBlock FontSize="13" Foreground="#EF4444" Margin="0,3,0,0"
                                                                    Text="{Binding TimeMinutes, StringFormat='Лимит: {0} мин'}">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
@@ -232,9 +263,9 @@
                                                             </TextBlock.Style>
                                                         </TextBlock>
                                                     </StackPanel>
-                                                    <TextBlock Grid.Column="2" Text="{Binding ScheduleTime}" FontSize="16"
+                                                    <TextBlock Grid.Column="2" Text="{Binding ScheduleTime}" FontSize="18"
                                                                FontWeight="Bold" Foreground="#4A90D9"
-                                                               VerticalAlignment="Center" Margin="8,0,0,0">
+                                                               VerticalAlignment="Center" Margin="12,0,0,0">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
                                                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -259,12 +290,9 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-
-                    <Button Content="Выход" Height="36" Margin="0,12,0,0"
-                            Command="{Binding ExitCommand}" Background="Transparent" Foreground="#94A3B8"
-                            BorderThickness="0" FontWeight="Normal"
-                            AutomationProperties.Name="Выход из программы"/>
-                </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
 
                 <!-- Wait -->
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="400"
@@ -726,8 +754,6 @@
                                 AutomationProperties.HelpText="Вернуться к экрану авторизации"/>
                     </StackPanel>
                 </Grid>
-            </StackPanel>
-        </ScrollViewer>
     </Grid>
     </DockPanel>
 </Window>

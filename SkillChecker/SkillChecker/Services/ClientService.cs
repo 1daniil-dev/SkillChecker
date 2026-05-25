@@ -1,6 +1,7 @@
 ﻿using System.Net.Sockets;
 using SkillChecker.Common.Models;
 using SkillChecker.Common.Protocol;
+using SkillChecker.Models;
 using Cmd = SkillChecker.Common.Protocol.Commands;
 
 namespace SkillChecker.Services
