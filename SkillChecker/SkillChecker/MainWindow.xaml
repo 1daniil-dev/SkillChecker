@@ -338,10 +338,10 @@
                             AutomationProperties.Name="Экран ожидания теста">
                     <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"
                                AutomationProperties.Name="Иконка часов"/>
-                    <TextBlock Text="{Binding WaitTestName}" FontSize="24" FontWeight="Bold" Foreground="#1E293B"
+                     <TextBlock Text="{Binding WaitTestName}" FontSize="28" FontWeight="Bold" Foreground="#1E293B"
                                HorizontalAlignment="Center" Margin="0,0,0,8"
                                AutomationProperties.Name="Название теста"/>
-                    <TextBlock Text="{Binding WaitTimeText}" FontSize="16" Foreground="#64748B"
+                     <TextBlock Text="{Binding WaitTimeText}" FontSize="17" Foreground="#64748B"
                                HorizontalAlignment="Center" Margin="0,0,0,24"
                                AutomationProperties.Name="Время начала теста"/>
                     <TextBlock Text="{Binding WaitCountdownText}" FontSize="48" FontWeight="Black" Foreground="#4F46E5"
@@ -351,7 +351,7 @@
                                AutomationProperties.LiveSetting="Polite"/>
                     <Button Content="Начать тест" Height="48" Width="260"
                             Command="{Binding StartFromWaitCommand}" Background="#4F46E5" Foreground="White"
-                            FontWeight="Bold" FontSize="15" BorderThickness="0"
+                            FontWeight="Bold" FontSize="16" BorderThickness="0"
                             AutomationProperties.Name="Начать тест"
                             AutomationProperties.HelpText="{Binding WaitButtonHelpText}"/>
                 </StackPanel>
@@ -368,7 +368,7 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Margin="0,0,0,8">
-                        <Button Content="Выйти" Height="30" Padding="12,0" FontSize="12"
+                        <Button Content="Выйти" Height="30" Padding="12,0" FontSize="13"
                                 Command="{Binding CancelTestCommand}" Background="#FEE2E2" Foreground="#EF4444"
                                 FontWeight="SemiBold" BorderThickness="0" VerticalAlignment="Center"
                                 HorizontalAlignment="Left"
@@ -380,9 +380,9 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
                                         AutomationProperties.Name="{Binding QuestionNumber, StringFormat='Вопрос {0}'}">
                                 <TextBlock Text="{Binding QuestionNumber, StringFormat='Вопрос {0}'}"
-                                           FontSize="14" Foreground="#64748B" FontWeight="SemiBold"/>
+                                           FontSize="15" Foreground="#64748B" FontWeight="SemiBold"/>
                                 <TextBlock Text="{Binding TotalQuestions, StringFormat=' из {0}'}"
-                                           FontSize="14" Foreground="#94A3B8"/>
+                                           FontSize="15" Foreground="#94A3B8"/>
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
@@ -390,9 +390,9 @@
                                     AutomationProperties.Name="Таймер теста"
                                     AutomationProperties.HelpText="Оставшееся время на тест"
                                     AutomationProperties.LiveSetting="Polite">
-                            <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="16" Margin="0,0,6,0"
+                            <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="18" Margin="0,0,6,0"
                                        VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding TimerText}" FontSize="18" FontWeight="Bold"
+                            <TextBlock Text="{Binding TimerText}" FontSize="20" FontWeight="Bold"
                                        Foreground="#EF4444" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Grid>
@@ -402,9 +402,9 @@
                                  Value="{Binding ProgressValue}" Minimum="0" Maximum="100"
                                  AutomationProperties.Name="Прогресс тестирования"/>
 
-                    <TextBlock Grid.Row="2" Text="{Binding QuestionTypeHint}" FontSize="14" Foreground="#94A3B8"
+                    <TextBlock Grid.Row="2" Text="{Binding QuestionTypeHint}" FontSize="15" Foreground="#94A3B8"
                                Margin="0,0,0,6" AutomationProperties.Name="Тип вопроса"/>
-                    <TextBlock Grid.Row="2" Text="{Binding QuestionText}" FontSize="20" FontWeight="Bold"
+                    <TextBlock Grid.Row="2" Text="{Binding QuestionText}" FontSize="22" FontWeight="Bold"
                                Foreground="#1E293B" TextWrapping="Wrap" Margin="0,18,0,24"
                                AutomationProperties.Name="Текст вопроса"/>
 
@@ -545,12 +545,12 @@
                     <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
                         <Button Content="Назад" Height="48" Width="160" Margin="0,0,12,0"
                                 Command="{Binding PrevQuestionCommand}" Background="#94A3B8" Foreground="White"
-                                FontWeight="SemiBold" FontSize="15" BorderThickness="0"
+                                FontWeight="SemiBold" FontSize="16" BorderThickness="0"
                                 AutomationProperties.Name="Предыдущий вопрос"
                                 AutomationProperties.HelpText="Вернуться к предыдущему вопросу"/>
                         <Button Content="{Binding NextButtonText}" Height="48" Width="200"
                                 Command="{Binding NextQuestionCommand}" Background="#4F46E5" Foreground="White"
-                                FontWeight="Bold" FontSize="15" BorderThickness="0"
+                                FontWeight="Bold" FontSize="16" BorderThickness="0"
                                 AutomationProperties.Name="Следующий вопрос"/>
                     </StackPanel>
                 </Grid>
@@ -566,10 +566,10 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,24">
-                        <TextBlock Text="Проверка ответов" FontSize="28" FontWeight="Bold"
+                        <TextBlock Text="Проверка ответов" FontSize="30" FontWeight="Bold"
                                    Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,8"
                                    AutomationProperties.Name="Заголовок проверки ответов"/>
-                        <TextBlock Text="Нажмите на вопрос, чтобы вернуться к нему" FontSize="14" Foreground="#64748B"
+                        <TextBlock Text="Нажмите на вопрос, чтобы вернуться к нему" FontSize="15" Foreground="#64748B"
                                    HorizontalAlignment="Center"
                                    AutomationProperties.Name="Подсказка"/>
                     </StackPanel>
@@ -618,12 +618,12 @@
                                                                     </Style.Triggers>
                                                                 </Style>
                                                             </Border.Style>
-                                                            <TextBlock Text="{Binding Number}" Foreground="#1E293B" FontWeight="Bold" FontSize="14"
+                                                            <TextBlock Text="{Binding Number}" Foreground="#1E293B" FontWeight="Bold" FontSize="16"
                                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </Border>
-                                                        <TextBlock Grid.Column="1" Text="{Binding QuestionText}" FontSize="14" Foreground="#1E293B"
+                                                        <TextBlock Grid.Column="1" Text="{Binding QuestionText}" FontSize="16" Foreground="#1E293B"
                                                                    TextWrapping="Wrap" VerticalAlignment="Center"/>
-                                                        <TextBlock Grid.Column="2" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0">
+                                                        <TextBlock Grid.Column="2" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="Foreground" Value="#94A3B8"/>
@@ -655,12 +655,12 @@
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
                         <Button Content="Выйти из теста" Height="48" Width="180" Margin="0,0,12,0"
                                 Command="{Binding CancelTestCommand}" Background="#EF4444" Foreground="White"
-                                FontWeight="SemiBold" FontSize="14" BorderThickness="0"
+                                FontWeight="SemiBold" FontSize="15" BorderThickness="0"
                                 AutomationProperties.Name="Выйти из теста"
                                 AutomationProperties.HelpText="Отменить тест и вернуться к выбору"/>
                         <Button Content="Отправить результат" Height="48" Width="220"
                                 Command="{Binding SubmitCommand}" Background="#4F46E5" Foreground="White"
-                                FontWeight="Bold" FontSize="15" BorderThickness="0"
+                                FontWeight="Bold" FontSize="16" BorderThickness="0"
                                 AutomationProperties.Name="Отправить результат"
                                 AutomationProperties.HelpText="Отправить ответы на сервер"/>
                     </StackPanel>
@@ -676,7 +676,7 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,20">
-                        <TextBlock Text="Результат тестирования" FontSize="28" FontWeight="Bold"
+                        <TextBlock Text="Результат тестирования" FontSize="30" FontWeight="Bold"
                                    Foreground="#1E293B" HorizontalAlignment="Center" Margin="0,0,0,16"
                                    AutomationProperties.Name="Заголовок результата"/>
                         <Border Width="100" Height="100" CornerRadius="50" Background="White"
@@ -704,7 +704,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
-                            <TextBlock Text="{Binding ResultScore}" FontSize="26" FontWeight="Black"
+                            <TextBlock Text="{Binding ResultScore}" FontSize="28" FontWeight="Black"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"
                                        AutomationProperties.Name="Оценка">
                                 <TextBlock.Style>
@@ -775,8 +775,8 @@
                                                 </TextBlock>
                                             </Border>
                                             <StackPanel Grid.Column="1">
-                                                <TextBlock Text="{Binding QuestionText}" FontWeight="SemiBold" Foreground="#0F172A" FontSize="14" TextWrapping="Wrap"/>
-                                                <TextBlock Foreground="#64748B" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap">
+                                                <TextBlock Text="{Binding QuestionText}" FontWeight="SemiBold" Foreground="#0F172A" FontSize="16" TextWrapping="Wrap"/>
+                                                <TextBlock Foreground="#64748B" FontSize="14" Margin="0,4,0,0" TextWrapping="Wrap">
                                                     <Run Text="Ваш ответ: "/><Run Text="{Binding SelectedAnswer, Mode=OneWay}"/>
                                                     <Run Text="   Правильный: "/><Run Text="{Binding CorrectAnswer, Mode=OneWay}"/>
                                                 </TextBlock>
