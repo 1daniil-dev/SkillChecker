@@ -357,7 +357,7 @@
                 </StackPanel>
 
                 <!-- Testing -->
-                <Grid Visibility="{Binding TestingVisibility}" x:Name="TestingPanel" Height="680"
+                <Grid Visibility="{Binding TestingVisibility}" x:Name="TestingPanel"
                       AutomationProperties.Name="Экран тестирования">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -408,93 +408,96 @@
                                Foreground="#1E293B" TextWrapping="Wrap" Margin="0,18,0,24"
                                AutomationProperties.Name="Текст вопроса"/>
 
-                    <ListBox Grid.Row="3" ItemsSource="{Binding CurrentOptions}"
-                             SelectedIndex="{Binding SelectedOptionIndex}"
-                             BorderThickness="0" Background="Transparent"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                             AutomationProperties.Name="Варианты ответа"
-                             AutomationProperties.HelpText="Выберите один вариант ответа">
-                        <ListBox.Style>
-                            <Style TargetType="ListBox">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsCurrentMultiple}" Value="True">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsCurrentText}" Value="True">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ListBox.Style>
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="Padding" Value="0"/>
-                                <Setter Property="Margin" Value="0,0,0,10"/>
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ListBoxItem">
-                                            <Border x:Name="itemBorder" Background="White" CornerRadius="10"
-                                                    BorderBrush="#E2E8F0" BorderThickness="1.5" Padding="18,14">
-                                                <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="itemBorder" Property="BorderBrush" Value="#A5B4FC"/>
-                                                </Trigger>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter TargetName="itemBorder" Property="BorderBrush" Value="#4F46E5"/>
-                                                    <Setter TargetName="itemBorder" Property="Background" Value="#EEF2FF"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Text}" FontSize="16" Foreground="#1E293B" TextWrapping="Wrap"/>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-
-                    <Grid Grid.Row="3" VerticalAlignment="Top">
-                        <Grid.Style>
-                            <Style TargetType="Grid">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsCurrentText}" Value="True">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
-                        <Border Background="White" CornerRadius="10"
-                                BorderBrush="#E2E8F0" BorderThickness="1.5" Padding="14,12">
-                            <TextBox Text="{Binding CurrentTextAnswer, UpdateSourceTrigger=PropertyChanged}"
-                                     MaxLength="200" MinHeight="44" FontSize="16" Foreground="#1E293B"
+                    <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+                        <Grid>
+                            <ListBox ItemsSource="{Binding CurrentOptions}"
+                                     SelectedIndex="{Binding SelectedOptionIndex}"
                                      BorderThickness="0" Background="Transparent"
-                                     TextWrapping="Wrap" AcceptsReturn="False" VerticalContentAlignment="Center"
-                                     AutomationProperties.Name="Поле для ввода текстового ответа"
-                                     AutomationProperties.HelpText="Введите ответ текстом, до 200 символов"/>
-                        </Border>
-                    </Grid>
-
-                    <ItemsControl Grid.Row="3" ItemsSource="{Binding CurrentOptions}"
-                                  AutomationProperties.Name="Варианты ответа"
-                                  AutomationProperties.HelpText="Выберите несколько вариантов ответа">
-                        <ItemsControl.Style>
-                            <Style TargetType="ItemsControl">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsCurrentMultiple}" Value="True">
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                     AutomationProperties.Name="Варианты ответа"
+                                     AutomationProperties.HelpText="Выберите один вариант ответа">
+                                <ListBox.Style>
+                                    <Style TargetType="ListBox">
                                         <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ItemsControl.Style>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCurrentMultiple}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsCurrentText}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListBox.Style>
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Padding" Value="0"/>
+                                        <Setter Property="Margin" Value="0,0,0,10"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <Border x:Name="itemBorder" Background="White" CornerRadius="10"
+                                                            BorderBrush="#E2E8F0" BorderThickness="1.5" Padding="18,14">
+                                                        <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="#A5B4FC"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="#4F46E5"/>
+                                                            <Setter TargetName="itemBorder" Property="Background" Value="#EEF2FF"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Text}" FontSize="16" Foreground="#1E293B" TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <Grid VerticalAlignment="Top">
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCurrentText}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <Border Background="White" CornerRadius="10"
+                                        BorderBrush="#E2E8F0" BorderThickness="1.5" Padding="14,12">
+                                    <TextBox Text="{Binding CurrentTextAnswer, UpdateSourceTrigger=PropertyChanged}"
+                                             MaxLength="200" MinHeight="44" FontSize="16" Foreground="#1E293B"
+                                             BorderThickness="0" Background="Transparent"
+                                             TextWrapping="Wrap" AcceptsReturn="False" VerticalContentAlignment="Center"
+                                             AutomationProperties.Name="Поле для ввода текстового ответа"
+                                             AutomationProperties.HelpText="Введите ответ текстом, до 200 символов"/>
+                                </Border>
+                            </Grid>
+
+                            <ItemsControl ItemsSource="{Binding CurrentOptions}"
+                                          AutomationProperties.Name="Варианты ответа"
+                                          AutomationProperties.HelpText="Выберите несколько вариантов ответа">
+                                <ItemsControl.Style>
+                                    <Style TargetType="ItemsControl">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCurrentMultiple}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ItemsControl.Style>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Button Margin="0,0,0,10" Padding="14,12" HorizontalContentAlignment="Stretch"
@@ -536,6 +539,8 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+                        </Grid>
+                    </ScrollViewer>
 
                     <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
                         <Button Content="Назад" Height="48" Width="160" Margin="0,0,12,0"
@@ -551,7 +556,7 @@
                 </Grid>
 
                 <!-- Review -->
-                <Grid Visibility="{Binding ReviewVisibility}" x:Name="ReviewPanel" Height="680"
+                <Grid Visibility="{Binding ReviewVisibility}" x:Name="ReviewPanel"
                       AutomationProperties.Name="Экран проверки ответов">
 
                     <Grid.RowDefinitions>
@@ -662,7 +667,7 @@
                 </Grid>
 
                 <!-- Result -->
-                <Grid Visibility="{Binding ResultVisibility}" x:Name="ResultPanel" Height="680"
+                <Grid Visibility="{Binding ResultVisibility}" x:Name="ResultPanel"
                       AutomationProperties.Name="Экран результата тестирования">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
