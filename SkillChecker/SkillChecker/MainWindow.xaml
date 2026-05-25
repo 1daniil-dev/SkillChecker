@@ -104,44 +104,80 @@
                     <Border Height="2" Background="#E2E8F0" Margin="0,0,0,18"/>
 
                     <TextBlock Text="ФИО студента" FontSize="16" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,6"/>
-                    <TextBox Text="{Binding StudentName, UpdateSourceTrigger=PropertyChanged}" Height="44" Padding="12,0"
-                             VerticalContentAlignment="Center" Margin="0,0,0,14"
-                             FontSize="16"
-                             AutomationProperties.Name="ФИО студента"
-                             AutomationProperties.HelpText="Введите полное ФИО">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox">
-                                <Setter Property="BorderBrush" Value="#E2E8F0"/>
-                                <Setter Property="BorderThickness" Value="1"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsNameError}" Value="True">
-                                        <Setter Property="BorderBrush" Value="#EF4444"/>
-                                        <Setter Property="BorderThickness" Value="2"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
+                    <Grid Margin="0,0,0,14">
+                        <TextBox Text="{Binding StudentName, UpdateSourceTrigger=PropertyChanged}" Height="44" Padding="12,0"
+                                 VerticalContentAlignment="Center"
+                                 FontSize="16"
+                                 x:Name="NameBox"
+                                 AutomationProperties.Name="ФИО студента"
+                                 AutomationProperties.HelpText="Введите полное ФИО">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsNameError}" Value="True">
+                                            <Setter Property="BorderBrush" Value="#EF4444"/>
+                                            <Setter Property="BorderThickness" Value="2"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                        <TextBlock Text="Введите ФИО"
+                                   FontSize="16" Foreground="#94A3B8"
+                                   Padding="14,0,0,0" VerticalAlignment="Center"
+                                   IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=NameBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
 
                     <TextBlock Text="Учебная группа" FontSize="16" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,6"/>
-                    <TextBox Text="{Binding StudentGroup, UpdateSourceTrigger=PropertyChanged}" Height="44" Padding="12,0"
-                             VerticalContentAlignment="Center" Margin="0,0,0,18"
-                             FontSize="16"
-                             AutomationProperties.Name="Учебная группа"
-                             AutomationProperties.HelpText="Введите номер группы">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox">
-                                <Setter Property="BorderBrush" Value="#E2E8F0"/>
-                                <Setter Property="BorderThickness" Value="1"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsGroupError}" Value="True">
-                                        <Setter Property="BorderBrush" Value="#EF4444"/>
-                                        <Setter Property="BorderThickness" Value="2"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
+                    <Grid Margin="0,0,0,18">
+                        <TextBox Text="{Binding StudentGroup, UpdateSourceTrigger=PropertyChanged}" Height="44" Padding="12,0"
+                                 VerticalContentAlignment="Center"
+                                 FontSize="16"
+                                 x:Name="GroupBox"
+                                 AutomationProperties.Name="Учебная группа"
+                                 AutomationProperties.HelpText="Введите номер группы">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsGroupError}" Value="True">
+                                            <Setter Property="BorderBrush" Value="#EF4444"/>
+                                            <Setter Property="BorderThickness" Value="2"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                        <TextBlock Text="Введите группу"
+                                   FontSize="16" Foreground="#94A3B8"
+                                   Padding="14,0,0,0" VerticalAlignment="Center"
+                                   IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=GroupBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
 
                     <Button Content="Выход" Height="36"
                             Command="{Binding ExitCommand}" Background="Transparent" Foreground="#94A3B8"
