@@ -75,7 +75,7 @@ void SyncResultsToDb()
                 entity.SourceFile = fileName;
                 db.Results.Add(entity);
             }
-            catch { }
+            catch (Exception ex) { Console.WriteLine($"SyncResultsToDb error: {ex.Message}"); }
         }
         db.SaveChanges();
     }
@@ -304,7 +304,7 @@ app.MapGet("/api/results", () =>
         {
             ResultEntity e = entities[i];
             List<StudentAnswer>? answers = null;
-            try { answers = JsonSerializer.Deserialize<List<StudentAnswer>>(e.AnswersJson, jsonOpts); } catch { }
+            try { answers = JsonSerializer.Deserialize<List<StudentAnswer>>(e.AnswersJson, jsonOpts); } catch (Exception ex) { Console.WriteLine($"Results deserialize error: {ex.Message}"); }
             ResultListItem item = new ResultListItem();
             item.StudentName = e.StudentName;
             item.Group = e.Group;
@@ -394,7 +394,7 @@ app.MapPost("/api/results/export", async (HttpContext context) =>
                 List<StudentAnswer>? answers = JsonSerializer.Deserialize<List<StudentAnswer>>(entity.AnswersJson, jsonOpts);
                 if (answers != null) tr.Answers = answers;
             }
-            catch { }
+            catch (Exception ex) { Console.WriteLine($"Export deserialize error: {ex.Message}"); }
             results.Add(tr);
         }
     }
