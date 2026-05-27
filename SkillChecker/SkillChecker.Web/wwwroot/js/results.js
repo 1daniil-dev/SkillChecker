@@ -96,12 +96,28 @@ function updateSortButtons() {
     }
 }
 
-function renderResults() {
+function applySearch() {
+    var q = document.getElementById("searchInput").value.toLowerCase();
+    if (!q) { renderResults(); return; }
+    var filtered = [];
+    for (var i = 0; i < allResults.length; i++) {
+        var r = allResults[i];
+        if (r.StudentName.toLowerCase().indexOf(q) >= 0 ||
+            r.Group.toLowerCase().indexOf(q) >= 0 ||
+            r.TestName.toLowerCase().indexOf(q) >= 0) {
+            filtered.push(r);
+        }
+    }
+    renderResults(filtered);
+}
+
+function renderResults(list) {
+    var results = list || allResults;
     var div = document.getElementById("resultsList");
     div.innerHTML = "";
     var sortDiv = document.getElementById("resultsSort");
 
-    if (allResults.length === 0) {
+    if (results.length === 0) {
         div.innerHTML = '<div class="empty" role="status">Пока нет результатов</div>';
         document.getElementById("resultsStats").classList.add("hidden");
         sortDiv.classList.add("hidden");
@@ -114,24 +130,21 @@ function renderResults() {
     var totalScore = 0;
     var bestScore = 0;
     var worstScore = 101;
-    for (var s = 0; s < allResults.length; s++) {
-        totalScore += allResults[s].Score;
-        if (allResults[s].Score > bestScore) bestScore = allResults[s].Score;
-        if (allResults[s].Score < worstScore) worstScore = allResults[s].Score;
+    for (var s = 0; s < results.length; s++) {
+        totalScore += results[s].Score;
+        if (results[s].Score > bestScore) bestScore = results[s].Score;
+        if (results[s].Score < worstScore) worstScore = results[s].Score;
     }
-    var avgScore = (totalScore / allResults.length).toFixed(1);
+    var avgScore = (totalScore / results.length).toFixed(1);
 
     var statsDiv = document.getElementById("resultsStats");
     statsDiv.classList.remove("hidden");
-    statsDiv.innerHTML = "<div class='stat-item'><span class='stat-value'>" + allResults.length + "</span><span class='stat-label'>Результатов</span></div>" +
-        "<div class='stat-item'><span class='stat-value'>" + avgScore + "%</span><span class='stat-label'>Средний балл</span></div>" +
-        "<div class='stat-item'><span class='stat-value'>" + bestScore + "%</span><span class='stat-label'>Лучший</span></div>" +
-        "<div class='stat-item'><span class='stat-value'>" + worstScore + "%</span><span class='stat-label'>Худший</span></div>";
+    statsDiv.innerHTML = "<div class='stat-item'><span class='stat-value'>" + results.length + "</span><span class='stat-label'>Результатов</span></div>" +
 
-    var results = sortResults(allResults);
+    var sorted = sortResults(results);
 
-    for (var i = 0; i < results.length; i++) {
-                var r = results[i];
+    for (var i = 0; i < sorted.length; i++) {
+                var r = sorted[i];
                 var card = document.createElement("div");
                 card.className = "result-card";
                 card.setAttribute("role", "listitem");
@@ -430,3 +443,6 @@ function doExport() {
         closeExportModal();
     });
 }
+
+var searchEl = document.getElementById("searchInput");
+if (searchEl) searchEl.oninput = applySearch;
