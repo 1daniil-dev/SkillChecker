@@ -1,4 +1,12 @@
-# SkillChecker
+<h1 align="center">SkillChecker</h1>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet" alt=".NET 8">
+  <img src="https://img.shields.io/badge/WPF-UI-0288D1" alt="WPF">
+  <img src="https://img.shields.io/badge/ASP.NET-8-512BD4?logo=dotnet" alt="ASP.NET">
+  <img src="https://img.shields.io/badge/SQLite-EF_Core-003B57?logo=sqlite" alt="SQLite">
+  <img src="https://img.shields.io/badge/xUnit-тесты-2EA44F" alt="xUnit">
+</p>
 
 Клиент-серверная система для проведения тестов. Преподаватель загружает тесты и управляет ими через веб-панель, студенты проходят тестирование через WPF-клиент и получают результат.
 
