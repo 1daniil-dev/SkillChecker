@@ -78,6 +78,14 @@ SkillChecker/
     └── ProtocolHelperTests.cs   сборка/разбор команд протокола
 ```
 
+## Архитектура
+
+```
+студент (WPF) ──TCP:9000──> сервер (консоль) <──HTTP:5000── преподаватель (веб)
+                                    │
+                                 SQLite
+```
+
 ## Запуск
 
 1. Открыть SkillChecker.slnx в Visual Studio
