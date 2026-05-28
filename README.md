@@ -44,38 +44,38 @@
 
 ```
 SkillChecker/
-├── SkillChecker.Common/       общая библиотека
-│   ├── Models/                Question, QuestionView, TestResult, StudentAnswer, AnswerChecker
-│   ├── Protocol/              Commands (константы), ProtocolHelper, ProtocolFramer (length-prefixed framing)
-│   └── Security/              PasswordHasher (SHA-256)
-├── SkillCheckerServer/        TCP-сервер (консоль)
-│   ├── Program.cs             запуск, интерактивное меню (1-6, ?)
-│   ├── Server.cs              приём подключений, многопоточность, логирование
-│   ├── Server.Commands.cs     обработка команд (GET_TESTS, GET_TEST, SUBMIT, CHECK_START, GET_TEST_SETTINGS)
-│   ├── Server.Results.cs      подсчёт результатов, сохранение в JSON и SQLite, цветная таблица
-│   ├── Server.Settings.cs     загрузка JSON-тестов, расписание, настройки видимости
-│   └── Tests/                 JSON-файлы тестов и test_settings.json
-├── SkillChecker/              WPF-клиент (студенты), MVVM
-│   ├── ViewModels/            MainViewModel (Auth, Wait, Testing, Review, Result)
-│   ├── Services/              ClientService (TCP-клиент)
-│   ├── Commands/              RelayCommand (реализация ICommand)
-│   ├── Models/                OptionItem, ResultItem, ReviewItem, TestCardItem
-│   └── MainWindow.xaml        5 экранов, Segoe MDL2 иконки, глобальные хоткеи
-├── SkillChecker.Web/          веб-панель преподавателя (ASP.NET Core Minimal API)
-│   ├── Program.cs             настройка, middleware, авторизация, вызов Endpoints
-│   ├── Endpoints/             AuthEndpoints, TestsEndpoints, ResultsEndpoints, SettingsEndpoints
-│   ├── Services/              ExcelExportService (ClosedXML)
-│   ├── Models/                ErrorResult, OperationResult, ResultListItem, SettingsListItem, TestListItem
-│   └── wwwroot/               index.html (2 вкладки), JS (4 модуля), CSS
-├── SkillChecker.Data/         хранение данных
-│   ├── AppDbContext.cs         контекст EF Core (SQLite, провайдер Microsoft.Data.Sqlite)
-│   └── ResultEntity.cs         сущность таблицы Results
-└── SkillChecker.Tests/        модульные тесты (xUnit)
-    ├── CheckAnswerTests.cs     проверка Single/Multiple
-    ├── CheckTextAnswerTests.cs проверка Text с нормализацией
-    ├── NormalizeTextTests.cs   функция нормализации текста
-    ├── ProtocolFramerTests.cs   length-prefixed фрейминг
-    └── ProtocolHelperTests.cs   сборка/разбор команд протокола
+├── SkillChecker.Common/            общая библиотека
+│   ├── Models/                     Question, QuestionView, TestResult, StudentAnswer, AnswerChecker
+│   ├── Protocol/                   Commands, ProtocolHelper, ProtocolFramer (length-prefixed framing)
+│   └── Security/                   PasswordHasher (SHA-256)
+├── SkillCheckerServer/             TCP-сервер (консоль)
+│   ├── Program.cs                  запуск, интерактивное меню (1-6, ?)
+│   ├── Server.cs                   приём подключений, многопоточность, логирование
+│   ├── Server.Commands.cs          обработка команд (GET_TESTS, GET_TEST, SUBMIT, CHECK_START, GET_TEST_SETTINGS)
+│   ├── Server.Results.cs           подсчёт результатов, сохранение в JSON и SQLite, цветная таблица
+│   ├── Server.Settings.cs          загрузка JSON-тестов, расписание, настройки видимости
+│   └── Tests/                      JSON-файлы тестов и test_settings.json
+├── SkillChecker/                   WPF-клиент (студенты), MVVM
+│   ├── ViewModels/                 MainViewModel (Auth, Wait, Testing, Review, Result)
+│   ├── Services/                   ClientService (TCP-клиент)
+│   ├── Commands/                   RelayCommand (реализация ICommand)
+│   ├── Models/                     OptionItem, ResultItem, ReviewItem, TestCardItem
+│   └── MainWindow.xaml             5 экранов, Segoe MDL2 иконки, глобальные хоткеи
+├── SkillChecker.Web/               веб-панель преподавателя (ASP.NET Core Minimal API)
+│   ├── Program.cs                  настройка, middleware, авторизация, вызов Endpoints
+│   ├── Endpoints/                  AuthEndpoints, TestsEndpoints, ResultsEndpoints, SettingsEndpoints
+│   ├── Services/                   ExcelExportService (ClosedXML)
+│   ├── Models/                     ErrorResult, OperationResult, ResultListItem, SettingsListItem, TestListItem
+│   └── wwwroot/                    index.html (2 вкладки), JS (4 модуля), CSS
+├── SkillChecker.Data/              хранение данных
+│   ├── AppDbContext.cs             контекст EF Core (SQLite, провайдер Microsoft.Data.Sqlite)
+│   └── ResultEntity.cs             сущность таблицы Results
+└── SkillChecker.Tests/             модульные тесты (xUnit)
+    ├── CheckAnswerTests.cs         проверка Single/Multiple
+    ├── CheckTextAnswerTests.cs     проверка Text с нормализацией
+    ├── NormalizeTextTests.cs       функция нормализации текста
+    ├── ProtocolFramerTests.cs      length-prefixed фрейминг
+    └── ProtocolHelperTests.cs      сборка/разбор команд протокола
 ```
 
 ## Архитектура
