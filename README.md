@@ -1,6 +1,11 @@
 <h1 align="center">SkillChecker</h1>
 
 <p align="center">
+  <img src="https://img.shields.io/github/repo-size/1daniil-dev/SkillChecker" alt="Repo size">
+  <img src="https://img.shields.io/github/languages/top/1daniil-dev/SkillChecker" alt="Top language">
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet" alt=".NET 8">
   <img src="https://img.shields.io/badge/WPF-UI-0288D1" alt="WPF">
   <img src="https://img.shields.io/badge/ASP.NET-8-512BD4?logo=dotnet" alt="ASP.NET">
