@@ -1,40 +1,6 @@
-```
-███████╗██╗  ██╗██╗██╗     ██╗      ██████╗██╗  ██╗███████╗ ██████╗██╗  ██╗███████╗██████╗ 
-██╔════╝██║ ██╔╝██║██║     ██║     ██╔════╝██║  ██║██╔════╝██╔════╝██║ ██╔╝██╔════╝██╔══██╗
-███████╗█████╔╝ ██║██║     ██║     ██║     ███████║█████╗  ██║     █████╔╝ █████╗  ██████╔╝
-╚════██║██╔═██╗ ██║██║     ██║     ██║     ██╔══██║██╔══╝  ██║     ██╔═██╗ ██╔══╝  ██╔══██╗
-███████║██║  ██╗██║███████╗███████╗╚██████╗██║  ██║███████╗╚██████╗██║  ██╗███████╗██║  ██║
-╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
-```
-
-# SkillChecker — Система тестирования учащихся
+# SkillChecker
 
 Клиент-серверная система для проведения тестов. Преподаватель загружает тесты и управляет ими через веб-панель, студенты проходят тестирование через WPF-клиент и получают результат.
-
-## Состав решения
-
-- **SkillChecker.Common** — общая библиотека: модели данных, протокол общения
-- **SkillCheckerServer** — TCP-сервер (порт 9000), обработка команд, подсчёт результатов
-- **SkillChecker** — WPF-клиент для студентов, MVVM-архитектура
-- **SkillChecker.Web** — веб-панель преподавателя (порт 5000), ASP.NET Minimal API
-- **SkillChecker.Tests** — xUnit-тесты на логику проверки ответов и сетевой протокол
-
-## Технологии
-
-- C# .NET 8
-- WPF (клиент)
-- TcpListener / TcpClient (сервер-клиент)
-- ASP.NET Core Minimal API (веб-панель)
-- System.Text.Json
-- xUnit (модульные тесты)
-
-## Запуск
-
-1. Открыть SkillChecker.slnx в Visual Studio
-2. Свойства решения → Несколько запускаемых проектов → SkillCheckerServer, SkillChecker, SkillChecker.Web (все «Запуск»)
-3. F5 — запускаются сервер, клиент и веб-панель
-4. В клиенте: IP 127.0.0.1, порт 9000, подключиться, выбрать тест, пройти
-5. Веб-панель: http://localhost:5000 (при первом запуске потребуется придумать пароль преподавателя)
 
 ## Возможности
 
@@ -44,15 +10,97 @@
 - Обратный отсчёт до начала запланированного теста
 - Навигация по вопросам, пропуск, проверка перед отправкой
 - Подробный результат с правильными/неправильными ответами
-- Текстовый тип ответа со строгой нормализацией (триминг, регистр, ё↔е, сжатие пробелов)
-- Сортировка результатов по дате, баллу, имени или группе
-- Защита веб-панели паролем с хранением хеша SHA-256
+- Три типа вопросов: одиночный выбор, множественный выбор, текстовый ввод
+- Нормализация текстовых ответов (триминг, регистр, сжатие пробелов)
+- Поиск по ФИО, группе и тесту на вкладке результатов
+- Сортировка результатов по дате и баллу
+- Экспорт результатов в Excel с фильтрацией по группам
+- Защита веб-панели паролем (SHA-256)
+- Доступность интерфейса для средств автоматизации (UI Automation)
+- Логирование ошибок в консоль сервера
+
+## Технологии
+
+| Технология | Где используется |
+|------------|------------------|
+| C# .NET 8 | Все проекты |
+| WPF (XAML) | Клиент (SkillChecker) |
+| TcpListener / TcpClient | Сервер-клиент (обмен данными) |
+| ASP.NET Core Minimal API | Веб-панель (SkillChecker.Web) |
+| Entity Framework Core + SQLite | Хранение результатов (SkillChecker.Data) |
+| ClosedXML | Экспорт в Excel |
+| System.Text.Json | Сериализация тестов и результатов |
+| xUnit | Модульные тесты (SkillChecker.Tests) |
+
+## Структура проекта
+
+```
+SkillChecker/
+├── SkillChecker.Common/       общая библиотека
+│   ├── Models/                Question, QuestionView, TestResult, StudentAnswer, AnswerChecker
+│   ├── Protocol/              Commands (константы), ProtocolHelper, ProtocolFramer (length-prefixed framing)
+│   └── Security/              PasswordHasher (SHA-256)
+├── SkillCheckerServer/        TCP-сервер (консоль)
+│   ├── Program.cs             запуск, интерактивное меню (1-6, ?)
+│   ├── Server.cs              приём подключений, многопоточность, логирование
+│   ├── Server.Commands.cs     обработка команд (GET_TESTS, GET_TEST, SUBMIT, CHECK_START, GET_TEST_SETTINGS)
+│   ├── Server.Results.cs      подсчёт результатов, сохранение в JSON и SQLite, цветная таблица
+│   ├── Server.Settings.cs     загрузка JSON-тестов, расписание, настройки видимости
+│   └── Tests/                 JSON-файлы тестов и test_settings.json
+├── SkillChecker/              WPF-клиент (студенты), MVVM
+│   ├── ViewModels/            MainViewModel (Auth, Wait, Testing, Review, Result)
+│   ├── Services/              ClientService (TCP-клиент)
+│   ├── Commands/              RelayCommand (реализация ICommand)
+│   ├── Models/                OptionItem, ResultItem, ReviewItem, TestCardItem
+│   └── MainWindow.xaml        5 экранов, Segoe MDL2 иконки, глобальные хоткеи
+├── SkillChecker.Web/          веб-панель преподавателя (ASP.NET Core Minimal API)
+│   ├── Program.cs             настройка, middleware, авторизация, вызов Endpoints
+│   ├── Endpoints/             AuthEndpoints, TestsEndpoints, ResultsEndpoints, SettingsEndpoints
+│   ├── Services/              ExcelExportService (ClosedXML)
+│   ├── Models/                ErrorResult, OperationResult, ResultListItem, SettingsListItem, TestListItem
+│   └── wwwroot/               index.html (2 вкладки), JS (4 модуля), CSS
+├── SkillChecker.Data/         хранение данных
+│   ├── AppDbContext.cs         контекст EF Core (SQLite, провайдер Microsoft.Data.Sqlite)
+│   └── ResultEntity.cs         сущность таблицы Results
+└── SkillChecker.Tests/        модульные тесты (xUnit)
+    ├── CheckAnswerTests.cs     проверка Single/Multiple
+    ├── CheckTextAnswerTests.cs проверка Text с нормализацией
+    ├── NormalizeTextTests.cs   функция нормализации текста
+    ├── ProtocolFramerTests.cs   length-prefixed фрейминг
+    └── ProtocolHelperTests.cs   сборка/разбор команд протокола
+```
+
+## Запуск
+
+1. Открыть SkillChecker.slnx в Visual Studio
+2. Свойства решения → Несколько запускаемых проектов → Start для SkillCheckerServer, SkillChecker, SkillChecker.Web
+3. F5 — запускаются сервер, клиент и веб-панель
+4. В клиенте: IP 127.0.0.1, порт 9000, подключиться, выбрать тест, пройти
+5. Веб-панель: http://localhost:5000 (при первом запуске потребуется придумать пароль преподавателя)
+
+Без Visual Studio:
+
+```powershell
+# сервер
+dotnet SkillCheckerServer.dll
+# клиент
+SkillChecker.exe
+# веб-панель
+dotnet Web.dll
+```
 
 ## Тестирование
 
 ```powershell
-cd SkillChecker
 dotnet test
 ```
 
-В проекте `SkillChecker.Tests` лежат xUnit-тесты на логику проверки ответов (`AnswerChecker`) и на сетевой протокол (`ProtocolHelper`). Каждая публичная функция покрывается отдельным файлом тестов.
+Проект `SkillChecker.Tests` содержит xUnit-тесты (5 классов):
+
+| Тестовый класс | Что проверяет |
+|----------------|---------------|
+| `CheckAnswerTests` | Сравнение ответов Single и Multiple |
+| `CheckTextAnswerTests` | Сравнение текстовых ответов с нормализацией |
+| `NormalizeTextTests` | Функция нормализации текста |
+| `ProtocolFramerTests` | Length-prefixed фрейминг (кодирование/декодирование) |
+| `ProtocolHelperTests` | Сборка и разбор команд протокола |
