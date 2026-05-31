@@ -108,6 +108,15 @@
                 };
                 actions.appendChild(previewBtn);
 
+                var editBtn = document.createElement("button");
+                editBtn.textContent = "Редактировать";
+                editBtn.setAttribute("data-name", test.Name);
+                editBtn.setAttribute("aria-label", "Редактировать тест " + test.Name);
+                editBtn.onclick = function () {
+                    window.location = "editor.html?test=" + encodeURIComponent(this.getAttribute("data-name"));
+                };
+                actions.appendChild(editBtn);
+
                 var delBtn = document.createElement("button");
                 delBtn.textContent = "Удалить";
                 delBtn.setAttribute("data-name", test.Name);

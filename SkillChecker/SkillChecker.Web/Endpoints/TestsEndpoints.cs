@@ -66,6 +66,58 @@ public static class TestsEndpoints
             return Results.Json(questions);
         });
 
+        app.MapPut("/api/test/{name}", async (string name, HttpContext context) =>
+        {
+            string filePath = Path.Combine(_testsFolder, name + ".json");
+            if (!File.Exists(filePath))
+            {
+                return Results.NotFound(new ErrorResult { Error = "Тест не найден" });
+            }
+
+            string requestBody = "";
+            using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
+            {
+                requestBody = await reader.ReadToEndAsync();
+            }
+
+            if (string.IsNullOrWhiteSpace(requestBody))
+            {
+                return Results.BadRequest(new ErrorResult { Error = "Пустое тело запроса" });
+            }
+
+            JsonSerializerOptions opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            List<Question>? questions = null;
+            try
+            {
+                questions = JsonSerializer.Deserialize<List<Question>>(requestBody, opts);
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(new ErrorResult { Error = "Некорректный JSON: " + ex.Message });
+            }
+
+            if (questions == null || questions.Count == 0)
+            {
+                return Results.BadRequest(new ErrorResult { Error = "Тест должен содержать хотя бы один вопрос" });
+            }
+
+            for (int i = 0; i < questions.Count; i++)
+            {
+                Question q = questions[i];
+                if (string.IsNullOrWhiteSpace(q.Text))
+                    return Results.BadRequest(new ErrorResult { Error = "Вопрос " + (i + 1) + ": не указан текст" });
+                if (q.Type == QuestionTypes.Single && q.Options.Count < 2)
+                    return Results.BadRequest(new ErrorResult { Error = "Вопрос " + (i + 1) + ": нужно минимум 2 варианта ответа" });
+                if (q.Type == QuestionTypes.Multiple && q.Options.Count < 2)
+                    return Results.BadRequest(new ErrorResult { Error = "Вопрос " + (i + 1) + ": нужно минимум 2 варианта ответа" });
+            }
+
+            string updatedJson = JsonSerializer.Serialize(questions, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+            await File.WriteAllTextAsync(filePath, updatedJson, Encoding.UTF8);
+
+            return Results.Json(new OperationResult { Ok = true });
+        });
+
         app.MapDelete("/api/test/{name}", (string name) =>
         {
             string filePath = Path.Combine(_testsFolder, name + ".json");
