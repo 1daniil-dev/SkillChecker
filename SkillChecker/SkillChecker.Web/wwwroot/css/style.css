@@ -328,6 +328,15 @@ h1 {
     background: #D32F2F;
 }
 
+.test-actions button.btn-edit {
+    background: #22C55E;
+    color: white;
+}
+
+.test-actions button.btn-edit:hover {
+    background: #16A34A;
+}
+
 .upload-form {
     margin-top: 16px;
     padding: 20px;
