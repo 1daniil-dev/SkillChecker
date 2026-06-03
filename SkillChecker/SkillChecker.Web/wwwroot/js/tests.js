@@ -126,8 +126,8 @@
                 };
                 actions.appendChild(delBtn);
 
-                mainRow.appendChild(actions);
                 card.appendChild(mainRow);
+                card.appendChild(actions);
 
                 if (test.HasSettings) {
                     var settingsRow = document.createElement("div");
