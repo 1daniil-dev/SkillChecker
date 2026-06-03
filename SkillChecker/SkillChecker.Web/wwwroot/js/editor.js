@@ -28,7 +28,7 @@ function renderEditor() {
     container.innerHTML = "";
     document.getElementById("editError").classList.add("hidden");
 
-    for (var i = 0; i < editorQuestions.length; i++) {
+    for (let i = 0; i < editorQuestions.length; i++) {
         var q = editorQuestions[i];
         var card = document.createElement("div");
         card.className = "question-editor-card";
@@ -95,7 +95,7 @@ function renderEditor() {
             card.appendChild(optsLabel);
 
             var options = q.Options || [];
-            for (var j = 0; j < options.length; j++) {
+            for (let j = 0; j < options.length; j++) {
                 var row = buildOptionRow(i, j, q, options);
                 card.appendChild(row);
             }
@@ -117,7 +117,7 @@ function renderEditor() {
             card.appendChild(accLabel);
 
             var acceptable = q.AcceptableAnswers || [];
-            for (var j = 0; j < acceptable.length; j++) {
+            for (let j = 0; j < acceptable.length; j++) {
                 var row = document.createElement("div");
                 row.className = "q-option-row";
 
@@ -269,7 +269,7 @@ function saveTestEdit() {
         return;
     }
 
-    for (var i = 0; i < editorQuestions.length; i++) {
+    for (let i = 0; i < editorQuestions.length; i++) {
         var q = editorQuestions[i];
         if (!q.Text || q.Text.trim().length === 0) {
             errDiv.textContent = "Вопрос " + (i + 1) + ": не указан текст";
@@ -282,7 +282,7 @@ function saveTestEdit() {
                 errDiv.classList.remove("hidden");
                 return;
             }
-            for (var j = 0; j < q.Options.length; j++) {
+            for (let j = 0; j < q.Options.length; j++) {
                 if (!q.Options[j] || q.Options[j].trim().length === 0) {
                     errDiv.textContent = "Вопрос " + (i + 1) + ": вариант " + (j + 1) + " не заполнен";
                     errDiv.classList.remove("hidden");
