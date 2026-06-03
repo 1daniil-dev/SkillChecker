@@ -108,6 +108,27 @@
                 };
                 actions.appendChild(previewBtn);
 
+                var editBtn = document.createElement("button");
+                editBtn.textContent = "Редактировать";
+                editBtn.style.background = "#22C55E";
+                editBtn.style.color = "white";
+                editBtn.style.border = "none";
+                editBtn.style.padding = "6px 14px";
+                editBtn.style.borderRadius = "6px";
+                editBtn.style.fontSize = "13px";
+                editBtn.style.cursor = "pointer";
+                editBtn.style.fontFamily = "inherit";
+                editBtn.onmouseenter = function () { this.style.background = "#16A34A"; };
+                editBtn.onmouseleave = function () {
+                    if (!editBtn.disabled) this.style.background = "#22C55E";
+                };
+                editBtn.setAttribute("data-name", test.Name);
+                editBtn.setAttribute("aria-label", "Редактировать тест " + test.Name);
+                editBtn.onclick = function () {
+                    window.location = "editor.html?test=" + encodeURIComponent(this.getAttribute("data-name"));
+                };
+                actions.appendChild(editBtn);
+
                 var delBtn = document.createElement("button");
                 delBtn.textContent = "Удалить";
                 delBtn.setAttribute("data-name", test.Name);
@@ -117,8 +138,8 @@
                 };
                 actions.appendChild(delBtn);
 
-                mainRow.appendChild(actions);
                 card.appendChild(mainRow);
+                card.appendChild(actions);
 
                 if (test.HasSettings) {
                     var settingsRow = document.createElement("div");

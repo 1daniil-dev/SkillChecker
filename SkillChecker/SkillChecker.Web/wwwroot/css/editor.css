@@ -1,0 +1,203 @@
+.top-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #E2E8F0;
+}
+
+.top-bar h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #1E293B;
+}
+
+.back-link {
+    color: #4A90D9;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    color: #2E6DB4;
+}
+
+.question-editor-card {
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+    background: #FAFBFC;
+}
+
+.q-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.q-card-num {
+    font-weight: 700;
+    font-size: 14px;
+    color: #4A90D9;
+}
+
+.q-type-select {
+    padding: 6px 10px;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.q-type-select:focus {
+    border-color: #4A90D9;
+    outline: none;
+}
+
+.q-text-input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.q-text-input:focus {
+    border-color: #4A90D9;
+    outline: none;
+}
+
+.q-options-label {
+    font-size: 13px;
+    color: #64748B;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.q-option-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.q-option-radio,
+.q-option-check {
+    flex-shrink: 0;
+}
+
+.q-option-input {
+    flex: 1;
+    padding: 7px 10px;
+    border: 1px solid #E2E8F0;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.q-option-input:focus {
+    border-color: #4A90D9;
+    outline: none;
+}
+
+.btn-remove-opt,
+.btn-remove-q {
+    background: none;
+    border: none;
+    color: #EF4444;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.btn-remove-opt:hover,
+.btn-remove-q:hover {
+    background: #FEE2E2;
+}
+
+.btn-add-opt {
+    background: none;
+    border: 1px dashed #CBD5E1;
+    color: #4A90D9;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    margin-top: 6px;
+}
+
+.btn-add-opt:hover {
+    background: #EEF2FF;
+    border-color: #4A90D9;
+}
+
+.btn-add-q {
+    background: none;
+    border: 2px dashed #CBD5E1;
+    color: #4A90D9;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.btn-add-q:hover {
+    background: #EEF2FF;
+    border-color: #4A90D9;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn-save {
+    padding: 10px 24px;
+    background: #4A90D9;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-save:hover {
+    background: #2E6DB4;
+}
+
+.btn-cancel {
+    padding: 10px 24px;
+    background: #E2E8F0;
+    color: #334155;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-cancel:hover {
+    background: #CBD5E1;
+}
+
+.error-msg {
+    color: #EF4444;
+    font-size: 13px;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: #FEF2F2;
+    border-radius: 6px;
+}
