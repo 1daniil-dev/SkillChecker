@@ -11,6 +11,9 @@ namespace SkillChecker.ViewModels
         {
             try
             {
+                if (!ValidateIpAndPort())
+                    return;
+
                 _clientService.ServerIp = _serverIp;
                 if (int.TryParse(_serverPort, out int port))
                 {
@@ -47,6 +50,40 @@ namespace SkillChecker.ViewModels
                 TestCountText = "";
                 StatusMessage = "Ошибка подключения: " + ex.Message;
             }
+        }
+
+        private bool ValidateIpAndPort()
+        {
+            string ip = _serverIp.Trim();
+            if (ip.Length == 0)
+            {
+                MessageBox.Show("Введите IP-адрес сервера", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            string[] octets = ip.Split('.');
+            if (octets.Length != 4)
+            {
+                MessageBox.Show("Неверный формат IP-адреса (например, 127.0.0.1)", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            for (int i = 0; i < octets.Length; i++)
+            {
+                if (!int.TryParse(octets[i], out int octet) || octet < 0 || octet > 255)
+                {
+                    MessageBox.Show("Неверный IP-адрес: каждое число от 0 до 255", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return false;
+                }
+            }
+
+            if (!int.TryParse(_serverPort, out int port) || port < 1 || port > 65535)
+            {
+                MessageBox.Show("Неверный порт (должен быть от 1 до 65535)", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            return true;
         }
 
         private bool CanRefresh(object? parameter)
