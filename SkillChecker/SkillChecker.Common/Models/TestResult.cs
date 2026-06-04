@@ -2,67 +2,25 @@
 {
     public class StudentAnswer
     {
-        private string _questionText;
-        private int _selectedIndex;
-        private int _correctIndex;
-        private bool _isCorrect;
-        private string _questionType;
-        private List<int> _selectedIndices;
-        private string _textAnswer;
-        private List<string> _acceptableAnswers;
-
-        public string QuestionText { get => _questionText; set => _questionText = value; }
-        public int SelectedIndex { get => _selectedIndex; set => _selectedIndex = value; }
-        public int CorrectIndex { get => _correctIndex; set => _correctIndex = value; }
-        public bool IsCorrect { get => _isCorrect; set => _isCorrect = value; }
-        public string QuestionType { get => _questionType; set => _questionType = value; }
-        public List<int> SelectedIndices { get => _selectedIndices; set => _selectedIndices = value; }
-        public string TextAnswer { get => _textAnswer; set => _textAnswer = value; }
-        public List<string> AcceptableAnswers { get => _acceptableAnswers; set => _acceptableAnswers = value; }
-
-        public StudentAnswer()
-        {
-            _questionText = "";
-            _selectedIndex = -1;
-            _correctIndex = 0;
-            _isCorrect = false;
-            _questionType = QuestionTypes.Single;
-            _selectedIndices = new List<int>();
-            _textAnswer = "";
-            _acceptableAnswers = new List<string>();
-        }
+        public string QuestionText { get; set; } = "";
+        public int SelectedIndex { get; set; } = -1;
+        public int CorrectIndex { get; set; }
+        public bool IsCorrect { get; set; }
+        public string QuestionType { get; set; } = QuestionTypes.Single;
+        public List<int> SelectedIndices { get; set; } = new List<int>();
+        public string TextAnswer { get; set; } = "";
+        public List<string> AcceptableAnswers { get; set; } = new List<string>();
     }
 
     public class TestResult
     {
-        private string _studentName;
-        private string _group;
-        private string _testName;
-        private DateTime _date;
-        private int _totalQuestions;
-        private int _correctAnswers;
-        private double _score;
-        private List<StudentAnswer> _answers;
-
-        public string StudentName { get => _studentName; set => _studentName = value; }
-        public string Group { get => _group; set => _group = value; }
-        public string TestName { get => _testName; set => _testName = value; }
-        public DateTime Date { get => _date; set => _date = value; }
-        public int TotalQuestions { get => _totalQuestions; set => _totalQuestions = value; }
-        public int CorrectAnswers { get => _correctAnswers; set => _correctAnswers = value; }
-        public double Score { get => _score; set => _score = value; }
-        public List<StudentAnswer> Answers { get => _answers; set => _answers = value; }
-
-        public TestResult()
-        {
-            _studentName = "";
-            _group = "";
-            _testName = "";
-            _date = DateTime.Now;
-            _totalQuestions = 0;
-            _correctAnswers = 0;
-            _score = 0;
-            _answers = new List<StudentAnswer>();
-        }
+        public string StudentName { get; set; } = "";
+        public string Group { get; set; } = "";
+        public string TestName { get; set; } = "";
+        public DateTime Date { get; set; } = DateTime.Now;
+        public int TotalQuestions { get; set; }
+        public int CorrectAnswers { get; set; }
+        public double Score { get; set; }
+        public List<StudentAnswer> Answers { get; set; } = new List<StudentAnswer>();
     }
 }

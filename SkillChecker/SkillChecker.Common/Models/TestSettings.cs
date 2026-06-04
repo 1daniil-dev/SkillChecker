@@ -2,19 +2,8 @@
 {
     public class TestSettings
     {
-        private DateTime? _startTime;
-        private int _timeMinutes;
-        private bool _visible;
-
-        public DateTime? StartTime { get => _startTime; set => _startTime = value; }
-        public int TimeMinutes { get => _timeMinutes; set => _timeMinutes = value; }
-        public bool Visible { get => _visible; set => _visible = value; }
-
-        public TestSettings()
-        {
-            _startTime = null;
-            _timeMinutes = 0;
-            _visible = true;
-        }
+        public DateTime? StartTime { get; set; }
+        public int TimeMinutes { get; set; }
+        public bool Visible { get; set; } = true;
     }
 }
