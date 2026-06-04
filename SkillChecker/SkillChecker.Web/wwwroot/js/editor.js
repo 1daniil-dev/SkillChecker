@@ -15,7 +15,7 @@ function init() {
     }
     document.getElementById("editorTitle").textContent = "Редактор: " + editingTestName;
 
-    authFetch("/api/test/" + encodeURIComponent(editingTestName) + "/preview")
+    authFetch("/api/test/" + encodeURIComponent(editingTestName) + "/preview-full")
         .then(function (r) { return r.json(); })
         .then(function (questions) {
             editorQuestions = questions;
