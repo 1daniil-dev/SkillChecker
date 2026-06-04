@@ -479,6 +479,3 @@ function previewTest(name) {
             card.appendChild(previewDiv);
         });
 }
-
-function hidePreview() {
-}
