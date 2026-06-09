@@ -139,7 +139,10 @@ function renderResults(list) {
 
     var statsDiv = document.getElementById("resultsStats");
     statsDiv.classList.remove("hidden");
-    statsDiv.innerHTML = "<div class='stat-item'><span class='stat-value'>" + results.length + "</span><span class='stat-label'>Результатов</span></div>";
+    statsDiv.innerHTML = "<div class='stat-item'><span class='stat-value'>" + results.length + "</span><span class='stat-label'>Результатов</span></div>" +
+        "<div class='stat-item'><span class='stat-value'>" + avgScore + "%</span><span class='stat-label'>Средний балл</span></div>" +
+        "<div class='stat-item'><span class='stat-value'>" + bestScore + "%</span><span class='stat-label'>Лучший</span></div>" +
+        "<div class='stat-item'><span class='stat-value'>" + worstScore + "%</span><span class='stat-label'>Худший</span></div>";
 
     var sorted = sortResults(results);
 
