@@ -245,14 +245,13 @@
                                                             </Style>
                                                         </Border.Style>
                                                         <TextBlock Foreground="#1E3A5F" FontWeight="Bold" FontSize="20"
-                                                                   FontFamily="Segoe MDL2 Assets"
                                                                    HorizontalAlignment="Center" VerticalAlignment="Center">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
-                                                                    <Setter Property="Text" Value="&#xE73E;"/>
+                                                                     <Setter Property="Text" Value="✔"/>
                                                                     <Style.Triggers>
                                                                         <DataTrigger Binding="{Binding IsScheduled}" Value="True">
-                                                                            <Setter Property="Text" Value="&#xE823;"/>
+                                                                             <Setter Property="Text" Value="⌛"/>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
@@ -336,7 +335,7 @@
                             Visibility="{Binding WaitVisibility}"
                             x:Name="WaitPanel"
                             AutomationProperties.Name="Экран ожидания теста">
-                    <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"
+                     <TextBlock Text="⌛" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"
                                AutomationProperties.Name="Иконка часов"/>
                      <TextBlock Text="{Binding WaitTestName}" FontSize="28" FontWeight="Bold" Foreground="#1E293B"
                                HorizontalAlignment="Center" Margin="0,0,0,8"
@@ -390,7 +389,7 @@
                                     AutomationProperties.Name="Таймер теста"
                                     AutomationProperties.HelpText="Оставшееся время на тест"
                                     AutomationProperties.LiveSetting="Polite">
-                            <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="18" Margin="0,0,6,0"
+                             <TextBlock Text="⏱" FontSize="18" Margin="0,0,6,0"
                                        VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding TimerText}" FontSize="20" FontWeight="Bold"
                                        Foreground="#EF4444" VerticalAlignment="Center"/>
@@ -526,7 +525,7 @@
                                                     <Setter TargetName="optBorder" Property="Background" Value="#EEF2FF"/>
                                                     <Setter TargetName="checkBox" Property="BorderBrush" Value="#4F46E5"/>
                                                     <Setter TargetName="checkBox" Property="Background" Value="#4F46E5"/>
-                                                    <Setter TargetName="checkMark" Property="Text" Value="&#xE73E;"/>
+                                                    <Setter TargetName="checkMark" Property="Text" Value="✔"/>
                                                     <Setter TargetName="checkMark" Property="Foreground" Value="White"/>
                                                 </DataTrigger>
                                                 <Trigger Property="IsMouseOver" Value="True">
