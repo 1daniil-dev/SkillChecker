@@ -95,7 +95,7 @@ namespace SkillCheckerServer
 
             string safeName = SanitizeFileName(result.StudentName.Replace(" ", "_"));
             string safeTest = SanitizeFileName(result.TestName);
-            string fileName = "result_" + safeName + "_" + safeTest + "_" + result.Date.ToString("yyyyMMdd_HHmm") + ".json";
+            string fileName = "result_" + safeName + "_" + safeTest + "_" + result.Date.ToString("yyyyMMdd_HHmmss") + ".json";
 
             JsonSerializerOptions options = new JsonSerializerOptions
             {
