@@ -448,15 +448,6 @@ function previewTest(name) {
                     for (var j = 0; j < q.Options.length; j++) {
                         var optDiv = document.createElement("div");
                         optDiv.className = "preview-option";
-                        if (q.Type === "Multiple") {
-                            if (q.CorrectAnswerIndices && q.CorrectAnswerIndices.indexOf(j) >= 0) {
-                                optDiv.classList.add("preview-correct");
-                            }
-                        } else {
-                            if (j === q.CorrectAnswerIndex) {
-                                optDiv.classList.add("preview-correct");
-                            }
-                        }
 
                         var optLabel = document.createElement("span");
                         optLabel.className = "preview-opt-letter";
