@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Globalization;
+using System.Net.Sockets;
 using SkillChecker.Common.Models;
 using SkillChecker.Common.Protocol;
 using SkillChecker.Models;
@@ -138,7 +139,7 @@ namespace SkillChecker.Services
             {
                 double score;
                 int correct, total;
-                if (double.TryParse(parts[1], out score)) result.Score = score;
+                if (double.TryParse(parts[1], CultureInfo.InvariantCulture, out score)) result.Score = score;
                 if (int.TryParse(parts[2], out correct)) result.CorrectAnswers = correct;
                 if (int.TryParse(parts[3], out total)) result.TotalQuestions = total;
 

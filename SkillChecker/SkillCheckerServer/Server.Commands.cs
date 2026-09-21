@@ -1,4 +1,5 @@
-﻿using SkillChecker.Common.Models;
+﻿using System.Globalization;
+using SkillChecker.Common.Models;
 using SkillChecker.Common.Protocol;
 
 namespace SkillCheckerServer
@@ -166,7 +167,7 @@ namespace SkillCheckerServer
                     }
 
                     return ProtocolHelper.BuildMessage(Commands.Result,
-                        result.Score.ToString(),
+                        result.Score.ToString(CultureInfo.InvariantCulture),
                         result.CorrectAnswers.ToString(),
                         result.TotalQuestions.ToString(),
                         correctIndices);
