@@ -74,6 +74,10 @@ namespace SkillCheckerServer
                 if (command == Commands.CheckStart && parts.Length >= 2)
                 {
                     string testName = parts[1];
+                    if (!_tests.ContainsKey(testName))
+                    {
+                        return ProtocolHelper.BuildMessage(Commands.Error, "Тест не найден");
+                    }
                     if (_testSettings.ContainsKey(testName) && !_testSettings[testName].Visible)
                     {
                         return ProtocolHelper.BuildMessage(Commands.Error, "Тест недоступен");
