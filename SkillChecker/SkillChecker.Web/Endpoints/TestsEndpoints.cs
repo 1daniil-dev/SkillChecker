@@ -49,7 +49,13 @@ public static class TestsEndpoints
 
         app.MapGet("/api/test/{name}/preview", (string name) =>
         {
-            string filePath = Path.Combine(_testsFolder, name + ".json");
+            string safeName = "";
+            if (!TryGetSafeName(name, out safeName))
+            {
+                return Results.BadRequest(new ErrorResult { Error = "Некорректное имя теста" });
+            }
+
+            string filePath = Path.Combine(_testsFolder, safeName + ".json");
             if (!File.Exists(filePath))
             {
                 return Results.NotFound(new ErrorResult { Error = "Тест не найден" });
@@ -68,7 +74,13 @@ public static class TestsEndpoints
 
         app.MapGet("/api/test/{name}/preview-full", (string name) =>
         {
-            string filePath = Path.Combine(_testsFolder, name + ".json");
+            string safeName = "";
+            if (!TryGetSafeName(name, out safeName))
+            {
+                return Results.BadRequest(new ErrorResult { Error = "Некорректное имя теста" });
+            }
+
+            string filePath = Path.Combine(_testsFolder, safeName + ".json");
             if (!File.Exists(filePath))
             {
                 return Results.NotFound(new ErrorResult { Error = "Тест не найден" });
@@ -87,7 +99,13 @@ public static class TestsEndpoints
 
         app.MapPut("/api/test/{name}", async (string name, HttpContext context) =>
         {
-            string filePath = Path.Combine(_testsFolder, name + ".json");
+            string safeName = "";
+            if (!TryGetSafeName(name, out safeName))
+            {
+                return Results.BadRequest(new ErrorResult { Error = "Некорректное имя теста" });
+            }
+
+            string filePath = Path.Combine(_testsFolder, safeName + ".json");
             if (!File.Exists(filePath))
             {
                 return Results.NotFound(new ErrorResult { Error = "Тест не найден" });
@@ -139,7 +157,13 @@ public static class TestsEndpoints
 
         app.MapDelete("/api/test/{name}", (string name) =>
         {
-            string filePath = Path.Combine(_testsFolder, name + ".json");
+            string safeName = "";
+            if (!TryGetSafeName(name, out safeName))
+            {
+                return Results.BadRequest(new ErrorResult { Error = "Некорректное имя теста" });
+            }
+
+            string filePath = Path.Combine(_testsFolder, safeName + ".json");
             if (!File.Exists(filePath))
             {
                 return Results.NotFound(new ErrorResult { Error = "Тест не найден" });
@@ -169,7 +193,13 @@ public static class TestsEndpoints
                 name = Path.GetFileNameWithoutExtension(file.FileName);
             }
 
-            string filePath = Path.Combine(_testsFolder, name + ".json");
+            string safeName = "";
+            if (!TryGetSafeName(name, out safeName))
+            {
+                return Results.BadRequest(new ErrorResult { Error = "Некорректное имя теста" });
+            }
+
+            string filePath = Path.Combine(_testsFolder, safeName + ".json");
             using (FileStream stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
@@ -177,5 +207,21 @@ public static class TestsEndpoints
 
             return Results.Json(new OperationResult { Ok = true, Name = name });
         });
+    }
+
+    private static bool TryGetSafeName(string name, out string safeName)
+    {
+        safeName = Path.GetFileName(name);
+        if (safeName.Length == 0 || safeName != name)
+        {
+            return false;
+        }
+
+        if (safeName == "test_settings" || safeName == "schedule")
+        {
+            return false;
+        }
+
+        return true;
     }
 }
