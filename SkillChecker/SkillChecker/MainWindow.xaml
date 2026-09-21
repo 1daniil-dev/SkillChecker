@@ -5,9 +5,6 @@
         WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
         MinWidth="800" MinHeight="600"
         Background="#F0F4F8">
-    <Window.InputBindings>
-        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}"/>
-    </Window.InputBindings>
 
     <DockPanel>
         <Menu DockPanel.Dock="Top" Background="White" Foreground="#334155" FontSize="14" Padding="4,2">
