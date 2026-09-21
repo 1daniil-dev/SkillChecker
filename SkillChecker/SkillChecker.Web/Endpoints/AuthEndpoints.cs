@@ -5,7 +5,6 @@ namespace SkillChecker.Web.Endpoints;
 
 public static class AuthEndpoints
 {
-    private static AuthData? _cachedAuth;
     private static string _authFile = "";
 
     public static void MapAuthEndpoints(this WebApplication app, string authFile)
@@ -61,8 +60,8 @@ public static class AuthEndpoints
         {
             string json = File.ReadAllText(_authFile, System.Text.Encoding.UTF8);
             System.Text.Json.JsonSerializerOptions options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            _cachedAuth = System.Text.Json.JsonSerializer.Deserialize<AuthData>(json, options);
-            return _cachedAuth;
+            AuthData? data = System.Text.Json.JsonSerializer.Deserialize<AuthData>(json, options);
+            return data;
         }
         catch
         {
