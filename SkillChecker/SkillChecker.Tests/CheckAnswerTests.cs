@@ -124,6 +124,19 @@ namespace SkillChecker.Tests
         }
 
         [Fact]
+        public void Multiple_DuplicateSelected_ReturnsFalse()
+        {
+            List<int> selected = new List<int>();
+            selected.Add(1);
+            selected.Add(1);
+            List<int> correct = new List<int>();
+            correct.Add(1);
+            correct.Add(2);
+            bool result = AnswerChecker.CheckAnswer(selected, correct, QuestionTypes.Multiple);
+            Assert.False(result);
+        }
+
+        [Fact]
         public void Multiple_NothingSelected_ReturnsFalse()
         {
             List<int> selected = new List<int>();

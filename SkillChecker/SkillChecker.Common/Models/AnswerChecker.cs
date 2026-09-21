@@ -14,6 +14,16 @@ namespace SkillChecker.Common.Models
                 }
                 for (int i = 0; i < selected.Count; i++)
                 {
+                    for (int j = i + 1; j < selected.Count; j++)
+                    {
+                        if (selected[i] == selected[j])
+                        {
+                            return false;
+                        }
+                    }
+                }
+                for (int i = 0; i < selected.Count; i++)
+                {
                     bool found = false;
                     for (int j = 0; j < correct.Count; j++)
                     {
