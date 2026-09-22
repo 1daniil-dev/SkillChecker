@@ -6,7 +6,7 @@ using SkillChecker.Data;
 
 namespace SkillCheckerServer
 {
-    internal partial class Server
+    public partial class Server
     {
         private TcpListener _listener;
         private bool _isRunning;

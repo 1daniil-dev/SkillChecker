@@ -5,7 +5,7 @@ using SkillChecker.Data;
 
 namespace SkillCheckerServer
 {
-    internal partial class Server
+    public partial class Server
     {
         private TestResult CalculateResult(string studentName, string group, string testName, List<Question> questions, List<List<int>> selectedAnswers, List<string> textAnswers)
         {

@@ -4,7 +4,7 @@ using SkillChecker.Common.Models;
 
 namespace SkillCheckerServer
 {
-    internal partial class Server
+    public partial class Server
     {
         public void LoadAllTests()
         {

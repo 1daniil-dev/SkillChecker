@@ -4,7 +4,7 @@ using SkillChecker.Common.Protocol;
 
 namespace SkillCheckerServer
 {
-    internal partial class Server
+    public partial class Server
     {
         private string ProcessCommand(string command, string[] parts, string clientEndPoint)
         {
