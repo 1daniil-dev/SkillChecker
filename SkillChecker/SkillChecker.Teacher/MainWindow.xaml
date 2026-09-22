@@ -1,0 +1,37 @@
+<Window x:Class="SkillChecker.Teacher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SkillChecker — Панель преподавателя" Height="380" Width="540"
+        WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize"
+        Background="#F0F4F8">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="SkillChecker" FontSize="26" FontWeight="Bold" Foreground="#1E293B"/>
+        <TextBlock Grid.Row="1" Text="Панель преподавателя" FontSize="14" Foreground="#64748B" Margin="0,2,0,18"/>
+
+        <Border Grid.Row="2" Background="White" CornerRadius="10" Padding="18">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse x:Name="StatusDot" Width="12" Height="12" Fill="#22C55E" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="StatusText" Text="Сервер запущен" FontSize="16" FontWeight="SemiBold" Foreground="#1E293B" Margin="8,0,0,0"/>
+                </StackPanel>
+                <TextBlock Text="Студенты подключаются по адресу:" FontSize="13" Foreground="#64748B" Margin="0,14,0,4"/>
+                <TextBlock x:Name="AddressText" FontSize="15" FontFamily="Consolas" Foreground="#0F172A"/>
+            </StackPanel>
+        </Border>
+
+        <Button Grid.Row="3" x:Name="OpenPanelButton" Content="Открыть панель преподавателя"
+                Height="44" Margin="0,18,0,0" FontSize="15" FontWeight="SemiBold"
+                Background="#4F46E5" Foreground="White" BorderThickness="0" Cursor="Hand"
+                Click="OpenPanel_Click"/>
+        <TextBlock Grid.Row="4" Text="Закрытие окна остановит сервер" FontSize="12" Foreground="#94A3B8"
+                   HorizontalAlignment="Center" Margin="0,10,0,0"/>
+    </Grid>
+</Window>
