@@ -22,8 +22,28 @@
                     <Ellipse x:Name="StatusDot" Width="12" Height="12" Fill="#22C55E" VerticalAlignment="Center"/>
                     <TextBlock x:Name="StatusText" Text="Сервер запущен" FontSize="16" FontWeight="SemiBold" Foreground="#1E293B" Margin="8,0,0,0"/>
                 </StackPanel>
-                <TextBlock Text="Студенты подключаются по адресу:" FontSize="13" Foreground="#64748B" Margin="0,14,0,4"/>
-                <TextBlock x:Name="AddressText" FontSize="15" FontFamily="Consolas" Foreground="#0F172A"/>
+                <TextBlock Text="Студенты подключаются по адресу:" FontSize="13" Foreground="#64748B" Margin="0,14,0,6"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="IP-адрес:" FontSize="14" Foreground="#64748B" Margin="0,0,10,4"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="IpAddressText" FontSize="15" FontFamily="Consolas" Foreground="#0F172A" Margin="0,0,0,4"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Порт:" FontSize="14" Foreground="#64748B" Margin="0,0,10,0"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="PortText" FontSize="15" FontFamily="Consolas" Foreground="#0F172A"/>
+
+                    <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" x:Name="CopyAddressButton"
+                            Content="Копировать" FontSize="13" Padding="14,7" Margin="12,0,0,0"
+                            Background="White" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
+                            Cursor="Hand" VerticalAlignment="Center" Click="CopyAddress_Click"/>
+                </Grid>
             </StackPanel>
         </Border>
 

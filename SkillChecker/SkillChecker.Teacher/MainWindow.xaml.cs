@@ -16,6 +16,7 @@ namespace SkillChecker.Teacher
 
         private Server _server = null!;
         private WebApplication _webApp = null!;
+        private List<string> _ipList = new List<string>();
         private bool _isClosing;
 
         public MainWindow()
@@ -79,22 +80,22 @@ namespace SkillChecker.Teacher
 
         private void ShowAddresses()
         {
-            List<string> ipList = GetLocalIps();
-            if (ipList.Count == 0)
+            _ipList = GetLocalIps();
+            if (_ipList.Count == 0)
             {
-                AddressText.Text = "127.0.0.1:" + ServerPort;
-                return;
+                _ipList.Add("127.0.0.1");
             }
-            string text = "";
-            for (int i = 0; i < ipList.Count; i++)
+            string ipText = "";
+            for (int i = 0; i < _ipList.Count; i++)
             {
                 if (i > 0)
                 {
-                    text += "\n";
+                    ipText += "\n";
                 }
-                text += ipList[i] + ":" + ServerPort;
+                ipText += _ipList[i];
             }
-            AddressText.Text = text;
+            IpAddressText.Text = ipText;
+            PortText.Text = ServerPort.ToString();
         }
 
         private List<string> GetLocalIps()
@@ -135,6 +136,21 @@ namespace SkillChecker.Teacher
         private void OpenPanel_Click(object sender, RoutedEventArgs e)
         {
             OpenPanel();
+        }
+
+        private async void CopyAddress_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Clipboard.SetText(_ipList[0] + "\n" + ServerPort);
+                CopyAddressButton.Content = "Скопировано ✓";
+            }
+            catch
+            {
+                CopyAddressButton.Content = "Не удалось";
+            }
+            await Task.Delay(2000);
+            CopyAddressButton.Content = "Копировать";
         }
 
         private void ShowError(string message)
