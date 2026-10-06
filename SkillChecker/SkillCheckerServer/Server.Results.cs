@@ -112,10 +112,7 @@ namespace SkillCheckerServer
         {
             string? dbDir = Path.GetDirectoryName(_dbPath);
             if (dbDir != null) Directory.CreateDirectory(dbDir);
-            using (AppDbContext db = new AppDbContext(_dbPath))
-            {
-                db.Database.EnsureCreated();
-            }
+            DatabaseInitializer.EnsureCreated(_dbPath);
             Log("База данных: " + _dbPath);
         }
 

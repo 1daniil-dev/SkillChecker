@@ -47,10 +47,7 @@ public static class WebPanelHost
 
         string? dbDir = Path.GetDirectoryName(dbPath);
         if (dbDir != null) Directory.CreateDirectory(dbDir);
-        using (AppDbContext initDb = new AppDbContext(dbPath))
-        {
-            initDb.Database.EnsureCreated();
-        }
+        DatabaseInitializer.EnsureCreated(dbPath);
 
         app.Use(async (HttpContext context, Func<Task> next) =>
         {
