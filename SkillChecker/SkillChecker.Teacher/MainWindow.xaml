@@ -1,57 +1,299 @@
 <Window x:Class="SkillChecker.Teacher.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="SkillChecker — Панель преподавателя" Height="380" Width="540"
-        WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize"
+        Title="SkillChecker — Панель преподавателя" Height="640" Width="920"
+        WindowStartupLocation="CenterScreen"
         Background="#F0F4F8">
-    <Grid Margin="24">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <TextBlock Grid.Row="0" Text="SkillChecker" FontSize="26" FontWeight="Bold" Foreground="#1E293B"/>
-        <TextBlock Grid.Row="1" Text="Панель преподавателя" FontSize="14" Foreground="#64748B" Margin="0,2,0,18"/>
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#4F46E5"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <Border Grid.Row="2" Background="White" CornerRadius="10" Padding="18">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Ellipse x:Name="StatusDot" Width="12" Height="12" Fill="#22C55E" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="StatusText" Text="Сервер запущен" FontSize="16" FontWeight="SemiBold" Foreground="#1E293B" Margin="8,0,0,0"/>
-                </StackPanel>
-                <TextBlock Text="Студенты подключаются по адресу:" FontSize="13" Foreground="#64748B" Margin="0,14,0,6"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#4F46E5"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#C7D2FE"/>
+            <Setter Property="Padding" Value="12,7"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#EEF2FF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DangerButton" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#DC2626"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#FECACA"/>
+            <Setter Property="Padding" Value="12,7"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#FEF2F2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TestItemStyle" TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border x:Name="ItemBorder" Background="Transparent" CornerRadius="8">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#F8FAFC"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#EEF2FF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="GridViewColumnHeader">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="6,8"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <TabControl Background="Transparent" BorderThickness="0">
+            <TabItem Header="Обзор">
+                <Grid Margin="0,12,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="IP-адрес:" FontSize="14" Foreground="#64748B" Margin="0,0,10,4"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="IpAddressText" FontSize="15" FontFamily="Consolas" Foreground="#0F172A" Margin="0,0,0,4"/>
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Порт:" FontSize="14" Foreground="#64748B" Margin="0,0,10,0"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="PortText" FontSize="15" FontFamily="Consolas" Foreground="#0F172A"/>
+                    <Border Grid.Row="0" Background="White" CornerRadius="10" Padding="18">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="12" Height="12" VerticalAlignment="Center">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="#EF4444"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsServerRunning}" Value="True">
+                                                    <Setter Property="Fill" Value="#22C55E"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Text="{Binding ServerStatusText}" FontSize="16" FontWeight="SemiBold" Foreground="#1E293B" Margin="8,0,0,0"/>
+                            </StackPanel>
 
-                    <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" x:Name="CopyAddressButton"
-                            Content="Копировать" FontSize="13" Padding="14,7" Margin="12,0,0,0"
-                            Background="White" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
-                            Cursor="Hand" VerticalAlignment="Center" Click="CopyAddress_Click"/>
+                            <TextBlock Text="Студенты подключаются по адресу:" FontSize="13" Foreground="#64748B" Margin="0,14,0,6"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="IP-адрес:" FontSize="14" Foreground="#64748B" Margin="0,0,10,4"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding IpAddressText}" FontSize="15" FontFamily="Consolas" Foreground="#0F172A" Margin="0,0,0,4"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Порт:" FontSize="14" Foreground="#64748B" Margin="0,0,10,0"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding PortText}" FontSize="15" FontFamily="Consolas" Foreground="#0F172A"/>
+
+                                <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Content="{Binding CopyButtonText}"
+                                        Style="{StaticResource SecondaryButton}" Margin="12,0,0,0" VerticalAlignment="Center"
+                                        Command="{Binding CopyAddressCommand}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,16,0,0" VerticalAlignment="Top">
+                        <Button Content="Открыть панель преподавателя" Style="{StaticResource PrimaryButton}" Command="{Binding OpenPanelCommand}"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="2" Text="Закрытие окна остановит сервер" FontSize="12" Foreground="#94A3B8" HorizontalAlignment="Center" Margin="0,16,0,0"/>
                 </Grid>
-            </StackPanel>
-        </Border>
+            </TabItem>
 
-        <Button Grid.Row="3" x:Name="OpenPanelButton" Content="Открыть панель преподавателя"
-                Height="44" Margin="0,18,0,0" FontSize="15" FontWeight="SemiBold"
-                Background="#4F46E5" Foreground="White" BorderThickness="0" Cursor="Hand"
-                Click="OpenPanel_Click"/>
-        <TextBlock Grid.Row="4" Text="Закрытие окна остановит сервер" FontSize="12" Foreground="#94A3B8"
-                   HorizontalAlignment="Center" Margin="0,10,0,0"/>
+            <TabItem Header="Тесты">
+                <Grid Margin="0,12,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                        <Button Content="Создать" Style="{StaticResource PrimaryButton}" Command="{Binding CreateTestCommand}"/>
+                        <Button Content="Редактировать" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding EditTestCommand}"/>
+                        <Button Content="Дублировать" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding DuplicateTestCommand}"/>
+                        <Button Content="Удалить" Style="{StaticResource DangerButton}" Margin="8,0,0,0" Command="{Binding DeleteTestCommand}"/>
+                        <Button Content="Импорт JSON" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding ImportTestCommand}"/>
+                        <Button Content="Обновить" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding RefreshTestsCommand}"/>
+                        <TextBlock Text="{Binding TestsInfoText}" FontSize="13" Foreground="#64748B" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                    </StackPanel>
+
+                    <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="12">
+                        <ListView ItemsSource="{Binding Tests}" SelectedItem="{Binding SelectedTest}"
+                                  ItemContainerStyle="{StaticResource TestItemStyle}"
+                                  BorderThickness="0" Background="Transparent"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="White" CornerRadius="8" Padding="14,10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" Foreground="#1E293B" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding QuestionCountText}" FontSize="13" Foreground="#64748B" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Результаты">
+                <Grid Margin="0,12,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,12">
+                        <Border Background="White" CornerRadius="8" Padding="14,10" Margin="0,0,8,0">
+                            <TextBlock Text="{Binding TotalText}" FontSize="15" FontWeight="Bold" Foreground="#1E293B"/>
+                        </Border>
+                        <Border Background="White" CornerRadius="8" Padding="14,10" Margin="0,0,8,0">
+                            <TextBlock Text="{Binding AverageText}" FontSize="15" FontWeight="Bold" Foreground="#4F46E5"/>
+                        </Border>
+                        <Border Background="White" CornerRadius="8" Padding="14,10" Margin="0,0,8,0">
+                            <TextBlock Text="{Binding BestText}" FontSize="15" FontWeight="Bold" Foreground="#2E7D32"/>
+                        </Border>
+                        <Border Background="White" CornerRadius="8" Padding="14,10">
+                            <TextBlock Text="{Binding WorstText}" FontSize="15" FontWeight="Bold" Foreground="#DC2626"/>
+                        </Border>
+                    </UniformGrid>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+                        <Button Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Command="{Binding ExportResultsCommand}"/>
+                        <Button Content="Обновить" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding RefreshResultsCommand}"/>
+                        <Button Content="Очистить" Style="{StaticResource DangerButton}" Margin="8,0,0,0" Command="{Binding ClearResultsCommand}"/>
+                    </StackPanel>
+
+                    <Border Grid.Row="2" Background="White" CornerRadius="10" Padding="12">
+                        <ListView ItemsSource="{Binding Results}" BorderThickness="0" Background="Transparent"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="ФИО" Width="170" DisplayMemberBinding="{Binding StudentName}"/>
+                                    <GridViewColumn Header="Группа" Width="110" DisplayMemberBinding="{Binding Group}"/>
+                                    <GridViewColumn Header="Тест" Width="160" DisplayMemberBinding="{Binding TestName}"/>
+                                    <GridViewColumn Header="Время" Width="90" DisplayMemberBinding="{Binding DateText}"/>
+                                    <GridViewColumn Header="Правильно" Width="90" DisplayMemberBinding="{Binding CorrectText}"/>
+                                    <GridViewColumn Header="Балл" Width="80">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding ScoreText}" FontWeight="SemiBold">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#D32F2F"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding ScoreLevel}" Value="1">
+                                                                    <Setter Property="Foreground" Value="#F57C00"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding ScoreLevel}" Value="2">
+                                                                    <Setter Property="Foreground" Value="#2E7D32"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
