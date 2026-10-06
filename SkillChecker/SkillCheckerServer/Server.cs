@@ -18,6 +18,12 @@ namespace SkillCheckerServer
         private string _dbPath;
         private readonly object _stateLock = new object();
 
+        public event Action<TestResult>? ResultSubmitted;
+
+        public string TestsFolderPath { get => _testsFolder; }
+        public string ResultsFolderPath { get => Path.Combine(Path.GetDirectoryName(_testsFolder) ?? "", "Results"); }
+        public string DbPath { get => _dbPath; }
+
         public Server(int port)
         {
             _listener = new TcpListener(IPAddress.Any, port);
