@@ -37,10 +37,10 @@ namespace SkillChecker.Teacher.ViewModels
         private string _portText = "";
         private string _copyButtonText = "Копировать";
         private string _testsInfoText = "Тестов: 0";
-        private string _totalText = "Сдало: 0";
-        private string _averageText = "Средний балл: —";
-        private string _bestText = "Лучший: —";
-        private string _worstText = "Худший: —";
+        private string _totalValue = "0";
+        private string _averageValue = "—";
+        private string _bestValue = "—";
+        private string _worstValue = "—";
         private TestInfo? _selectedTest;
 
         public ObservableCollection<TestInfo> Tests { get; } = new ObservableCollection<TestInfo>();
@@ -119,28 +119,28 @@ namespace SkillChecker.Teacher.ViewModels
             set { _testsInfoText = value; OnPropertyChanged(); }
         }
 
-        public string TotalText
+        public string TotalValue
         {
-            get => _totalText;
-            set { _totalText = value; OnPropertyChanged(); }
+            get => _totalValue;
+            set { _totalValue = value; OnPropertyChanged(); }
         }
 
-        public string AverageText
+        public string AverageValue
         {
-            get => _averageText;
-            set { _averageText = value; OnPropertyChanged(); }
+            get => _averageValue;
+            set { _averageValue = value; OnPropertyChanged(); }
         }
 
-        public string BestText
+        public string BestValue
         {
-            get => _bestText;
-            set { _bestText = value; OnPropertyChanged(); }
+            get => _bestValue;
+            set { _bestValue = value; OnPropertyChanged(); }
         }
 
-        public string WorstText
+        public string WorstValue
         {
-            get => _worstText;
-            set { _worstText = value; OnPropertyChanged(); }
+            get => _worstValue;
+            set { _worstValue = value; OnPropertyChanged(); }
         }
 
         public TestInfo? SelectedTest
@@ -380,10 +380,10 @@ namespace SkillChecker.Teacher.ViewModels
         {
             if (Results.Count == 0)
             {
-                TotalText = "Сдало: 0";
-                AverageText = "Средний балл: —";
-                BestText = "Лучший: —";
-                WorstText = "Худший: —";
+                TotalValue = "0";
+                AverageValue = "—";
+                BestValue = "—";
+                WorstValue = "—";
                 return;
             }
 
@@ -404,10 +404,10 @@ namespace SkillChecker.Teacher.ViewModels
                 }
             }
 
-            TotalText = "Сдало: " + Results.Count;
-            AverageText = "Средний балл: " + (sum / Results.Count).ToString("0.#") + "%";
-            BestText = "Лучший: " + best.ToString("0.#") + "%";
-            WorstText = "Худший: " + worst.ToString("0.#") + "%";
+            TotalValue = Results.Count.ToString();
+            AverageValue = (sum / Results.Count).ToString("0.#") + "%";
+            BestValue = best.ToString("0.#") + "%";
+            WorstValue = worst.ToString("0.#") + "%";
         }
 
         private void ExportResults()

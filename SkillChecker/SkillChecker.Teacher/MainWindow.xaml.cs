@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using SkillChecker.Teacher.ViewModels;
 using SkillChecker.Teacher.Views;
 
@@ -14,6 +15,23 @@ namespace SkillChecker.Teacher
             _viewModel = new TeacherViewModel();
             DataContext = _viewModel;
             _viewModel.OpenEditorRequested += OpenEditor;
+            NavList.SelectedIndex = 0;
+            UpdatePanels();
+        }
+
+        private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdatePanels();
+        }
+
+        private void UpdatePanels()
+        {
+            ListBoxItem? item = NavList.SelectedItem as ListBoxItem;
+            string tag = item != null ? (item.Tag as string ?? "") : "";
+
+            OverviewPanel.Visibility = tag == "overview" ? Visibility.Visible : Visibility.Collapsed;
+            TestsPanel.Visibility = tag == "tests" ? Visibility.Visible : Visibility.Collapsed;
+            ResultsPanel.Visibility = tag == "results" ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void OpenEditor(string? testName)
