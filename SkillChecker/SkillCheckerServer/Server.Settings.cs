@@ -52,6 +52,7 @@ namespace SkillCheckerServer
                     Dictionary<string, JsonElement>? data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json, options);
                     if (data != null)
                     {
+                        _testSettings.Clear();
                         foreach (KeyValuePair<string, JsonElement> kvp in data)
                         {
                             TestSettings settings = new TestSettings();
@@ -128,6 +129,66 @@ namespace SkillCheckerServer
 
                 string json = JsonSerializer.Serialize(data, options);
                 File.WriteAllText(_settingsFile, json, Encoding.UTF8);
+            }
+        }
+
+        public Dictionary<string, TestSettings> GetTestSettings()
+        {
+            lock (_stateLock)
+            {
+                LoadSettings();
+
+                Dictionary<string, TestSettings> copy = new Dictionary<string, TestSettings>();
+                foreach (KeyValuePair<string, TestSettings> kvp in _testSettings)
+                {
+                    TestSettings settings = new TestSettings();
+                    settings.StartTime = kvp.Value.StartTime;
+                    settings.TimeMinutes = kvp.Value.TimeMinutes;
+                    settings.Visible = kvp.Value.Visible;
+                    copy[kvp.Key] = settings;
+                }
+                return copy;
+            }
+        }
+
+        public void SaveTestSettings(string testName, DateTime? startTime, int timeMinutes, bool visible)
+        {
+            lock (_stateLock)
+            {
+                if (timeMinutes < 0)
+                {
+                    timeMinutes = 0;
+                }
+
+                TestSettings settings;
+                if (_testSettings.ContainsKey(testName))
+                {
+                    settings = _testSettings[testName];
+                }
+                else
+                {
+                    settings = new TestSettings();
+                }
+                settings.StartTime = startTime;
+                settings.TimeMinutes = timeMinutes;
+                settings.Visible = visible;
+                _testSettings[testName] = settings;
+
+                SaveSettings();
+                Log("Настройки теста сохранены: " + testName);
+            }
+        }
+
+        public void RemoveTestSettings(string testName)
+        {
+            lock (_stateLock)
+            {
+                if (_testSettings.ContainsKey(testName))
+                {
+                    _testSettings.Remove(testName);
+                    SaveSettings();
+                    Log("Настройки теста удалены: " + testName);
+                }
             }
         }
 
