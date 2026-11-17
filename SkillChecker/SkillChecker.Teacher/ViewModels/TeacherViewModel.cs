@@ -50,6 +50,7 @@ namespace SkillChecker.Teacher.ViewModels
         public RelayCommand OpenPanelCommand { get; }
         public RelayCommand CreateTestCommand { get; }
         public RelayCommand EditTestCommand { get; }
+        public RelayCommand SettingsTestCommand { get; }
         public RelayCommand DuplicateTestCommand { get; }
         public RelayCommand DeleteTestCommand { get; }
         public RelayCommand ImportTestCommand { get; }
@@ -59,6 +60,7 @@ namespace SkillChecker.Teacher.ViewModels
         public RelayCommand ClearResultsCommand { get; }
 
         public event Action<string?>? OpenEditorRequested;
+        public event Action<string>? OpenSettingsRequested;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public TeacherViewModel()
@@ -67,6 +69,13 @@ namespace SkillChecker.Teacher.ViewModels
             OpenPanelCommand = new RelayCommand(p => OpenPanel());
             CreateTestCommand = new RelayCommand(p => OpenEditorRequested?.Invoke(null));
             EditTestCommand = new RelayCommand(p => OpenEditorRequested?.Invoke(SelectedTest?.Name), p => SelectedTest != null);
+            SettingsTestCommand = new RelayCommand(p =>
+            {
+                if (SelectedTest != null)
+                {
+                    OpenSettingsRequested?.Invoke(SelectedTest.Name);
+                }
+            }, p => SelectedTest != null);
             DuplicateTestCommand = new RelayCommand(p => DuplicateTest(), p => SelectedTest != null);
             DeleteTestCommand = new RelayCommand(p => DeleteTest(), p => SelectedTest != null);
             ImportTestCommand = new RelayCommand(p => ImportTest());
@@ -160,6 +169,29 @@ namespace SkillChecker.Teacher.ViewModels
         public void RefreshAfterEditor()
         {
             _server.LoadAllTests();
+            LoadTests();
+        }
+
+        public TestSettings? GetTestSettingsFor(string testName)
+        {
+            Dictionary<string, TestSettings> settings = _server.GetTestSettings();
+            TestSettings? result;
+            if (settings.TryGetValue(testName, out result))
+            {
+                return result;
+            }
+            return null;
+        }
+
+        public void SaveSettingsForTest(string testName, DateTime? startTime, int timeMinutes, bool visible)
+        {
+            _server.SaveTestSettings(testName, startTime, timeMinutes, visible);
+            LoadTests();
+        }
+
+        public void RemoveSettingsForTest(string testName)
+        {
+            _server.RemoveTestSettings(testName);
             LoadTests();
         }
 
@@ -299,6 +331,7 @@ namespace SkillChecker.Teacher.ViewModels
         {
             Tests.Clear();
             Directory.CreateDirectory(_server.TestsFolderPath);
+            Dictionary<string, TestSettings> settings = _server.GetTestSettings();
             string[] files = Directory.GetFiles(_server.TestsFolderPath, "*.json");
             for (int i = 0; i < files.Length; i++)
             {
@@ -324,6 +357,41 @@ namespace SkillChecker.Teacher.ViewModels
                 catch
                 {
                     info.QuestionCount = 0;
+                }
+
+                TestSettings? settingsItem;
+                if (settings.TryGetValue(info.Name, out settingsItem))
+                {
+                    if (!settingsItem.Visible)
+                    {
+                        info.StatusText = "Скрыт";
+                        info.StatusLevel = 2;
+                    }
+                    else if (settingsItem.StartTime != null && settingsItem.StartTime.Value > DateTime.Now)
+                    {
+                        info.StatusText = "Запланирован";
+                        info.StatusLevel = 1;
+                    }
+                    else
+                    {
+                        info.StatusText = "Доступен";
+                        info.StatusLevel = 0;
+                    }
+
+                    string details = "";
+                    if (settingsItem.StartTime != null)
+                    {
+                        details = "Начало: " + settingsItem.StartTime.Value.ToString("dd.MM HH:mm");
+                    }
+                    if (settingsItem.TimeMinutes > 0)
+                    {
+                        if (details.Length > 0)
+                        {
+                            details += " · ";
+                        }
+                        details += "Лимит: " + settingsItem.TimeMinutes + " мин";
+                    }
+                    info.DetailsText = details;
                 }
 
                 Tests.Add(info);
@@ -498,6 +566,7 @@ namespace SkillChecker.Teacher.ViewModels
             {
                 File.Delete(filePath);
             }
+            _server.RemoveTestSettings(SelectedTest.Name);
             _server.LoadAllTests();
             LoadTests();
         }

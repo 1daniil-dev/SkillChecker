@@ -319,15 +319,16 @@
                     <TextBlock Text="Создание, редактирование и запуск тестов" Style="{StaticResource SectionSubtitle}"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,14">
-                    <Button Content="Создать" Style="{StaticResource PrimaryButton}" Command="{Binding CreateTestCommand}"/>
-                    <Button Content="Редактировать" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding EditTestCommand}"/>
-                    <Button Content="Дублировать" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding DuplicateTestCommand}"/>
-                    <Button Content="Удалить" Style="{StaticResource DangerButton}" Margin="8,0,0,0" Command="{Binding DeleteTestCommand}"/>
-                    <Button Content="Импорт JSON" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding ImportTestCommand}"/>
-                    <Button Content="Обновить" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding RefreshTestsCommand}"/>
-                    <TextBlock Text="{Binding TestsInfoText}" FontSize="13" Foreground="#64748B" VerticalAlignment="Center" Margin="14,0,0,0"/>
-                </StackPanel>
+                <WrapPanel Grid.Row="1" Margin="0,0,0,6">
+                    <Button Content="Создать" Style="{StaticResource PrimaryButton}" Margin="0,0,8,8" Command="{Binding CreateTestCommand}"/>
+                    <Button Content="Редактировать" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8" Command="{Binding EditTestCommand}"/>
+                    <Button Content="Настроить" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8" Command="{Binding SettingsTestCommand}"/>
+                    <Button Content="Дублировать" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8" Command="{Binding DuplicateTestCommand}"/>
+                    <Button Content="Удалить" Style="{StaticResource DangerButton}" Margin="0,0,8,8" Command="{Binding DeleteTestCommand}"/>
+                    <Button Content="Импорт JSON" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8" Command="{Binding ImportTestCommand}"/>
+                    <Button Content="Обновить" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8" Command="{Binding RefreshTestsCommand}"/>
+                    <TextBlock Text="{Binding TestsInfoText}" FontSize="13" Foreground="#64748B" VerticalAlignment="Center" Margin="4,0,0,8"/>
+                </WrapPanel>
 
                 <Border Grid.Row="2" Background="White" CornerRadius="12" Padding="12">
                     <Grid>
@@ -343,8 +344,54 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" Foreground="#1E293B" VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding QuestionCountText}" FontSize="13" Foreground="#64748B" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" Foreground="#1E293B"/>
+                                                <TextBlock Text="{Binding DetailsText}" FontSize="12" Foreground="#64748B" Margin="0,3,0,0">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding DetailsText}" Value="">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Border CornerRadius="10" Padding="9,3" Margin="0,0,10,0">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background" Value="#DCFCE7"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding StatusLevel}" Value="1">
+                                                                    <Setter Property="Background" Value="#FEF3C7"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding StatusLevel}" Value="2">
+                                                                    <Setter Property="Background" Value="#F1F5F9"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <TextBlock Text="{Binding StatusText}" FontSize="11" FontWeight="SemiBold">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="#15803D"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding StatusLevel}" Value="1">
+                                                                        <Setter Property="Foreground" Value="#B45309"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding StatusLevel}" Value="2">
+                                                                        <Setter Property="Foreground" Value="#64748B"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Border>
+                                                <TextBlock Text="{Binding QuestionCountText}" FontSize="13" Foreground="#64748B" VerticalAlignment="Center"/>
+                                            </StackPanel>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>

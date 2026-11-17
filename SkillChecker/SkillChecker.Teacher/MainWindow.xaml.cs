@@ -15,6 +15,7 @@ namespace SkillChecker.Teacher
             _viewModel = new TeacherViewModel();
             DataContext = _viewModel;
             _viewModel.OpenEditorRequested += OpenEditor;
+            _viewModel.OpenSettingsRequested += OpenSettings;
             NavList.SelectedIndex = 0;
             UpdatePanels();
         }
@@ -40,6 +41,13 @@ namespace SkillChecker.Teacher
             window.Owner = this;
             window.ShowDialog();
             _viewModel.RefreshAfterEditor();
+        }
+
+        private void OpenSettings(string testName)
+        {
+            TestSettingsWindow window = new TestSettingsWindow(_viewModel, testName);
+            window.Owner = this;
+            window.ShowDialog();
         }
 
         protected override void OnClosed(EventArgs e)
