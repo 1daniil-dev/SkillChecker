@@ -18,7 +18,7 @@ namespace SkillCheckerServer
         private string _dbPath;
         private readonly object _stateLock = new object();
 
-        public event Action<TestResult>? ResultSubmitted;
+        public event Action<TestResult, string>? ResultSubmitted;
 
         public string TestsFolderPath { get => _testsFolder; }
         public string ResultsFolderPath { get => Path.Combine(Path.GetDirectoryName(_testsFolder) ?? "", "Results"); }

@@ -143,7 +143,7 @@ namespace SkillCheckerServer
 
                     string savedFileName = SaveResultToFile(result);
                     SaveResultToDb(result, savedFileName);
-                    ResultSubmitted?.Invoke(result);
+                    ResultSubmitted?.Invoke(result, savedFileName);
 
                     string correctIndices = "";
                     for (int i = 0; i < questions.Count; i++)

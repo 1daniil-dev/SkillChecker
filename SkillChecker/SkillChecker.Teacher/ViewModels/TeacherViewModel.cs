@@ -290,7 +290,7 @@ namespace SkillChecker.Teacher.ViewModels
             webThread.Start();
         }
 
-        private void OnResultSubmitted(TestResult result)
+        private void OnResultSubmitted(TestResult result, string fileName)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
