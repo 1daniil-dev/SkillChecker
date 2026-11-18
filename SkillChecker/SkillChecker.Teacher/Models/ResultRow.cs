@@ -1,3 +1,5 @@
+using SkillChecker.Common.Models;
+
 namespace SkillChecker.Teacher.Models
 {
     public class ResultRow
@@ -9,6 +11,8 @@ namespace SkillChecker.Teacher.Models
         public double Score { get; set; }
         public int CorrectAnswers { get; set; }
         public int TotalQuestions { get; set; }
+        public string FileName { get; set; } = "";
+        public List<StudentAnswer> Answers { get; set; } = new List<StudentAnswer>();
 
         public string DateText { get => Date.ToString("dd.MM HH:mm"); }
         public string ScoreText { get => Score.ToString("0.#") + "%"; }

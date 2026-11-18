@@ -48,10 +48,12 @@ namespace SkillChecker.Teacher.ViewModels
         private string _emptyText = "Пока никто не сдал";
         private string _sortField = "date";
         private bool _sortAscending;
+        private ResultRow? _selectedResult;
         private TestInfo? _selectedTest;
 
         public ObservableCollection<TestInfo> Tests { get; } = new ObservableCollection<TestInfo>();
         public ObservableCollection<ResultRow> Results { get; } = new ObservableCollection<ResultRow>();
+        public ObservableCollection<AnswerRow> SelectedAnswers { get; } = new ObservableCollection<AnswerRow>();
         public ICollectionView ResultsView { get; }
 
         public RelayCommand CopyAddressCommand { get; }
@@ -67,6 +69,7 @@ namespace SkillChecker.Teacher.ViewModels
         public RelayCommand RefreshResultsCommand { get; }
         public RelayCommand ExportResultsCommand { get; }
         public RelayCommand ClearResultsCommand { get; }
+        public RelayCommand DeleteResultCommand { get; }
         public RelayCommand SortByDateCommand { get; }
         public RelayCommand SortByScoreCommand { get; }
 
@@ -102,6 +105,7 @@ namespace SkillChecker.Teacher.ViewModels
             RefreshResultsCommand = new RelayCommand(p => LoadResults());
             ExportResultsCommand = new RelayCommand(p => ExportResults(), p => Results.Count > 0);
             ClearResultsCommand = new RelayCommand(p => ClearResults(), p => Results.Count > 0);
+            DeleteResultCommand = new RelayCommand(p => DeleteResult(), p => SelectedResult != null);
             SortByDateCommand = new RelayCommand(p => SortBy("date"));
             SortByScoreCommand = new RelayCommand(p => SortBy("score"));
 
@@ -207,6 +211,30 @@ namespace SkillChecker.Teacher.ViewModels
             set { _emptyText = value; OnPropertyChanged(); }
         }
 
+        public ResultRow? SelectedResult
+        {
+            get => _selectedResult;
+            set
+            {
+                _selectedResult = value;
+                OnPropertyChanged();
+                OnPropertyChanged("SelectedResultTitle");
+                BuildAnswerRows(_selectedResult);
+            }
+        }
+
+        public string SelectedResultTitle
+        {
+            get
+            {
+                if (_selectedResult == null)
+                {
+                    return "";
+                }
+                return "Ответы: " + _selectedResult.StudentName + " — " + _selectedResult.TestName;
+            }
+        }
+
         public TestInfo? SelectedTest
         {
             get => _selectedTest;
@@ -294,7 +322,7 @@ namespace SkillChecker.Teacher.ViewModels
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                Results.Insert(0, ToRow(result));
+                Results.Insert(0, ToRow(result, fileName));
                 RefreshStats();
             });
         }
@@ -473,7 +501,7 @@ namespace SkillChecker.Teacher.ViewModels
             RefreshStats();
         }
 
-        private ResultRow ToRow(TestResult result)
+        private ResultRow ToRow(TestResult result, string fileName)
         {
             ResultRow row = new ResultRow();
             row.StudentName = result.StudentName;
@@ -483,6 +511,8 @@ namespace SkillChecker.Teacher.ViewModels
             row.Score = result.Score;
             row.CorrectAnswers = result.CorrectAnswers;
             row.TotalQuestions = result.TotalQuestions;
+            row.FileName = fileName;
+            row.Answers = new List<StudentAnswer>(result.Answers);
             return row;
         }
 
@@ -496,7 +526,173 @@ namespace SkillChecker.Teacher.ViewModels
             row.Score = entity.Score;
             row.CorrectAnswers = entity.CorrectAnswers;
             row.TotalQuestions = entity.TotalQuestions;
+            row.FileName = entity.SourceFile;
+
+            try
+            {
+                JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                List<StudentAnswer>? answers = JsonSerializer.Deserialize<List<StudentAnswer>>(entity.AnswersJson, options);
+                if (answers != null)
+                {
+                    row.Answers = answers;
+                }
+            }
+            catch
+            {
+                row.Answers = new List<StudentAnswer>();
+            }
             return row;
+        }
+
+        private void BuildAnswerRows(ResultRow? row)
+        {
+            SelectedAnswers.Clear();
+            if (row == null)
+            {
+                return;
+            }
+
+            List<Question>? questions = null;
+            try
+            {
+                string path = Path.Combine(_server.TestsFolderPath, row.TestName + ".json");
+                if (File.Exists(path))
+                {
+                    string json = File.ReadAllText(path, Encoding.UTF8);
+                    JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                    questions = JsonSerializer.Deserialize<List<Question>>(json, options);
+                }
+            }
+            catch
+            {
+                questions = null;
+            }
+
+            for (int i = 0; i < row.Answers.Count; i++)
+            {
+                StudentAnswer answer = row.Answers[i];
+                AnswerRow item = new AnswerRow();
+                item.Number = i + 1;
+                item.QuestionText = answer.QuestionText;
+                item.IsCorrect = answer.IsCorrect;
+
+                Question? question = null;
+                if (questions != null && questions.Count == row.Answers.Count)
+                {
+                    question = questions[i];
+                }
+
+                if (answer.QuestionType == QuestionTypes.Text)
+                {
+                    item.YourAnswer = answer.TextAnswer.Length > 0 ? answer.TextAnswer : "(нет ответа)";
+                    if (answer.AcceptableAnswers.Count > 0)
+                    {
+                        item.CorrectAnswer = string.Join(", ", answer.AcceptableAnswers);
+                    }
+                    else
+                    {
+                        item.CorrectAnswer = "(не указан)";
+                    }
+                }
+                else if (answer.QuestionType == QuestionTypes.Multiple)
+                {
+                    item.YourAnswer = FormatIndices(answer.SelectedIndices, question != null ? question.Options : null);
+                    if (question != null && question.CorrectAnswerIndices.Count > 0)
+                    {
+                        item.CorrectAnswer = FormatIndices(question.CorrectAnswerIndices, question.Options);
+                    }
+                    else
+                    {
+                        item.CorrectAnswer = FormatIndices(new List<int> { answer.CorrectIndex }, question != null ? question.Options : null);
+                    }
+                }
+                else
+                {
+                    item.YourAnswer = FormatIndices(new List<int> { answer.SelectedIndex }, question != null ? question.Options : null);
+                    item.CorrectAnswer = FormatIndices(new List<int> { answer.CorrectIndex }, question != null ? question.Options : null);
+                }
+
+                SelectedAnswers.Add(item);
+            }
+        }
+
+        private string FormatIndices(List<int> indices, List<string>? options)
+        {
+            if (indices == null || indices.Count == 0)
+            {
+                return "(нет ответа)";
+            }
+            if (indices.Count == 1 && indices[0] < 0)
+            {
+                return "(нет ответа)";
+            }
+
+            string text = "";
+            for (int i = 0; i < indices.Count; i++)
+            {
+                int index = indices[i];
+                string part;
+                if (options != null && index >= 0 && index < options.Count)
+                {
+                    part = (char)(1040 + index) + ") " + options[index];
+                }
+                else if (index >= 0)
+                {
+                    part = "вариант " + (index + 1);
+                }
+                else
+                {
+                    part = "(нет)";
+                }
+                if (i > 0)
+                {
+                    text += ", ";
+                }
+                text += part;
+            }
+            return text;
+        }
+
+        private void DeleteResult()
+        {
+            if (SelectedResult == null)
+            {
+                return;
+            }
+
+            MessageBoxResult answer = MessageBox.Show("Удалить результат «" + SelectedResult.StudentName + " — " + SelectedResult.TestName + "»?", "SkillChecker", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (answer != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            string filePath = Path.Combine(_server.ResultsFolderPath, SelectedResult.FileName);
+            if (SelectedResult.FileName.Length > 0 && File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            using (AppDbContext db = new AppDbContext(_server.DbPath))
+            {
+                ResultEntity? target = null;
+                foreach (ResultEntity entity in db.Results)
+                {
+                    if (entity.SourceFile == SelectedResult.FileName)
+                    {
+                        target = entity;
+                        break;
+                    }
+                }
+                if (target != null)
+                {
+                    db.Results.Remove(target);
+                    db.SaveChanges();
+                }
+            }
+
+            Results.Remove(SelectedResult);
+            SelectedResult = null;
+            RefreshStats();
         }
 
         private bool FilterResult(object item)

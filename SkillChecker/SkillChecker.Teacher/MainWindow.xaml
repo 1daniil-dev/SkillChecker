@@ -422,6 +422,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Margin="0,0,0,20">
@@ -497,7 +498,7 @@
                         </Border>
 
                         <Grid Grid.Row="1">
-                            <ListView ItemsSource="{Binding ResultsView}" BorderThickness="0" Background="Transparent"
+                            <ListView ItemsSource="{Binding ResultsView}" SelectedItem="{Binding SelectedResult}" BorderThickness="0" Background="Transparent"
                                       AlternationCount="2"
                                       ItemContainerStyle="{StaticResource ResultRowStyle}"
                                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -551,6 +552,66 @@
                                 </TextBlock.Style>
                             </TextBlock>
                         </Grid>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="4" Background="White" CornerRadius="12" Padding="16" Height="230" Margin="0,12,0,0">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedResult}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <TextBlock Text="{Binding SelectedResultTitle}" FontSize="14" FontWeight="SemiBold" Foreground="#1E293B" VerticalAlignment="Center"/>
+                            <Button Content="Удалить результат" Style="{StaticResource DangerButton}" HorizontalAlignment="Right" Command="{Binding DeleteResultCommand}"/>
+                        </Grid>
+
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,10,0,0">
+                            <ItemsControl ItemsSource="{Binding SelectedAnswers}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12,8" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" FontSize="14" FontWeight="Bold" Margin="0,0,10,0" VerticalAlignment="Top">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="✗"/>
+                                                            <Setter Property="Foreground" Value="#DC2626"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsCorrect}" Value="True">
+                                                                    <Setter Property="Text" Value="✓"/>
+                                                                    <Setter Property="Foreground" Value="#16A34A"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="{Binding Header}" FontSize="13" FontWeight="SemiBold" Foreground="#1E293B" TextWrapping="Wrap"/>
+                                                    <TextBlock Text="{Binding YourAnswerText}" FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                                    <TextBlock Text="{Binding CorrectAnswerText}" FontSize="12" Foreground="#64748B" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
                     </Grid>
                 </Border>
             </Grid>
