@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Win32;
 using SkillChecker.Common.Models;
@@ -41,10 +42,17 @@ namespace SkillChecker.Teacher.ViewModels
         private string _averageValue = "—";
         private string _bestValue = "—";
         private string _worstValue = "—";
+        private string _searchText = "";
+        private string _dateSortLabel = "По дате";
+        private string _scoreSortLabel = "По баллу";
+        private string _emptyText = "Пока никто не сдал";
+        private string _sortField = "date";
+        private bool _sortAscending;
         private TestInfo? _selectedTest;
 
         public ObservableCollection<TestInfo> Tests { get; } = new ObservableCollection<TestInfo>();
         public ObservableCollection<ResultRow> Results { get; } = new ObservableCollection<ResultRow>();
+        public ICollectionView ResultsView { get; }
 
         public RelayCommand CopyAddressCommand { get; }
         public RelayCommand OpenPanelCommand { get; }
@@ -59,6 +67,8 @@ namespace SkillChecker.Teacher.ViewModels
         public RelayCommand RefreshResultsCommand { get; }
         public RelayCommand ExportResultsCommand { get; }
         public RelayCommand ClearResultsCommand { get; }
+        public RelayCommand SortByDateCommand { get; }
+        public RelayCommand SortByScoreCommand { get; }
 
         public event Action<string?>? OpenEditorRequested;
         public event Action<string>? OpenSettingsRequested;
@@ -92,6 +102,12 @@ namespace SkillChecker.Teacher.ViewModels
             RefreshResultsCommand = new RelayCommand(p => LoadResults());
             ExportResultsCommand = new RelayCommand(p => ExportResults(), p => Results.Count > 0);
             ClearResultsCommand = new RelayCommand(p => ClearResults(), p => Results.Count > 0);
+            SortByDateCommand = new RelayCommand(p => SortBy("date"));
+            SortByScoreCommand = new RelayCommand(p => SortBy("score"));
+
+            ResultsView = CollectionViewSource.GetDefaultView(Results);
+            ResultsView.Filter = FilterResult;
+            ApplySort();
 
             StartServer();
             StartWebPanel();
@@ -159,6 +175,36 @@ namespace SkillChecker.Teacher.ViewModels
         {
             get => _worstValue;
             set { _worstValue = value; OnPropertyChanged(); }
+        }
+
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value ?? "";
+                OnPropertyChanged();
+                ResultsView.Refresh();
+                RefreshStats();
+            }
+        }
+
+        public string DateSortLabel
+        {
+            get => _dateSortLabel;
+            set { _dateSortLabel = value; OnPropertyChanged(); }
+        }
+
+        public string ScoreSortLabel
+        {
+            get => _scoreSortLabel;
+            set { _scoreSortLabel = value; OnPropertyChanged(); }
+        }
+
+        public string EmptyText
+        {
+            get => _emptyText;
+            set { _emptyText = value; OnPropertyChanged(); }
         }
 
         public TestInfo? SelectedTest
@@ -453,9 +499,98 @@ namespace SkillChecker.Teacher.ViewModels
             return row;
         }
 
+        private bool FilterResult(object item)
+        {
+            ResultRow? row = item as ResultRow;
+            if (row == null)
+            {
+                return false;
+            }
+            if (_searchText.Length == 0)
+            {
+                return true;
+            }
+            if (row.StudentName.IndexOf(_searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+            if (row.Group.IndexOf(_searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+            if (row.TestName.IndexOf(_searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void SortBy(string field)
+        {
+            if (_sortField == field)
+            {
+                _sortAscending = !_sortAscending;
+            }
+            else
+            {
+                _sortField = field;
+                _sortAscending = false;
+            }
+            ApplySort();
+        }
+
+        private void ApplySort()
+        {
+            ResultsView.SortDescriptions.Clear();
+            ListSortDirection direction = _sortAscending ? ListSortDirection.Ascending : ListSortDirection.Descending;
+
+            if (_sortField == "date")
+            {
+                ResultsView.SortDescriptions.Add(new SortDescription("Date", direction));
+            }
+            else
+            {
+                ResultsView.SortDescriptions.Add(new SortDescription("Score", direction));
+            }
+
+            if (_sortField == "date")
+            {
+                DateSortLabel = _sortAscending ? "По дате ▲" : "По дате ▼";
+                ScoreSortLabel = "По баллу";
+            }
+            else
+            {
+                DateSortLabel = "По дате";
+                ScoreSortLabel = _sortAscending ? "По баллу ▲" : "По баллу ▼";
+            }
+        }
+
         private void RefreshStats()
         {
+            List<ResultRow> visible = new List<ResultRow>();
+            foreach (object item in ResultsView)
+            {
+                ResultRow? row = item as ResultRow;
+                if (row != null)
+                {
+                    visible.Add(row);
+                }
+            }
+
             if (Results.Count == 0)
+            {
+                EmptyText = "Пока никто не сдал";
+            }
+            else if (visible.Count == 0)
+            {
+                EmptyText = "Ничего не найдено";
+            }
+            else
+            {
+                EmptyText = "";
+            }
+
+            if (visible.Count == 0)
             {
                 TotalValue = "0";
                 AverageValue = "—";
@@ -465,11 +600,11 @@ namespace SkillChecker.Teacher.ViewModels
             }
 
             double sum = 0;
-            double best = Results[0].Score;
-            double worst = Results[0].Score;
-            for (int i = 0; i < Results.Count; i++)
+            double best = visible[0].Score;
+            double worst = visible[0].Score;
+            for (int i = 0; i < visible.Count; i++)
             {
-                double score = Results[i].Score;
+                double score = visible[i].Score;
                 sum += score;
                 if (score > best)
                 {
@@ -481,8 +616,8 @@ namespace SkillChecker.Teacher.ViewModels
                 }
             }
 
-            TotalValue = Results.Count.ToString();
-            AverageValue = (sum / Results.Count).ToString("0.#") + "%";
+            TotalValue = visible.Count.ToString();
+            AverageValue = (sum / visible.Count).ToString("0.#") + "%";
             BestValue = best.ToString("0.#") + "%";
             WorstValue = worst.ToString("0.#") + "%";
         }

@@ -456,11 +456,19 @@
                     </Border>
                 </UniformGrid>
 
-                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,12">
-                    <Button Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Command="{Binding ExportResultsCommand}"/>
-                    <Button Content="Обновить" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding RefreshResultsCommand}"/>
-                    <Button Content="Очистить" Style="{StaticResource DangerButton}" Margin="8,0,0,0" Command="{Binding ClearResultsCommand}"/>
-                </StackPanel>
+                <Grid Grid.Row="2" Margin="0,0,0,12">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Command="{Binding ExportResultsCommand}"/>
+                        <Button Content="Обновить" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding RefreshResultsCommand}"/>
+                        <Button Content="Очистить" Style="{StaticResource DangerButton}" Margin="8,0,0,0" Command="{Binding ClearResultsCommand}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock Text="Поиск:" FontSize="13" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="220" Padding="8,6" FontSize="13" VerticalContentAlignment="Center"/>
+                        <Button Content="{Binding DateSortLabel}" Style="{StaticResource SecondaryButton}" Margin="10,0,0,0" Command="{Binding SortByDateCommand}"/>
+                        <Button Content="{Binding ScoreSortLabel}" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Command="{Binding SortByScoreCommand}"/>
+                    </StackPanel>
+                </Grid>
 
                 <Border Grid.Row="3" Background="White" CornerRadius="12" Padding="0">
                     <Grid>
@@ -489,7 +497,7 @@
                         </Border>
 
                         <Grid Grid.Row="1">
-                            <ListView ItemsSource="{Binding Results}" BorderThickness="0" Background="Transparent"
+                            <ListView ItemsSource="{Binding ResultsView}" BorderThickness="0" Background="Transparent"
                                       AlternationCount="2"
                                       ItemContainerStyle="{StaticResource ResultRowStyle}"
                                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -529,14 +537,14 @@
                                 </ListView.ItemTemplate>
                             </ListView>
 
-                            <TextBlock Text="Пока никто не сдал" FontSize="14" Foreground="#94A3B8"
+                            <TextBlock Text="{Binding EmptyText}" FontSize="14" Foreground="#94A3B8"
                                        HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Setter Property="Visibility" Value="Visible"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Results.Count}" Value="0">
-                                                <Setter Property="Visibility" Value="Visible"/>
+                                            <DataTrigger Binding="{Binding EmptyText}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
