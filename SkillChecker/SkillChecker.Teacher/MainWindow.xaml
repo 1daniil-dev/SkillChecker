@@ -323,6 +323,7 @@
                     <Button Content="Создать" Style="{StaticResource PrimaryButton}" Margin="0,0,8,8" Command="{Binding CreateTestCommand}"/>
                     <Button Content="Редактировать" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8" Command="{Binding EditTestCommand}"/>
                     <Button Content="Настроить" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8" Command="{Binding SettingsTestCommand}"/>
+                    <Button Content="Предпросмотр" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8" Command="{Binding PreviewTestCommand}"/>
                     <Button Content="Дублировать" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8" Command="{Binding DuplicateTestCommand}"/>
                     <Button Content="Удалить" Style="{StaticResource DangerButton}" Margin="0,0,8,8" Command="{Binding DeleteTestCommand}"/>
                     <Button Content="Импорт JSON" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8" Command="{Binding ImportTestCommand}"/>

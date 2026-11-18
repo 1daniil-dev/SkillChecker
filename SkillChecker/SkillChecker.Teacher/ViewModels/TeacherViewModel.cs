@@ -51,6 +51,7 @@ namespace SkillChecker.Teacher.ViewModels
         public RelayCommand CreateTestCommand { get; }
         public RelayCommand EditTestCommand { get; }
         public RelayCommand SettingsTestCommand { get; }
+        public RelayCommand PreviewTestCommand { get; }
         public RelayCommand DuplicateTestCommand { get; }
         public RelayCommand DeleteTestCommand { get; }
         public RelayCommand ImportTestCommand { get; }
@@ -61,6 +62,7 @@ namespace SkillChecker.Teacher.ViewModels
 
         public event Action<string?>? OpenEditorRequested;
         public event Action<string>? OpenSettingsRequested;
+        public event Action<string>? OpenPreviewRequested;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public TeacherViewModel()
@@ -74,6 +76,13 @@ namespace SkillChecker.Teacher.ViewModels
                 if (SelectedTest != null)
                 {
                     OpenSettingsRequested?.Invoke(SelectedTest.Name);
+                }
+            }, p => SelectedTest != null);
+            PreviewTestCommand = new RelayCommand(p =>
+            {
+                if (SelectedTest != null)
+                {
+                    OpenPreviewRequested?.Invoke(SelectedTest.Name);
                 }
             }, p => SelectedTest != null);
             DuplicateTestCommand = new RelayCommand(p => DuplicateTest(), p => SelectedTest != null);

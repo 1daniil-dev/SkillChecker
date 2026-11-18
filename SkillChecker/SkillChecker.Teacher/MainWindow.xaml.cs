@@ -16,6 +16,7 @@ namespace SkillChecker.Teacher
             DataContext = _viewModel;
             _viewModel.OpenEditorRequested += OpenEditor;
             _viewModel.OpenSettingsRequested += OpenSettings;
+            _viewModel.OpenPreviewRequested += OpenPreview;
             NavList.SelectedIndex = 0;
             UpdatePanels();
         }
@@ -46,6 +47,13 @@ namespace SkillChecker.Teacher
         private void OpenSettings(string testName)
         {
             TestSettingsWindow window = new TestSettingsWindow(_viewModel, testName);
+            window.Owner = this;
+            window.ShowDialog();
+        }
+
+        private void OpenPreview(string testName)
+        {
+            TestPreviewWindow window = new TestPreviewWindow(_viewModel.TestsFolderPath, testName);
             window.Owner = this;
             window.ShowDialog();
         }
