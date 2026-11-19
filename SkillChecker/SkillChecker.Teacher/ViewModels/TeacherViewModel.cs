@@ -76,6 +76,7 @@ namespace SkillChecker.Teacher.ViewModels
         public event Action<string?>? OpenEditorRequested;
         public event Action<string>? OpenSettingsRequested;
         public event Action<string>? OpenPreviewRequested;
+        public event Action? OpenExportRequested;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public TeacherViewModel()
@@ -103,7 +104,7 @@ namespace SkillChecker.Teacher.ViewModels
             ImportTestCommand = new RelayCommand(p => ImportTest());
             RefreshTestsCommand = new RelayCommand(p => LoadTests());
             RefreshResultsCommand = new RelayCommand(p => LoadResults());
-            ExportResultsCommand = new RelayCommand(p => ExportResults(), p => Results.Count > 0);
+            ExportResultsCommand = new RelayCommand(p => OpenExportRequested?.Invoke(), p => Results.Count > 0);
             ClearResultsCommand = new RelayCommand(p => ClearResults(), p => Results.Count > 0);
             DeleteResultCommand = new RelayCommand(p => DeleteResult(), p => SelectedResult != null);
             SortByDateCommand = new RelayCommand(p => SortBy("date"));
@@ -818,8 +819,13 @@ namespace SkillChecker.Teacher.ViewModels
             WorstValue = worst.ToString("0.#") + "%";
         }
 
-        private void ExportResults()
+        public void ExportResultsToFile(List<string> groups)
         {
+            if (groups == null || groups.Count == 0)
+            {
+                return;
+            }
+
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.Filter = "Excel (*.xlsx)|*.xlsx";
             dialog.FileName = "results.xlsx";
@@ -833,6 +839,20 @@ namespace SkillChecker.Teacher.ViewModels
             {
                 foreach (ResultEntity entity in db.Results)
                 {
+                    bool include = false;
+                    for (int g = 0; g < groups.Count; g++)
+                    {
+                        if (entity.Group == groups[g])
+                        {
+                            include = true;
+                            break;
+                        }
+                    }
+                    if (!include)
+                    {
+                        continue;
+                    }
+
                     TestResult result = new TestResult();
                     result.StudentName = entity.StudentName;
                     result.Group = entity.Group;

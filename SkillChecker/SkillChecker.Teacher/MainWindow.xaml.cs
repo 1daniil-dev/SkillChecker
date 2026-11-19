@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using SkillChecker.Teacher.Models;
 using SkillChecker.Teacher.ViewModels;
 using SkillChecker.Teacher.Views;
 
@@ -19,6 +20,7 @@ namespace SkillChecker.Teacher
             _viewModel.OpenEditorRequested += OpenEditor;
             _viewModel.OpenSettingsRequested += OpenSettings;
             _viewModel.OpenPreviewRequested += OpenPreview;
+            _viewModel.OpenExportRequested += OpenExport;
             _viewModel.PropertyChanged += ViewModel_PropertyChanged;
             NavList.SelectedIndex = 0;
             UpdatePanels();
@@ -92,6 +94,17 @@ namespace SkillChecker.Teacher
             TestPreviewWindow window = new TestPreviewWindow(_viewModel.TestsFolderPath, testName);
             window.Owner = this;
             window.ShowDialog();
+        }
+
+        private void OpenExport()
+        {
+            List<ResultRow> rows = new List<ResultRow>(_viewModel.Results);
+            ExportResultsWindow window = new ExportResultsWindow(rows);
+            window.Owner = this;
+            if (window.ShowDialog() == true)
+            {
+                _viewModel.ExportResultsToFile(window.SelectedGroups);
+            }
         }
 
         protected override void OnClosed(EventArgs e)
