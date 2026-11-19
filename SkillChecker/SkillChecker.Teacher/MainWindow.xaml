@@ -421,8 +421,9 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="3*"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition x:Name="DetailsRow" Height="2*"/>
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Margin="0,0,0,20">
@@ -555,17 +556,11 @@
                     </Grid>
                 </Border>
 
-                <Border Grid.Row="4" Background="White" CornerRadius="12" Padding="16" Height="230" Margin="0,12,0,0">
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Setter Property="Visibility" Value="Visible"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedResult}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
+                <GridSplitter Grid.Row="4" x:Name="DetailsSplitter" Height="6" HorizontalAlignment="Stretch"
+                              Background="#E2E8F0" ResizeDirection="Rows" ResizeBehavior="PreviousAndNext"
+                              Cursor="SizeNS" Visibility="Collapsed" Margin="0,6,0,0"/>
+
+                <Border Grid.Row="5" x:Name="DetailsPanel" Background="White" CornerRadius="12" Padding="16" Margin="0,6,0,0" Visibility="Collapsed">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>

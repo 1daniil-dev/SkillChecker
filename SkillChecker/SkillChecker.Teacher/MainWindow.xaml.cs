@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using SkillChecker.Teacher.ViewModels;
@@ -8,6 +9,7 @@ namespace SkillChecker.Teacher
     public partial class MainWindow : Window
     {
         private TeacherViewModel _viewModel;
+        private GridLength _detailsHeight = new GridLength(2, GridUnitType.Star);
 
         public MainWindow()
         {
@@ -17,8 +19,42 @@ namespace SkillChecker.Teacher
             _viewModel.OpenEditorRequested += OpenEditor;
             _viewModel.OpenSettingsRequested += OpenSettings;
             _viewModel.OpenPreviewRequested += OpenPreview;
+            _viewModel.PropertyChanged += ViewModel_PropertyChanged;
             NavList.SelectedIndex = 0;
             UpdatePanels();
+            UpdateDetailsVisibility();
+        }
+
+        private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SelectedResult")
+            {
+                UpdateDetailsVisibility();
+            }
+        }
+
+        private void UpdateDetailsVisibility()
+        {
+            bool hasSelection = _viewModel.SelectedResult != null;
+            if (hasSelection)
+            {
+                if (DetailsRow.Height.Value == 0)
+                {
+                    DetailsRow.Height = _detailsHeight;
+                }
+                DetailsPanel.Visibility = Visibility.Visible;
+                DetailsSplitter.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                if (DetailsRow.Height.Value > 0)
+                {
+                    _detailsHeight = DetailsRow.Height;
+                }
+                DetailsRow.Height = new GridLength(0);
+                DetailsPanel.Visibility = Visibility.Collapsed;
+                DetailsSplitter.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
